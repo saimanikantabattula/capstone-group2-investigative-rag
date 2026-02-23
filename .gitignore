@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Mac
+.DS_Store
+__MACOSX/
+._*
+
+# Capstone data (do not commit)
+data/
+*.zip
+*.xml
+*.pdf

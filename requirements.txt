@@ -1,0 +1,7 @@
+pandas
+lxml
+pypdf
+chromadb
+sentence-transformers
+python-dotenv
+tqdm
