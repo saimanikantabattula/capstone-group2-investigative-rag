@@ -17,6 +17,9 @@ flowchart LR
   VDB --> RAG
   RAG --> UI["UI / API Output"]
 
+```md
+## Data Flow Diagram
+```mermaid
 flowchart TB
   A["Raw XML/PDF/CSV"] --> B["Parse + Extract"]
   B --> C["Clean + Normalize"]
@@ -29,10 +32,12 @@ flowchart TB
   G --> I
   I --> J["Answer + Citations"]
 
+```md
+## Conceptual ER Diagram (ERD)
+```mermaid
 erDiagram
   ORGANIZATION ||--o{ FILING : submits
   FILING ||--o{ DOCUMENT : contains
   DOCUMENT ||--o{ CHUNK : splits_into
   CHUNK ||--o{ EMBEDDING : has
   ORGANIZATION ||--o{ LINK : connected_to
-
