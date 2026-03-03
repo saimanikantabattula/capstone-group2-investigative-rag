@@ -34,4 +34,3 @@ erDiagram
   DOCUMENT ||--o{ CHUNK : splits_into
   CHUNK ||--o{ EMBEDDING : has
   ORGANIZATION ||--o{ LINK : connected_to
-```
