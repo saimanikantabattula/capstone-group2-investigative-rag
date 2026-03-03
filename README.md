@@ -15,7 +15,7 @@ flowchart LR
   PG --> RAG["Multi-Agent RAG"]
   VDB --> RAG
   RAG --> UI["UI / API Output"]
-
+```
 flowchart TB
   A["Raw XML/PDF/CSV"] --> B["Parse + Extract"]
   B --> C["Clean + Normalize"]
