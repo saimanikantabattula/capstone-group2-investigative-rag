@@ -27,10 +27,11 @@ flowchart TB
   D --> I
   G --> I
   I --> J["Answer + Citations"]
-
+```
 erDiagram
   ORGANIZATION ||--o{ FILING : submits
   FILING ||--o{ DOCUMENT : contains
   DOCUMENT ||--o{ CHUNK : splits_into
   CHUNK ||--o{ EMBEDDING : has
   ORGANIZATION ||--o{ LINK : connected_to
+```
