@@ -9,12 +9,9 @@ A multi-agent RAG system that ingests IRS 990 (XML) + FEC filings (PDF/metadata)
 ## Architecture Diagram
 ```mermaid
 flowchart LR
-  DS[IRS 990 + FEC] --> ING[Ingestion + Cleaning]
-  ING --> PG[Postgres (structured)] ING
-  ING --> VDB[Vector Index (embeddings)]
-  PG --> RAG[Multi-Agent RAG]
+  DS["IRS 990 + FEC"] --> ING["Ingestion + Cleaning"]
+  ING --> PG["Postgres (structured)"]
+  ING --> VDB["Vector Index (embeddings)"]
+  PG --> RAG["Multi-Agent RAG"]
   VDB --> RAG
-  RAG --> UI[UI / API Output]
-
-**Then on a new empty line type:**
-```text
+  RAG --> UI["UI / API Output"]
