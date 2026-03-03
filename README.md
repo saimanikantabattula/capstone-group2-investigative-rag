@@ -1,27 +1,20 @@
-# Capstone Group 2 — Multi-Agent RAG / Investigative Intelligence
+# Capstone Group 2 — Investigative RAG (IRS 990 + FEC)
+
+## Research Question
+Can we automatically connect IRS Form 990 nonprofit filings with FEC committee filings to uncover financial/organizational links, and answer investigation questions with citations?
 
 ## What we are building
-An agentic RAG system that retrieves evidence from:
-- Structured data (CSV/DB)
-- Unstructured documents (XML/PDF)
-Then generates answers with citations.
+A multi-agent RAG system that ingests IRS 990 (XML) + FEC filings (PDF/metadata), stores structured data in Postgres, and uses retrieval + agents to generate answers with citations.
 
-## Datasets (stored locally, NOT committed to GitHub)
-### IRS 990 (2024–2025)
-- Structured: IRS index/sample CSV with OBJECT_ID
-- Unstructured: XML filings named <OBJECT_ID>_public.xml
+## Architecture Diagram
+```mermaid
+flowchart LR
+  DS[IRS 990 + FEC] --> ING[Ingestion + Cleaning]
+  ING --> PG[Postgres (structured)]
+  ING --> VDB[Vector Index (embeddings)]
+  PG --> RAG[Multi-Agent RAG]
+  VDB --> RAG
+  RAG --> UI[UI / API Output]
 
-### FEC (2024 + 2025 activity)
-- Structured: committee_summary_2024.csv and committee_summary_2026.csv
-- Unstructured: selected filing PDFs downloaded from FEC filings page
-
-## Repo structure
-- src/ingest: ingestion scripts (IRS XML, FEC PDFs)
-- src/index: embeddings + vector DB indexing
-- src/query: retrieval + query pipeline
-- docs/: use cases and notes
-
-## Local setup
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+**Then on a new empty line type:**
+```text
