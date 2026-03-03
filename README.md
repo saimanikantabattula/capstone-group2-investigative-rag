@@ -6,7 +6,7 @@ Can we automatically connect IRS Form 990 nonprofit filings with FEC committee f
 ## What we are building
 A multi-agent RAG system that ingests IRS 990 (XML) + FEC filings (PDF/metadata), stores structured data in Postgres, and uses retrieval + agents to generate answers with citations.
 
-```md
+
 ## Architecture Diagram
 ```mermaid
 flowchart LR
@@ -16,8 +16,8 @@ flowchart LR
   PG --> RAG["Multi-Agent RAG"]
   VDB --> RAG
   RAG --> UI["UI / API Output"]
+```
 
-```md
 ## Data Flow Diagram
 ```mermaid
 flowchart TB
@@ -31,8 +31,8 @@ flowchart TB
   D --> I
   G --> I
   I --> J["Answer + Citations"]
+```
 
-```md
 ## Conceptual ER Diagram (ERD)
 ```mermaid
 erDiagram
@@ -41,3 +41,4 @@ erDiagram
   DOCUMENT ||--o{ CHUNK : splits_into
   CHUNK ||--o{ EMBEDDING : has
   ORGANIZATION ||--o{ LINK : connected_to
+```
