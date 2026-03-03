@@ -15,3 +15,22 @@ flowchart LR
   PG --> RAG["Multi-Agent RAG"]
   VDB --> RAG
   RAG --> UI["UI / API Output"]
+
+flowchart TB
+  A["Raw XML/PDF/CSV"] --> B["Parse + Extract"]
+  B --> C["Clean + Normalize"]
+  C --> D["Write to Postgres"]
+  C --> E["Chunk Text"]
+  E --> F["Embeddings"]
+  F --> G["Vector DB"]
+  H["User Question"] --> I["Agents"]
+  D --> I
+  G --> I
+  I --> J["Answer + Citations"]
+
+erDiagram
+  ORGANIZATION ||--o{ FILING : submits
+  FILING ||--o{ DOCUMENT : contains
+  DOCUMENT ||--o{ CHUNK : splits_into
+  CHUNK ||--o{ EMBEDDING : has
+  ORGANIZATION ||--o{ LINK : connected_to
