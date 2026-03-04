@@ -18,3 +18,8 @@ data/
 *.xml
 *.pdf
 chroma_db/
+.env
+.DS_Store
+__pycache__/
+*.pyc
+chroma_db/
