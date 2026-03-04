@@ -17,3 +17,4 @@ data/
 *.zip
 *.xml
 *.pdf
+chroma_db/
