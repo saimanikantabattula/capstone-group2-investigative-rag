@@ -2,7 +2,7 @@
 answer.py
 
 Retrieves relevant chunks from ChromaDB for a given query,
-builds a context block, and sends it to Claude to generate
+builds a context block, and calls the language model API to generate
 a cited answer. Returns structured output with answer text
 and source citations.
 """
@@ -11,17 +11,18 @@ import os
 import re
 from dataclasses import dataclass, field
 
-import anthropic
+import anthropic as _llm_client
 import chromadb
 from chromadb.utils import embedding_functions
 
 
 CHROMA_PATH = os.getenv("CHROMA_PATH", "/Users/battulasaimanikanta/Documents/capstone-group2-investigative-rag/chroma_db")
-IRS_COLLECTION = os.getenv("IRS_COLLECTION", "irs_filings_5000")
+IRS_COLLECTION = os.getenv("IRS_COLLECTION", "irs_filings_25k")
 FEC_COLLECTION = os.getenv("FEC_COLLECTION", "fec_filings")
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+LLM_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 TOP_K = int(os.getenv("TOP_K", "5"))
 EMBED_MODEL = "all-MiniLM-L6-v2"
+LLM_MODEL = "claude-haiku-4-5-20251001"
 
 
 @dataclass
@@ -116,6 +117,35 @@ def build_citation_list(citations):
     return "\n".join(lines)
 
 
+def generate_answer(context, citation_list, query):
+    system_prompt = (
+        "You are an investigative intelligence analyst specializing in nonprofit finance "
+        "(IRS 990 filings) and political finance (FEC filings).\n\n"
+        "Answer questions using only the provided source documents.\n"
+        "Use inline citations like [1], [2] when referencing sources.\n"
+        "Be concise, factual, and professional.\n"
+        "If the documents do not contain enough information, say so clearly.\n"
+        "Never fabricate numbers or organization names.\n"
+        "End every answer with a Sources section."
+    )
+
+    user_message = (
+        f"Question: {query}\n\n"
+        f"--- SOURCE DOCUMENTS ---\n{context}\n\n"
+        f"--- CITATION REFERENCES ---\n{citation_list}\n\n"
+        "Answer using only the source documents above. Use inline citations."
+    )
+
+    api = _llm_client.Anthropic(api_key=LLM_API_KEY)
+    response = api.messages.create(
+        model=LLM_MODEL,
+        max_tokens=1024,
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_message}],
+    )
+    return response.content[0].text
+
+
 def ask(query, dataset="both", top_k=TOP_K):
     all_citations = []
     sources_used = []
@@ -142,33 +172,8 @@ def ask(query, dataset="both", top_k=TOP_K):
     context = build_context(all_citations)
     citation_list = build_citation_list(all_citations)
 
-    system_prompt = (
-        "You are an investigative intelligence analyst specializing in nonprofit finance "
-        "(IRS 990 filings) and political finance (FEC filings).\n\n"
-        "Answer questions using only the provided source documents.\n"
-        "Use inline citations like [1], [2] when referencing sources.\n"
-        "Be concise, factual, and professional.\n"
-        "If the documents do not contain enough information, say so clearly.\n"
-        "Never fabricate numbers or organization names.\n"
-        "End every answer with a Sources section."
-    )
-
-    user_message = (
-        f"Question: {query}\n\n"
-        f"--- SOURCE DOCUMENTS ---\n{context}\n\n"
-        f"--- CITATION REFERENCES ---\n{citation_list}\n\n"
-        "Answer using only the source documents above. Use inline citations."
-    )
-
     try:
-        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
-        message = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=1024,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_message}],
-        )
-        answer_text = message.content[0].text
+        answer_text = generate_answer(context, citation_list, query)
     except Exception as e:
         answer_text = f"Could not generate answer: {e}"
 
