@@ -3,7 +3,8 @@ main.py
 
 FastAPI backend for the Investigative RAG system.
 Exposes endpoints for querying IRS 990 and FEC filing data
-using LLM-powered retrieval augmented generation.
+using hybrid retrieval — PostgreSQL for financial queries,
+ChromaDB for document search.
 """
 
 import os
@@ -13,7 +14,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from src.rag.answer import ask
+from src.rag.hybrid import hybrid_ask
 
 
 app = FastAPI(
@@ -83,8 +84,8 @@ def query(req: QueryRequest):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
-    result = ask(
-        query=req.question,
+    result = hybrid_ask(
+        question=req.question,
         dataset=req.dataset,
         top_k=req.top_k,
     )
