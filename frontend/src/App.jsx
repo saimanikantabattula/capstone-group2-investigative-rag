@@ -171,7 +171,7 @@ export default function App() {
           </div>
           <div className="footer-right">
             <p>IRS 990 + FEC Filings</p>
-            <p>Powered by Claude AI</p>
+            <p>Multi-Agent RAG System</p>
           </div>
         </div>
       </footer>

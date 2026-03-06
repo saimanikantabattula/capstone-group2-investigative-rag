@@ -3,7 +3,7 @@ main.py
 
 FastAPI backend for the Investigative RAG system.
 Exposes endpoints for querying IRS 990 and FEC filing data
-using Claude-powered retrieval augmented generation.
+using LLM-powered retrieval augmented generation.
 """
 
 import os
