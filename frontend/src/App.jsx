@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "./components/SearchBar";
 import DatasetToggle from "./components/DatasetToggle";
 import AnswerPanel from "./components/AnswerPanel";
@@ -27,6 +27,14 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [history, setHistory] = useState([]);
+
+  // Apply dark mode
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   async function handleSearch(q) {
     const query = q || question;
@@ -34,6 +42,13 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResult(null);
+
+    // Save to history
+    setHistory((prev) => {
+      const filtered = prev.filter((h) => h !== query);
+      return [query, ...filtered].slice(0, 10);
+    });
+
     try {
       const data = await queryRAG(query, dataset, 5);
       setResult(data);
@@ -42,6 +57,12 @@ export default function App() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleHistoryClick(q) {
+    setQuestion(q);
+    setSettingsOpen(false);
+    handleSearch(q);
   }
 
   return (
@@ -56,18 +77,69 @@ export default function App() {
             </div>
             <p className="header-sub">IRS 990 &amp; FEC Filing Intelligence System</p>
           </div>
-          <div className="header-right">
-            <div className="status-dot">
-              <div className="dot" />
-              System Online
-            </div>
-            <div className="data-badges">
-              <span className="data-badge irs">IRS 990</span>
-              <span className="data-badge fec">FEC</span>
-            </div>
-          </div>
+
+          {/* Settings Button */}
+          <button className="settings-btn" onClick={() => setSettingsOpen(true)}>
+            ⚙ Settings
+          </button>
         </div>
       </header>
+
+      {/* Settings Panel */}
+      {settingsOpen && (
+        <>
+          <div className="settings-overlay" onClick={() => setSettingsOpen(false)} />
+          <div className="settings-panel">
+            <div className="settings-header">
+              <span className="settings-title">Settings</span>
+              <button className="settings-close" onClick={() => setSettingsOpen(false)}>✕</button>
+            </div>
+            <div className="settings-body">
+
+              {/* Theme */}
+              <div className="settings-section-title">Appearance</div>
+              <div className="theme-toggle">
+                <div className="theme-toggle-label">
+                  <span className="theme-icon">{darkMode ? "🌙" : "☀️"}</span>
+                  {darkMode ? "Dark Mode" : "Light Mode"}
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={darkMode}
+                    onChange={(e) => setDarkMode(e.target.checked)}
+                  />
+                  <span className="toggle-slider" />
+                </label>
+              </div>
+
+              {/* Search History */}
+              <div className="settings-section-title">Search History</div>
+              <div className="history-list">
+                {history.length === 0 ? (
+                  <p className="history-empty">No searches yet</p>
+                ) : (
+                  history.map((h, i) => (
+                    <button
+                      key={i}
+                      className="history-item"
+                      onClick={() => handleHistoryClick(h)}
+                    >
+                      {h}
+                    </button>
+                  ))
+                )}
+              </div>
+              {history.length > 0 && (
+                <button className="clear-history-btn" onClick={() => setHistory([])}>
+                  Clear History
+                </button>
+              )}
+
+            </div>
+          </div>
+        </>
+      )}
 
       <main className="main">
         {/* Hero */}
@@ -91,7 +163,7 @@ export default function App() {
             loading={loading}
           />
           <div className="hints-row">
-            <span className="hints-label">Suggested:</span>
+            <span className="hints-label">Try:</span>
             {HINTS.map((h) => (
               <button
                 key={h}
