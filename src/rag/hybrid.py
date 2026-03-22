@@ -107,17 +107,30 @@ def query_irs_by_state(state_abbr):
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
         cur.execute("""
-            SELECT org_name, state, return_type, tax_year,
-                   ROUND(total_revenue) as total_revenue,
-                   ROUND(total_assets) as total_assets
-            FROM irs_financials
-            WHERE UPPER(state) = %s
-              AND total_revenue IS NOT NULL
-            ORDER BY total_revenue DESC
-            LIMIT 20
+            SELECT f.org_name, f.state, l.city, f.return_type, f.tax_year,
+                   ROUND(f.total_revenue) as total_revenue,
+                   ROUND(f.total_assets) as total_assets
+            FROM irs_financials f
+            LEFT JOIN irs_locations l USING (ein)
+            WHERE UPPER(f.state) = %s
+              AND f.total_revenue IS NOT NULL
+            ORDER BY f.total_revenue DESC
+            LIMIT 10
         """, (state_abbr,))
-        rows = cur.fetchall()
-        return [dict(r) for r in rows]
+        financial_rows = [dict(r) for r in cur.fetchall()]
+
+        cur.execute("""
+            SELECT org_name, state, city, return_type, tax_year
+            FROM irs_locations
+            WHERE UPPER(state) = %s
+            ORDER BY org_name
+            LIMIT 15
+        """, (state_abbr,))
+        location_rows = [dict(r) for r in cur.fetchall()]
+
+        seen = set(r["org_name"] for r in financial_rows)
+        extra = [r for r in location_rows if r["org_name"] not in seen]
+        return financial_rows + extra[:10]
     finally:
         cur.close()
         conn.close()
