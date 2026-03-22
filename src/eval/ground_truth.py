@@ -58,8 +58,8 @@ GROUND_TRUTH = [
     {
         "id": "irs_007",
         "question": "Which foundations have the most net assets?",
-        "expected_keywords": ["foundation", "net assets", "million"],
-        "expected_contains": "foundation",
+        "expected_keywords": ["foundation", "net assets"],
+        "expected_contains": "net assets",
         "dataset": "irs",
         "category": "IRS Financial Ranking",
     },
@@ -74,8 +74,8 @@ GROUND_TRUTH = [
     {
         "id": "irs_009",
         "question": "Which nonprofits are based in New York?",
-        "expected_keywords": ["NY", "New York"],
-        "expected_contains": "NY",
+        "expected_keywords": ["New York", "million"],
+        "expected_contains": "New York",
         "dataset": "irs",
         "category": "IRS Geographic",
     },

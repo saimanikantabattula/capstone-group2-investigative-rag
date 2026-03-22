@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-03-22T18:00:32.143626",
+  "timestamp": "2026-03-22T18:54:00.187735",
   "summary": {
     "total": 25,
     "passed": 25,
     "failed": 0,
     "accuracy_pct": 100.0,
-    "avg_keyword_score": 0.874,
-    "avg_response_time_sec": 3.07
+    "avg_keyword_score": 0.877,
+    "avg_response_time_sec": 3.13
   },
   "by_category": {
     "IRS Financial Ranking": {
@@ -44,72 +44,124 @@
       "question": "Which nonprofits raised the most money?",
       "dataset": "irs",
       "category": "IRS Financial Ranking",
-      "answer": "# Nonprofits That Raised the Most Money\n\nBased on total revenue in the 2025 tax year, the top five nonprofits are:\n\n1. **Beth Israel Deaconess Medical Center** (MA) - $3.1 billion [1]\n2. **Cabell Huntington Hospital Inc** (WV) - $877.0 million [2]\n3. **Main Line Healthcare** (PA) - $527.9 million [3]\n4. **Illinois Institute of Technology** (IL) - $444.0 million [4]\n5. **Front Porch Communities and Services** (CA) - $380.2 million [5]\n\nBeth Israel Deaconess Medical Center significantly outpaced all other organizations in the dataset, raising approximately $3.1 billion\u2014more than 3.5 times the second-highest nonprofit.\n\n---\n\n**Sources:**\n[1-5] IRS Form 990 Financial Data, Tax Year 2025",
+      "answer": "# Nonprofits That Raised the Most Money (by Total Revenue)\n\nBased on 2025 IRS Form 990 filings, the top five nonprofits by total revenue are:\n\n1. **Beth Israel Deaconess Medical Center** (MA) \u2013 $3.1 billion [1]\n2. **Cabell Huntington Hospital Inc** (WV) \u2013 $877.0 million [2]\n3. **Main Line Healthcare** (PA) \u2013 $527.9 million [3]\n4. **Illinois Institute of Technology** (IL) \u2013 $444.0 million [4]\n5. **Front Porch Communities and Services** (CA) \u2013 $380.2 million [5]\n\nBeth Israel Deaconess Medical Center significantly outpaced all other organizations in the dataset, raising more than three times the revenue of the second-place organization.\n\n---\n\n**Sources:**\n[1] IRS Form 990 filing, Beth Israel Deaconess Medical Center, 2025\n[2] IRS Form 990 filing, Cabell Huntington Hospital Inc, 2025\n[3] IRS Form 990 filing, Main Line Healthcare, 2025\n[4] IRS Form 990 filing, Illinois Institute of Technology, 2025\n[5] IRS Form 990 filing, Front Porch Communities and Services, 2025",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.97
+      "response_time_sec": 3.32
     },
     {
       "id": "irs_002",
       "question": "Which hospitals have the most assets?",
       "dataset": "irs",
       "category": "IRS Financial Ranking",
-      "answer": "# Hospitals with the Most Assets (2025 Tax Year)\n\nBased on IRS Form 990-T filings, the hospitals with the largest asset bases are:\n\n1. **Yale New Haven Hospital** (CT) \u2013 $5.4 billion [8]\n2. **Seattle Children's Hospital** (WA) \u2013 $5.6 billion [7]\n3. **Allina Health System** (MN) \u2013 $5.9 billion [6]\n4. **Beth Israel Deaconess Medical Center** (MA) \u2013 $3.8 billion [10]\n5. **Yale New Haven Health Services** (CT) \u2013 $3.5 billion [11]\n6. **Central DuPage Hospital Association** (IL) \u2013 $3.4 billion [13]\n\n**Note:** The dataset also includes university medical centers with substantially higher assets (Howard Hughes Medical Institute at $27.3 billion [1], Emory University at $22.2 billion [2]), but these are research/academic institutions rather than standalone hospital systems.\n\nAmong entities identified primarily as hospital operations, **Allina Health System** holds the largest asset base at approximately $5.9 billion.\n\n---\n\n**Sources:**\n[1] [6] [7] [8] [10] [11] [13] IRS Financials, Form 990-T filings, Tax Year 2025",
+      "answer": "# Hospitals with the Most Assets\n\nBased on IRS nonprofit financial data (tax year 2025), the hospitals with the largest asset bases are:\n\n1. **ALLINA HEALTH SYSTEM** (Minnesota) - $5.97 billion [6]\n2. **SEATTLE CHILDREN'S HOSPITAL** (Washington) - $5.58 billion [7]\n3. **YALE NEW HAVEN HOSPITAL** (Connecticut) - $5.45 billion [8]\n4. **BETH ISRAEL DEACONESS MEDICAL CENTER** (Massachusetts) - $3.81 billion [10]\n5. **YALE NEW HAVEN HEALTH SERVICES** (Connecticut) - $3.52 billion [11]\n6. **Central DuPage Hospital Association** (Illinois) - $3.35 billion [13]\n\n**Note:** The dataset also includes large medical research institutions (Howard Hughes Medical Institute at $27.3 billion [1], Emory University at $22.2 billion [2], and MGB Pooled Holdings LLC at $16.2 billion [3]), though these are primarily research or academic medical centers rather than traditional hospital systems.\n\n---\n\n**Sources:**\n[1-15] IRS Form 990/990T filings, tax year 2025",
       "contexts_count": 5,
       "keyword_score": 0.75,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.74
+      "response_time_sec": 2.54
     },
     {
       "id": "irs_003",
       "question": "Find nonprofits with high officer compensation",
       "dataset": "irs",
       "category": "IRS Financial Ranking",
-      "answer": "# Nonprofits with High Officer Compensation\n\nBased on the provided source documents, I cannot identify nonprofits with high officer compensation. Here's why:\n\nThe documents contain minimal specific compensation data:\n\n- **MAXIMUMGOOD INC** [1]: Executive Director Peter Dunn \"received no\" compensation (compensation amount cut off in excerpt).\n\n- **ALLIANCE FOR NONPROFITS** [2]: The filing shows only summary financial totals ($19,241 in various categories) with no officer compensation details specified.\n\n- **Regalia & Associates CPAS**, **HOULDSWORTH RUSSO & COMPANY PC**, and **LOPEZ ACCOUNTING GROUP** [3][4][5]: These documents only reference compensation review procedures and policies, not actual compensation amounts paid to officers.\n\nThe one specific compensation figure mentioned is **HOULDSWORTH RUSSO & COMPANY PC**'s \"PROGRAM CONSULTANTS\" at $546,229 [4], but this appears to be consulting fees rather than officer compensation.\n\n## Sources\n\n[1] MAXIMUMGOOD INC (EIN: 830374559) \u2014 202530769349300433_public.xml\n[2] ALLIANCE FOR NONPROFITS (EIN: 812711265) \u2014 202431299349202418_public.xml\n[3] Regalia & Associates CPAS (EIN: 680260103) \u2014 202510279349301611_public.xml\n[4] HOULDSWORTH RUSSO & COMPANY PC (EIN: 880374623) \u2014 202402629349300425_public.xml\n[5] LOPEZ ACCOUNTING GROUP (EIN: 812737245) \u2014 202523509349300437_public.xml",
+      "answer": "# Nonprofits with High Officer Compensation\n\nBased on the provided source documents, I cannot identify specific nonprofits with high officer compensation because the documents do not contain actual compensation amounts or salary figures.\n\nThe documents reference compensation-related policies and procedures:\n\n- **MAXIMUMGOOD INC** [1]: Peter Dunn serves as Executive Director and President but \"received no\" compensation (the sentence is incomplete in the excerpt).\n\n- **HOULDSWORTH RUSSO & COMPANY PC** [4]: References review of \"compensation packages of similar officers of nonprofit corporations in the area,\" but does not disclose specific compensation amounts.\n\n- **Regalia & Associates CPAS** [3], **LOPEZ ACCOUNTING GROUP** [5], and **ALLIANCE FOR NONPROFITS** [2]: These documents mention compensation review processes and policies but do not provide actual compensation figures.\n\nTo identify nonprofits with high officer compensation, you would need access to the complete Form 990 Part VII (Compensation of Officers, Directors, Trustees, and Key Employees) sections, which are not fully included in these excerpts.\n\n## Sources\n\n[1] IRS 990 | MAXIMUMGOOD INC (EIN: 830374559)\n[2] IRS 990 | ALLIANCE FOR NONPROFITS (EIN: 812711265)\n[3] IRS 990 | Regalia & Associates CPAS (EIN: 680260103)\n[4] IRS 990 | HOULDSWORTH RUSSO & COMPANY PC (EIN: 880374623)\n[5] IRS 990 | LOPEZ ACCOUNTING GROUP (EIN: 812737245)",
       "contexts_count": 5,
       "keyword_score": 0.5,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 7.79
+      "response_time_sec": 8.71
     },
     {
       "id": "irs_004",
       "question": "Which universities reported the highest revenue?",
       "dataset": "irs",
       "category": "IRS Financial Ranking",
-      "answer": "# Universities with Highest Revenue\n\nBased on the provided IRS Form 990 data, only **two universities** are included in this dataset:\n\n1. **Illinois Institute of Technology** (IL) - $444.0 million in total revenue [4]\n2. **Davidson College** (NC) - $270.0 million in total revenue [7]\n\n**Illinois Institute of Technology reported the highest revenue among universities** in this dataset at $444,012,183 [4], followed by Davidson College at $269,984,596 [7].\n\n---\n\n**Sources:**\n[4] IRS Financials - Illinois Institute of Technology, 2025\n[7] IRS Financials - Davidson College, 2025",
+      "answer": "# Universities with Highest Reported Revenue\n\nBased on the IRS Form 990 data provided, only **two universities** are included in this dataset:\n\n1. **Illinois Institute of Technology** (IL) - $444.0 million in total revenue [4]\n2. **Davidson College** (NC) - $270.0 million in total revenue [7]\n\nIllinois Institute of Technology reported the highest revenue among universities in this dataset at approximately **$444 million** for tax year 2025 [4].\n\n**Note:** The majority of organizations in this dataset are healthcare facilities, foundations, and other nonprofit entities rather than universities. A comprehensive analysis of university revenues would require a larger dataset focused specifically on higher education institutions.\n\n---\n\n## Sources\n[4] Illinois Institute of Technology, IRS Form 990, Tax Year 2025\n[7] Davidson College, IRS Form 990, Tax Year 2025",
       "contexts_count": 5,
-      "keyword_score": 0.75,
+      "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.45
+      "response_time_sec": 3.07
     },
     {
       "id": "irs_005",
       "question": "Which nonprofits have the highest total assets?",
       "dataset": "irs",
       "category": "IRS Financial Ranking",
-      "answer": "# Nonprofits with Highest Total Assets (Tax Year 2025)\n\nBased on IRS filings, the top nonprofits by total assets are:\n\n1. **Howard Hughes Medical Institute** (MD) - $27.3 billion [1]\n2. **Emory University** (GA) - $22.2 billion [2]\n3. **MGB Pooled Holdings LLC** (MA) - $16.2 billion [3]\n4. **University of Pittsburgh** (PA) - $10.5 billion [4]\n5. **University of North Carolina at Chapel Hill** (NC) - $10.2 billion [5]\n\nThe Howard Hughes Medical Institute leads by a substantial margin with approximately $27.3 billion in total assets, followed by Emory University at $22.2 billion. The top five organizations collectively hold over $86 billion in assets.\n\n---\n\n**Sources:**\nIRS Form 990-T and 990 Filings, Tax Year 2025",
+      "answer": "# Nonprofits with Highest Total Assets\n\nBased on 2025 IRS Form 990/990T filings, the top five nonprofits by total assets are:\n\n1. **Howard Hughes Medical Institute** (MD) \u2013 $27.3 billion [1]\n2. **Emory University** (GA) \u2013 $22.2 billion [2]\n3. **MGB Pooled Holdings LLC** (MA) \u2013 $16.2 billion [3]\n4. **University of Pittsburgh** (PA) \u2013 $10.5 billion [4]\n5. **University of North Carolina at Chapel Hill** (NC) \u2013 $10.2 billion [5]\n\nThe Howard Hughes Medical Institute significantly leads with assets nearly $5.1 billion higher than the second-ranked organization. The top three organizations alone represent $65.7 billion in total assets.\n\n---\n\n**Sources:**\nIRS Nonprofit Financial Data, Tax Year 2025, Forms 990/990T",
       "contexts_count": 5,
       "keyword_score": 0.667,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.25
+      "response_time_sec": 2.66
     },
     {
       "id": "irs_006",
       "question": "Which nonprofits reported the most expenses?",
       "dataset": "irs",
       "category": "IRS Financial Ranking",
-      "answer": "# Nonprofits with the Most Expenses\n\nBased on the IRS financial data provided, the top five nonprofits by total expenses are:\n\n1. **Beth Israel Deaconess Medical Center** (MA) \u2013 $3.1 billion [1]\n2. **Cabell Huntington Hospital Inc** (WV) \u2013 $825.0 million [2]\n3. **Main Line Healthcare** (PA) \u2013 $527.9 million [3]\n4. **Illinois Institute of Technology** (IL) \u2013 $442.5 million [4]\n5. **Front Porch Communities and Services** (CA) \u2013 $376.3 million [5]\n\nBeth Israel Deaconess Medical Center reported significantly higher expenses than all other organizations in this dataset, with total expenses nearly four times greater than the second-highest organization.\n\n---\n\n**Sources:**\n[1] IRS Financials | Beth Israel Deaconess Medical Center | MA | 2025\n[2] IRS Financials | Cabell Huntington Hospital Inc | WV | 2025\n[3] IRS Financials | Main Line Healthcare | PA | 2025\n[4] IRS Financials | Illinois Institute of Technology | IL | 2025\n[5] IRS Financials | Front Porch Communities and Services | CA | 2025",
+      "answer": "# Nonprofits with Highest Reported Expenses\n\nBased on the IRS 990 filings provided, the nonprofits reporting the most expenses are:\n\n1. **Beth Israel Deaconess Medical Center** (MA) \u2013 $3.1 billion [1]\n2. **Cabell Huntington Hospital Inc** (WV) \u2013 $825.0 million [2]\n3. **Main Line Healthcare** (PA) \u2013 $527.9 million [3]\n4. **Illinois Institute of Technology** (IL) \u2013 $442.5 million [4]\n5. **Front Porch Communities and Services** (CA) \u2013 $376.3 million [5]\n\nBeth Israel Deaconess Medical Center significantly leads with nearly $3.1 billion in total expenses, which is substantially higher than the second-place organization (Cabell Huntington Hospital) at $825.0 million.\n\n---\n\n**Sources:**\n[1-5] IRS Financials data, tax year 2025, Form 990 filings",
+      "contexts_count": 5,
+      "keyword_score": 1.0,
+      "contains_check": true,
+      "passed": true,
+      "status": "PASS",
+      "response_time_sec": 1.94
+    },
+    {
+      "id": "irs_007",
+      "question": "Which foundations have the most net assets?",
+      "dataset": "irs",
+      "category": "IRS Financial Ranking",
+      "answer": "Based on the IRS financial data provided, the organizations with the most net assets are:\n\n**Top Organizations by Total Assets (2025):**\n\n1. **Howard Hughes Medical Institute** (MD) - $27.3 billion [1]\n2. **Emory University** (GA) - $22.2 billion [2]\n3. **MGB Pooled Holdings LLC** (MA) - $16.2 billion [3]\n4. **University of Pittsburgh** (PA) - $10.5 billion [4]\n5. **University of North Carolina at Chapel Hill** (NC) - $10.2 billion [5]\n\n**Note on Net Assets:** The dataset provided contains only one organization with explicit net assets disclosure: **Beth Israel Deaconess Medical Center** (MA) reported net assets of $1.6 billion, calculated from total assets of $3.8 billion minus total liabilities of $2.2 billion [10]. The remaining organizations reported only total assets figures, which do not account for liabilities and therefore may not represent true net assets.\n\n---\n\n**Sources:**\nIRS Financials (Form 990/990T), Tax Year 2025, as provided in the data above [1-15]",
+      "contexts_count": 5,
+      "keyword_score": 0.5,
+      "contains_check": true,
+      "passed": true,
+      "status": "PASS",
+      "response_time_sec": 2.55
+    },
+    {
+      "id": "irs_008",
+      "question": "Which nonprofits are based in California?",
+      "dataset": "irs",
+      "category": "IRS Geographic",
+      "answer": "# California-Based Nonprofits\n\nBased on the IRS nonprofit filings data provided, the following organizations are based in California [1-20]:\n\n1. **Front Porch Communities and Services** - Glendale, CA [1]\n2. **LOMA LINDA - INLAND EMPIRE CONSORTIUM** - San Bernardino, CA [5]\n3. **VALLEY HEALTH TEAM INC** - San Joaquin, CA [7]\n4. **MIDPEN HOUSING CORPORATION** - Foster City, CA [9]\n5. **#IWEARORANGE INC** - Panorama City, CA [11]\n6. **06519336 Petanque La Rose** - Santa Rosa, CA [13]\n7. **1 DREAM FOUNDATION INC** - San Luis Obispo, CA [14]\n8. **1 GLOBAL VISION** - Arcadia, CA [16]\n9. **1 Grain to 1000 Grains** - Menlo Park, CA [17]\n10. **1 Hundred Years Enterprise Foundation** - Richmond, CA [19]\n11. **1 Life Fully Lived** - Portola, CA [20]\n\n## Sources\nIRS Nonprofit Filings Financial Data (References 1-20)",
+      "contexts_count": 5,
+      "keyword_score": 1.0,
+      "contains_check": true,
+      "passed": true,
+      "status": "PASS",
+      "response_time_sec": 2.44
+    },
+    {
+      "id": "irs_009",
+      "question": "Which nonprofits are based in New York?",
+      "dataset": "irs",
+      "category": "IRS Geographic",
+      "answer": "# Nonprofits Based in New York\n\nBased on the IRS filings data provided, the following nonprofits are based in New York State:\n\n## Major Organizations (New York City)\n\n1. **SELFHELP COMMUNITY SERVICES INC** [1] - New York City\n   - 2025 Revenue: $117.9 million | Assets: $93.1 million\n\n2. **GOVERNORS ISLAND CORPORATION** [3] - New York City\n   - 2025 Revenue: $66.1 million | Assets: $385.9 million\n\n3. **NEW YORK SHAKESPEARE FESTIVAL** [7] - New York City\n   - 2025 Revenue: $61.1 million | Assets: $175.0 million\n\n## Other New York-Based Organizations\n\n4. **HOUSING WORKS INC** [5] - Brooklyn\n   - 2025 Revenue: $63.8 million | Assets: $38.3 million\n\n5. **(KISP) Kalash Indigenous Survival Program Inc** [12] - New York City\n\n6. **1 MILLION GUITARS** [16] - New York City\n\n7. **(914) CARES INC** [11] - Armonk\n\n8. **0016 Long Island State Employees** [14] - St James\n\n9. **1 WORKER 1 VOTE INC** [17] - Point Lookout\n\n10. **1 WORLD FOUNDATION INC** [19] - Glen Park\n\n---\n\n**Sources:** IRS Form 990 and 990EZ Filings (tax years 2021-2025)",
+      "contexts_count": 5,
+      "keyword_score": 1.0,
+      "contains_check": true,
+      "passed": true,
+      "status": "PASS",
+      "response_time_sec": 3.1
+    },
+    {
+      "id": "irs_010",
+      "question": "Which organizations filed 990PF returns?",
+      "dataset": "irs",
+      "category": "IRS Filing Type",
+      "answer": "# Organizations That Filed 990PF Returns\n\nBased on the data provided, **no organizations filed 990PF returns**. \n\nAll 15 organizations in the dataset filed Form 990 returns, as indicated by the `return_type: 990` designation [1-15]. Form 990PF is the required return for private foundations, while Form 990 is used by other tax-exempt organizations such as hospitals, educational institutions, and charitable organizations.\n\n## Sources\n\nIRS Financials data entries [1-15]",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
@@ -118,115 +170,63 @@
       "response_time_sec": 2.15
     },
     {
-      "id": "irs_007",
-      "question": "Which foundations have the most net assets?",
-      "dataset": "irs",
-      "category": "IRS Financial Ranking",
-      "answer": "# Organizations with the Most Net Assets\n\nBased on the IRS financial data provided, I can only definitively identify **one organization with reported net assets**:\n\n**Beth Israel Deaconess Medical Center** (MA) has **net assets of $1.6 billion** [10], calculated from total assets of $3.8 billion minus total liabilities of $2.2 billion.\n\n## Important Limitation\n\nThe remaining 14 organizations in the dataset report only \"total_assets\" figures [1-9, 11-15]. Net assets cannot be calculated from the data provided, as the liabilities information necessary to derive net assets (net assets = total assets - total liabilities) is not included for these organizations.\n\nTo comprehensively answer which foundations have the most net assets, complete balance sheet data (including total liabilities) would be needed for all organizations in the dataset.\n\n---\n\n**Sources**\n- [10] IRS Financials, Beth Israel Deaconess Medical Center, MA, 990 return, 2025 tax year\n- [1-9, 11-15] IRS Financials, various organizations, 990T returns, 2025 tax year",
+      "id": "fec_001",
+      "question": "Which PACs spent the most money in 2024?",
+      "dataset": "fec",
+      "category": "FEC Financial Ranking",
+      "answer": "# Top PAC Spenders in 2024\n\nBased on total disbursements (TTL_DISB), the PACs that spent the most money in 2024 were:\n\n1. **ActBlue** - $3.79 billion [1]\n2. **WinRed** - $1.68 billion [2]\n3. **Harris Victory Fund** - $1.31 billion [3]\n4. **Harris for President** - $1.18 billion [6]\n5. **DNC Services Corp/Democratic National Committee** - $692.1 million [8]\n\nActBlue significantly outpaced all other PACs, spending nearly 2.3 times more than the second-highest spender (WinRed).\n\n---\n\n**Sources:**\n[1] FEC data - ActBlue (MA), Committee Type V, 2024 cycle\n[2] FEC data - WinRed (VA), Committee Type V, 2024 cycle\n[3] FEC data - Harris Victory Fund (DC), Committee Type N, 2024 cycle\n[6] FEC data - Harris for President (PA), Committee Type P, 2024 cycle\n[8] FEC data - DNC Services Corp/Democratic National Committee (DC), Committee Type Y, 2024 cycle",
       "contexts_count": 5,
-      "keyword_score": 0.667,
+      "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
       "response_time_sec": 3.07
     },
     {
-      "id": "irs_008",
-      "question": "Which nonprofits are based in California?",
-      "dataset": "irs",
-      "category": "IRS Geographic",
-      "answer": "# California-Based Nonprofits\n\nBased on the IRS nonprofit filings data, the following 20 organizations are based in California (CA):\n\n1. Front Porch Communities and Services [1] - $380.2 million revenue\n2. LOMA LINDA - INLAND EMPIRE CONSORTIUM [2] - $89.6 million revenue\n3. VALLEY HEALTH TEAM INC [3] - $61.0 million revenue\n4. MIDPEN HOUSING CORPORATION [4] - $55.4 million revenue\n5. FOCUSING PHILANTHROPY INC [5] - $35.3 million revenue\n6. CONGREGATIONAL HOMES INC [6] - $33.2 million revenue\n7. THE REDWOODS A COMMUNITY OF SENIORS [7] - $27.5 million revenue\n8. Human-I-T [8] - $25.9 million revenue\n9. SIATECH INC [9] - $24.4 million revenue\n10. THE REASON FOUNDATION [10] - $23.3 million revenue\n11. CALIFORNIA MANUFACTURING TECHNOLOGY [11] - $20.8 million revenue\n12. COMMUNITY CORPORATION OF SANTA MONICA [12] - $17.4 million revenue\n13. Coachella Valley Rescue Mission [13] - $15.0 million revenue\n14. BIOCOM CALIFORNIA [14] - $14.1 million revenue\n15. GOFUNDMEORG [15] - $13.6 million revenue\n16. STUDENT UNION OF SAN JOSE [16] - $11.9 million revenue\n17. GREY BEARS [17] - $9.5 million revenue\n18. THE PLANTATION GOLF CLUB [18] - $7.5 million revenue\n19. Union Roofers Vacation Fund [19] - $7.3 million revenue\n20. PLUMBING INDUSTRY APPRENTICESHIP [20] - $7.1 million revenue\n\n## Sources\nIRS Nonprofit Filings Financial Data (Tax Years 2024-2025)",
-      "contexts_count": 5,
-      "keyword_score": 1.0,
-      "contains_check": true,
-      "passed": true,
-      "status": "PASS",
-      "response_time_sec": 3.38
-    },
-    {
-      "id": "irs_009",
-      "question": "Which nonprofits are based in New York?",
-      "dataset": "irs",
-      "category": "IRS Geographic",
-      "answer": "# New York-Based Nonprofits\n\nBased on the IRS financial data provided, **20 nonprofits are based in New York (NY)**:\n\n1. SELFHELP COMMUNITY SERVICES INC [1]\n2. GOVERNORS ISLAND CORPORATION [2]\n3. HOUSING WORKS INC [3]\n4. NEW YORK SHAKESPEARE FESTIVAL [4]\n5. UNITED FEDERATION OF TEACHERS HEALTH CAR [5]\n6. ROCKAWAY HOME ATTENDANT SERVICES INC [6]\n7. CITYMEALS-ON-WHEELS [7]\n8. LEARNING DISABILITIES ASSOCIATION OF [8]\n9. UR MEDICINE HOME CARE CERTIFIED [9]\n10. OPTIONS FOR COMMUNITY LIVING INC [10]\n11. AMERICAN FRIENDS OF BAR-ILAN UNIVERSITY [11]\n12. B H R A G S HOMECARE INC [12]\n13. CSA Retiree Welfare Fund [13]\n14. GURWIN INDEPENDENT HOUSING INC [14]\n15. BEDFORD STUYVESANT EARLY CHILDHOOD DEVELOPMENT CENTER [15]\n16. NEW YORK ACADEMY OF ART [16]\n17. CENTER FOR ELDER LAW & JUSTICE INC [17]\n18. DIOCESE ROCKVILLE CENTRE CATHOLIC [18]\n19. KINGSTON AREA SUPPORTING ORGANIZATION [19]\n20. SHEET METAL WORKERS LOCAL 46 [20]\n\nThese organizations range in size from $8.5 million to $117.9 million in total revenue (2025 tax year).\n\n---\n\n**Sources:** IRS Form 990 Filings, Tax Year 2025",
-      "contexts_count": 5,
-      "keyword_score": 1.0,
-      "contains_check": true,
-      "passed": true,
-      "status": "PASS",
-      "response_time_sec": 2.97
-    },
-    {
-      "id": "irs_010",
-      "question": "Which organizations filed 990PF returns?",
-      "dataset": "irs",
-      "category": "IRS Filing Type",
-      "answer": "# Organizations That Filed 990PF Returns\n\nBased on the data provided, **no organizations filed 990PF returns**. \n\nAll 15 organizations in the dataset filed Form 990 returns, as indicated by `return_type: 990` [1-15]. Form 990PF is the return type for private foundations, while Form 990 is used by public charities and other tax-exempt organizations.\n\n---\n\n**Sources:**\n[1-15] IRS Financials data provided",
-      "contexts_count": 5,
-      "keyword_score": 1.0,
-      "contains_check": true,
-      "passed": true,
-      "status": "PASS",
-      "response_time_sec": 1.95
-    },
-    {
-      "id": "fec_001",
-      "question": "Which PACs spent the most money in 2024?",
-      "dataset": "fec",
-      "category": "FEC Financial Ranking",
-      "answer": "# Top Spending PACs in 2024\n\nBased on total disbursements (TTL_DISB) in 2024, the PACs that spent the most money were:\n\n1. **ActBlue** - $3.79 billion [1]\n2. **WinRed** - $1.68 billion [2]\n3. **Harris Victory Fund** - $1.31 billion [3]\n4. **Harris for President** - $1.18 billion [6]\n5. **DNC Services Corp / Democratic National Committee** - $692.1 million [8]\n\nActBlue significantly outspent all other committees, with nearly 2.3 times the disbursements of the second-place WinRed.\n\n**Sources:**\n- FEC Committee Disbursement Data, 2024 Election Cycle [1-15]",
-      "contexts_count": 5,
-      "keyword_score": 1.0,
-      "contains_check": true,
-      "passed": true,
-      "status": "PASS",
-      "response_time_sec": 2.56
-    },
-    {
       "id": "fec_002",
       "question": "Which committees raised the most money in 2024?",
       "dataset": "fec",
       "category": "FEC Financial Ranking",
-      "answer": "# Top Money-Raising Committees in 2024\n\nBased on total receipts in the 2024 cycle, the committees that raised the most money were:\n\n1. **ACTBLUE** [1] - $3.82 billion\n2. **WINRED** [2] - $1.69 billion\n3. **HARRIS VICTORY FUND** [3] - $1.31 billion\n4. **HARRIS FOR PRESIDENT** [6] - $1.18 billion\n5. **DNC SERVICES CORP / DEMOCRATIC NATIONAL COMMITTEE** [8] - $684 million\n\nACTBLUE, a Democratic-aligned fundraising platform, significantly outpaced all other committees, raising nearly 2.3 times more than WINRED, the Republican-aligned fundraising platform in second place [1][2].\n\n**Sources**\n\n[1] FEC Committee Data: ACTBLUE (MA), TTL_RECEIPTS: $3,821,173,165.20, 2024\n[2] FEC Committee Data: WINRED (VA), TTL_RECEIPTS: $1,686,456,165.90, 2024\n[3] FEC Committee Data: HARRIS VICTORY FUND (DC), TTL_RECEIPTS: $1,313,956,729.16, 2024\n[6] FEC Committee Data: HARRIS FOR PRESIDENT (PA), TTL_RECEIPTS: $1,175,189,365.41, 2024\n[8] FEC Committee Data: DNC SERVICES CORP (DC), TTL_RECEIPTS: $683,665,789.81, 2024",
+      "answer": "# Top Committee Fundraisers in 2024\n\nBased on total receipts, the committees that raised the most money in 2024 were:\n\n1. **ActBlue** - $3.82 billion [1]\n2. **WinRed** - $1.69 billion [2]\n3. **Harris Victory Fund** - $1.31 billion [3]\n4. **Harris for President** - $1.18 billion [6]\n5. **DNC Services Corp/Democratic National Committee** - $683.7 million [8]\n\n**ActBlue**, a Democratic fundraising platform, significantly outraised all other committees, bringing in approximately $3.82 billion in total receipts during the 2024 cycle [1]. This was more than double the second-place finisher, WinRed (the Republican equivalent fundraising platform), which raised $1.69 billion [2].\n\n---\n\n**Sources**\n[1] FEC data - ActBlue (MA), 2024 cycle\n[2] FEC data - WinRed (VA), 2024 cycle\n[3] FEC data - Harris Victory Fund (DC), 2024 cycle\n[6] FEC data - Harris for President (PA), 2024 cycle\n[8] FEC data - DNC Services Corp/Democratic National Committee (DC), 2024 cycle",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 3.69
+      "response_time_sec": 3.07
     },
     {
       "id": "fec_003",
       "question": "How much did ActBlue raise in 2024?",
       "dataset": "fec",
       "category": "FEC Specific Committee",
-      "answer": "# ActBlue 2024 Fundraising\n\nBased on FEC data for ActBlue in the 2024 election cycle, the organization raised a combined total of **$5.06 billion** in receipts.\n\nThis consists of:\n- **$3.82 billion** [1]\n- **$1.24 billion** [2]\n\n**Total 2024 Receipts: $5,061,523,152.92**\n\nNote: The data shows two separate entries for ActBlue's 2024 fundraising, which may represent different accounts or reporting periods within the cycle.\n\n---\n\n**Sources:**\n[1] FEC filing - ActBlue (MA), 2024 cycle: Total Receipts $3,821,173,165.20\n[2] FEC filing - ActBlue (MA), 2024 cycle: Total Receipts $1,240,349,987.72",
+      "answer": "Based on FEC data for the 2024 election cycle, ActBlue raised a combined total of approximately **$5.1 billion** in 2024.\n\nThis consists of:\n- $3.82 billion from one filing [1]\n- $1.24 billion from another filing [2]\n\n**Total: $5,061,523,152.92**\n\nNote: These appear to be separate FEC committee filings for ActBlue (Committee Type: V, Massachusetts) during the 2024 cycle, possibly representing different account structures or reporting periods.\n\n**Sources:**\n[1] FEC Committee filings - ActBlue, 2024 cycle, Total Receipts: $3,821,173,165.20\n[2] FEC Committee filings - ActBlue, 2024 cycle, Total Receipts: $1,240,349,987.72",
       "contexts_count": 3,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.76
+      "response_time_sec": 3.29
     },
     {
       "id": "fec_004",
       "question": "How much did WinRed raise in 2024?",
       "dataset": "fec",
       "category": "FEC Specific Committee",
-      "answer": "# WinRed 2024 Fundraising\n\nBased on FEC data, WinRed raised a combined total of **$2.16 billion** in 2024 across its reported accounts:\n\n- **$1.69 billion** [1]\n- **$469.6 million** [2]\n\n**Total: $2,155,923,844** in total receipts for the 2024 cycle.\n\nNote: The data shows two separate entries for WinRed in 2024, which may represent different organizational accounts or reporting categories within the same entity.\n\n---\n\n**Sources**\n[1] FEC Committee filing data - WinRed (VA), 2024 cycle\n[2] FEC Committee filing data - WinRed (VA), 2024 cycle",
+      "answer": "# WinRed 2024 Fundraising\n\nBased on FEC data, WinRed raised a total of **$2.16 billion** in 2024 across their reported accounts:\n\n- **$1.69 billion** [1]\n- **$469.6 million** [2]\n\n**Combined Total: $2,155,023,844** in total receipts for the 2024 cycle.\n\n---\n\n## Sources\n[1] FEC Committee Data - WINRED, TTL_RECEIPTS: $1,686,456,165.90 (2024)\n[2] FEC Committee Data - WINRED, TTL_RECEIPTS: $469,567,678.86 (2024)",
       "contexts_count": 3,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.25
+      "response_time_sec": 1.94
     },
     {
       "id": "fec_005",
       "question": "What did Harris for President report in 2024?",
       "dataset": "fec",
       "category": "FEC Specific Committee",
-      "answer": "# Harris for President 2024 FEC Report\n\nBased on FEC filings, Harris for President reported the following in 2024 [1]:\n\n- **Total Receipts:** $1.175 billion\n- **Total Disbursements:** $1.175 billion\n\nThe committee, registered as a Presidential committee (P) based in Pennsylvania (PA), raised approximately $1.18 billion and spent nearly the same amount during the 2024 election cycle.\n\n---\n\n**Sources**\n[1] FEC Committee Report - Harris for President, 2024 cycle",
+      "answer": "# Harris for President 2024 FEC Report\n\nBased on FEC filings for the 2024 cycle, Harris for President reported [1]:\n\n- **Total Receipts:** $1.175 billion\n- **Total Disbursements:** $1.175 billion\n\nThe committee, classified as a principal campaign committee (Type P) and based in Pennsylvania, received and spent nearly identical amounts, indicating the campaign expended substantially all funds it raised during the 2024 election cycle.\n\n---\n\n## Sources\n[1] FEC Committee Activity Data - Harris for President, 2024 Cycle",
       "contexts_count": 2,
       "keyword_score": 0.8,
       "contains_check": true,
@@ -239,130 +239,130 @@
       "question": "Which Democratic committees raised the most money?",
       "dataset": "fec",
       "category": "FEC Financial Ranking",
-      "answer": "# Democratic Committees with Highest Fundraising (2024 Cycle)\n\nBased on the FEC data provided, the top Democratic committees by total receipts are:\n\n1. **ActBlue** [1] - $3.82 billion (Vendor committee, MA)\n2. **Harris Victory Fund** [3] - $1.31 billion (National committee, DC)\n3. **Harris for President** [6] - $1.18 billion (Presidential committee, PA)\n4. **DNC Services Corp / Democratic National Committee** [8] - $683.7 million (Party committee, DC)\n5. **FF PAC** [9] - $559.3 million (Vendor committee, DC)\n\n**ActBlue significantly led Democratic fundraising**, raising $3.82 billion, which exceeds the combined totals of the next four Democratic committees. This reflects ActBlue's role as a major online fundraising platform for Democratic candidates and causes.\n\n---\n\n**Sources**\n[1] FEC data - ActBlue, 2024 cycle, TTL_RECEIPTS: $3,821,173,165.20\n[3] FEC data - Harris Victory Fund, 2024 cycle, TTL_RECEIPTS: $1,313,956,729.16\n[6] FEC data - Harris for President, 2024 cycle, TTL_RECEIPTS: $1,175,189,365.41\n[8] FEC data - DNC Services Corp/Democratic National Committee, 2024 cycle, TTL_RECEIPTS: $683,665,789.81\n[9] FEC data - FF PAC, 2024 cycle, TTL_RECEIPTS: $559,289,965.96",
+      "answer": "# Democratic Committees with Highest Fundraising\n\nBased on the FEC data provided, the Democratic committees that raised the most money in the 2024 cycle are:\n\n1. **ActBlue** - $3.82 billion [1]\n   - Total receipts: $3,821,173,165.20\n   - Committee type: Voter registration (V)\n\n2. **Harris Victory Fund** - $1.31 billion [3]\n   - Total receipts: $1,313,956,729.16\n   - Committee type: Non-party (N)\n\n3. **Harris for President** - $1.18 billion [6]\n   - Total receipts: $1,175,189,365.41\n   - Committee type: Presidential (P)\n\n4. **DNC Services Corp / Democratic National Committee** - $683.7 million [8]\n   - Total receipts: $683,665,789.81\n   - Committee type: Party (Y)\n\nActBlue significantly outraised other Democratic-aligned committees, collecting more than $3.8 billion in total receipts, primarily from individual contributions ($3.76 billion) [1].\n\n---\n\n**Sources:**\n[1] FEC - ActBlue, MA, 2024 cycle\n[3] FEC - Harris Victory Fund, DC, 2024 cycle\n[6] FEC - Harris for President, PA, 2024 cycle\n[8] FEC - DNC Services Corp, DC, 2024 cycle",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 3.79
+      "response_time_sec": 3.49
     },
     {
       "id": "fec_007",
       "question": "Which Republican committees raised the most money?",
       "dataset": "fec",
       "category": "FEC Financial Ranking",
-      "answer": "# Republican Committees with Highest Fundraising (2024 Cycle)\n\nBased on the FEC data provided, the Republican committees that raised the most money in the 2024 cycle were:\n\n1. **WINRED** - $1.69 billion [2]\n   - Type: Voter Contribution Committee (V)\n   - State: VA\n\n2. **REPUBLICAN NATIONAL COMMITTEE** - $475.8 million [11]\n   - Type: National Party Committee (Y)\n   - State: DC\n\n3. **TRUMP NATIONAL COMMITTEE JFC, INC.** - $474.5 million [12]\n   - Type: Non-Qualified Committee (N)\n   - State: VA\n\n4. **NEVER SURRENDER, INC.** - $495.9 million [10]\n   - Type: Non-Qualified Committee (N)\n   - State: VA\n\nWINRED significantly outpaced other Republican committees, raising approximately $1.69 billion in total receipts during the 2024 cycle.\n\n---\n\n**Sources:**\n[2], [10], [11], [12] - FEC financial disclosure data, 2024 cycle",
+      "answer": "# Republican Committees with Highest Fundraising\n\nBased on the FEC data provided, the Republican committees that raised the most money (2024 cycle) were:\n\n1. **WINRED** - $1.69 billion [2]\n2. **NEVER SURRENDER, INC.** - $495.9 million [10]\n3. **REPUBLICAN NATIONAL COMMITTEE** - $475.8 million [11]\n4. **TRUMP NATIONAL COMMITTEE JFC, INC.** - $474.5 million [12]\n5. **WINRED** (additional entry) - $469.6 million [13]\n\nThe top Republican fundraiser was **WINRED**, a voter contact committee (CMTE_TP: V), which raised **$1.69 billion** in total receipts [2].\n\n---\n\n**Sources**\n[2] FEC WINRED, Committee Type: V, 2024 cycle\n[10] FEC NEVER SURRENDER, INC., Committee Type: N, 2024 cycle\n[11] FEC REPUBLICAN NATIONAL COMMITTEE, Committee Type: Y, 2024 cycle\n[12] FEC TRUMP NATIONAL COMMITTEE JFC, INC., Committee Type: N, 2024 cycle\n[13] FEC WINRED, Committee Type: V, 2024 cycle",
       "contexts_count": 5,
       "keyword_score": 0.8,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.77
+      "response_time_sec": 2.98
     },
     {
       "id": "fec_008",
       "question": "Which Super PACs spent the most in 2024?",
       "dataset": "fec",
       "category": "FEC Financial Ranking",
-      "answer": "# Super PAC Spending in 2024\n\nBased on the FEC data provided, the top Super PACs by total disbursements (spending) in 2024 were:\n\n1. **ActBlue** - $3.79 billion [1]\n2. **WinRed** - $1.68 billion [2]\n3. **Harris Victory Fund** - $1.31 billion [3]\n4. **FF PAC** - $559.4 million [9]\n5. **Never Surrender, Inc.** - $471.5 million [10]\n\nActBlue significantly outspent all other Super PACs in 2024, spending more than double the amount of the second-highest spender (WinRed).\n\n**Note:** The data includes some committee type variations (V, N, P, Y, O designations). Super PACs are typically classified as committee type \"V\" or \"N\" depending on their structure.\n\n---\n\n**Sources:**\n[1] FEC data - ActBlue (CMTE_TP: V), 2024\n[2] FEC data - WinRed (CMTE_TP: V), 2024\n[3] FEC data - Harris Victory Fund (CMTE_TP: N), 2024\n[9] FEC data - FF PAC (CMTE_TP: V), 2024\n[10] FEC data - Never Surrender, Inc. (CMTE_TP: N), 2024",
+      "answer": "# Top Super PACs by 2024 Spending\n\nBased on FEC data for 2024, the Super PACs (Type V committees) with the highest spending were:\n\n1. **ActBlue** - $3.79 billion in total disbursements [1]\n2. **WinRed** - $1.68 billion in total disbursements [2]\n\nThese two committees significantly outpaced all other political committees in 2024 spending. ActBlue spent approximately 2.25 times more than WinRed.\n\n**Note:** The data provided includes various committee types (V=Super PAC, N=Leadership PAC, P=Presidential, Y=Party Committee, O=Other). If the question intended to include all independent expenditure committees beyond just Super PACs, other major spenders included the Harris Victory Fund ($1.31 billion, Type N) [3] and FF PAC ($559.4 million, Type V) [9].\n\n---\n\n**Sources:**\n[1] ActBlue (Type V) - Total Disbursements: $3,789,960,310.57\n[2] WinRed (Type V) - Total Disbursements: $1,683,997,381.72",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 3.05
+      "response_time_sec": 3.68
     },
     {
       "id": "fec_009",
       "question": "Which FEC committees are based in New York?",
       "dataset": "fec",
       "category": "FEC Geographic",
-      "answer": "# FEC Committees Based in New York\n\nBased on the FEC data provided, the following committees are based in New York (CMTE_ST: NY):\n\n1. **AMERICAN VALUES 2024** [1]\n2. **WORKERS VOTE** [2]\n3. **WORKING FAMILIES PARTY PAC** [3], [16], [17]\n4. **ALEXANDRIA OCASIO-CORTEZ FOR CONGRESS** [4], [5], [11]\n5. **EVERYTOWN FOR GUN SAFETY VICTORY FUND** [6]\n6. **NEW YORK STATE DEMOCRATIC COMMITTEE** [7]\n7. **PLANNED PARENTHOOD VOTES** [8]\n8. **ELISE FOR CONGRESS** [9]\n9. **UNITE HERE PAC** [10]\n10. **VOICE OF TEACHERS FOR EDUC/CMTE ON POL EDUC OF NY STATE UNTD TEACHERS (VOTE/COPE) OF NYSUT** [12]\n11. **NY REPUBLICAN FEDERAL CAMPAIGN COMMITTEE** [13]\n12. **1199 SEIU UNITED HEALTHCARE WORKERS EAST FEDERAL POLITICAL ACTION FUND** [14]\n13. **TEAM ELISE** [15]\n14. **MONDAIRE FOR CONGRESS** [18]\n15. **GILLIBRAND FOR SENATE** [19]\n16. **SUOZZI FOR CONGRESS** [20]\n\nIn total, there are **16 distinct FEC committees** based in New York represented in this dataset (accounting for duplicate entries across different election cycles).\n\n**Sources:** FEC Committee data, 2024-2026 election cycles",
+      "answer": "# FEC Committees Based in New York\n\nBased on the FEC data provided, the following committees are based in New York (CMTE_ST: NY):\n\n1. **AMERICAN VALUES 2024** [1]\n2. **WORKERS VOTE** [2]\n3. **WORKING FAMILIES PARTY PAC** [3], [16], [17]\n4. **ALEXANDRIA OCASIO-CORTEZ FOR CONGRESS** [4], [5], [11]\n5. **EVERYTOWN FOR GUN SAFETY VICTORY FUND** [6]\n6. **NEW YORK STATE DEMOCRATIC COMMITTEE** [7]\n7. **PLANNED PARENTHOOD VOTES** [8]\n8. **ELISE FOR CONGRESS** [9]\n9. **UNITE HERE PAC** [10]\n10. **VOICE OF TEACHERS FOR EDUC/CMTE ON POL EDUC OF NY STATE UNTD TEACHERS (VOTE/COPE) OF NYSUT** [12]\n11. **NY REPUBLICAN FEDERAL CAMPAIGN COMMITTEE** [13]\n12. **1199 SEIU UNITED HEALTHCARE WORKERS EAST FEDERAL POLITICAL ACTION FUND** [14]\n13. **TEAM ELISE** [15]\n14. **MONDAIRE FOR CONGRESS** [18]\n15. **GILLIBRAND FOR SENATE** [19]\n16. **SUOZZI FOR CONGRESS** [20]\n\n**In total, 16 distinct FEC committees are based in New York**, with combined 2024 receipts exceeding $370 million across all entries.\n\n---\n\n**Sources:** FEC Committee data, 2024 and 2026 cycles",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 3.82
+      "response_time_sec": 3.28
     },
     {
       "id": "fec_010",
       "question": "Which committees raised over 100 million dollars in 2024?",
       "dataset": "fec",
       "category": "FEC Financial Ranking",
-      "answer": "# Committees That Raised Over $100 Million in 2024\n\nThe following committees raised over $100 million in 2024:\n\n1. **ACTBLUE** - $3.8 billion [1]\n2. **WINRED** - $1.7 billion [2]\n3. **HARRIS VICTORY FUND** - $1.3 billion [3]\n4. **ACTBLUE** - $1.2 billion [4]\n5. **HARRIS FOR PRESIDENT** - $1.2 billion [6]\n6. **DNC SERVICES CORP / DEMOCRATIC NATIONAL COMMITTEE** - $683.7 million [8]\n7. **FF PAC** - $559.3 million [9]\n8. **NEVER SURRENDER, INC.** - $495.9 million [10]\n9. **REPUBLICAN NATIONAL COMMITTEE** - $475.8 million [11]\n10. **TRUMP NATIONAL COMMITTEE JFC, INC.** - $474.5 million [12]\n11. **WINRED** - $469.6 million [13]\n12. **MAKE AMERICA GREAT AGAIN INC.** - $410.5 million [15]\n13. **SMP** - $390.0 million [16]\n14. **TRUMP 47 COMMITTEE, INC.** - $368.2 million [17]\n15. **DCCC** - $339.9 million [18]\n16. **WINSENATE** - $313.1 million [19]\n17. **SENATE LEADERSHIP FUND** - $298.9 million [20]\n\nAll 20 committees listed raised over $100 million in 2024.\n\n**Sources:**\nFEC committee financial data for 2024 cycle",
+      "answer": "# Committees That Raised Over $100 Million in 2024\n\nBased on the FEC data provided, **17 committees** raised over $100 million in 2024:\n\n1. **ACTBLUE** - $3.82 billion [1]\n2. **WINRED** - $1.69 billion [2]\n3. **HARRIS VICTORY FUND** - $1.31 billion [3]\n4. **ACTBLUE** - $1.24 billion [4]\n5. **HARRIS FOR PRESIDENT** - $1.18 billion [6]\n6. **DNC SERVICES CORP / DEMOCRATIC NATIONAL COMMITTEE** - $683.7 million [8]\n7. **FF PAC** - $559.3 million [9]\n8. **NEVER SURRENDER, INC.** - $495.9 million [10]\n9. **REPUBLICAN NATIONAL COMMITTEE** - $475.8 million [11]\n10. **TRUMP NATIONAL COMMITTEE JFC, INC.** - $474.5 million [12]\n11. **WINRED** - $469.6 million [13]\n12. **MAKE AMERICA GREAT AGAIN INC.** - $410.5 million [15]\n13. **SMP** - $390.0 million [16]\n14. **TRUMP 47 COMMITTEE, INC.** - $368.2 million [17]\n15. **DCCC** - $339.9 million [18]\n16. **WINSENATE** - $313.1 million [19]\n17. **SENATE LEADERSHIP FUND** - $298.9 million [20]\n\nThe top three fundraisers were ActBlue ($3.82B), WinRed ($1.69B), and Harris Victory Fund ($1.31B).\n\n---\n\n**Sources:** FEC Political Finance Data, 2024 cycle",
       "contexts_count": 5,
       "keyword_score": 0.667,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.96
+      "response_time_sec": 4.61
     },
     {
       "id": "both_001",
       "question": "Which nonprofits pay their officers the most?",
       "dataset": "both",
       "category": "Cross Dataset",
-      "answer": "Based on the provided source documents, I cannot definitively answer which nonprofits pay their officers the most.\n\nThe documents contain limited officer compensation information:\n\n- **MAXIMUMGOOD INC** [1]: Peter Dunn serves as Executive Director and President but \"received no\" compensation (the sentence appears incomplete in the source).\n\n- **HRB TAX GROUP INC** [3]: States that \"ALL OFFICERS ARE VOLUNTEER AND DO NOT RECEIVE WAGES.\"\n\n- **HOULDSWORTH RUSSO & COMPANY PC** [4]: References a CEO compensation determination based on comparable packages in the area, but does not disclose the actual compensation amount paid.\n\nThe other nonprofits in the provided documents either lack officer compensation details or do not appear to be traditional 501(c)(3) organizations (such as the BPOE lodge in source [5]).\n\nTo properly answer this question, I would need IRS Form 990 filings that contain completed Schedule J (Compensation of Officers, Directors, Trustees, Key Employees, and Highest Compensated Employees) with specific salary amounts for each organization.\n\n**Sources**\n[1] IRS 990 \u2014 MAXIMUMGOOD INC (EIN: 830374559)\n[3] IRS 990 \u2014 HRB TAX GROUP INC (EIN: 431871840)\n[4] IRS 990 \u2014 HOULDSWORTH RUSSO & COMPANY PC (EIN: 880374623)",
+      "answer": "Based on the provided source documents, I cannot adequately answer which nonprofits pay their officers the most.\n\nWhile the documents include several IRS 990 filings from nonprofits, they contain only partial information about officer compensation:\n\n- MAXIMUMGOOD INC: Peter Dunn (Executive Director/President) received no compensation [1]\n- HRB TAX GROUP INC: All officers are volunteers and do not receive wages [3]\n- HOULDSWORTH RUSSO & COMPANY PC: Contains some compensation data ($546,229 for program consultants), but this does not clearly identify individual officer salaries [4]\n\nThe documents do not provide complete officer compensation schedules (typically found on IRS Form 990, Part VII) that would allow for a meaningful comparison across nonprofits. To properly answer this question, I would need access to the full compensation tables from multiple nonprofit 990 filings showing named officers' salaries.\n\n**Sources:**\n[1] MAXIMUMGOOD INC (EIN: 830374559)\n[3] HRB TAX GROUP INC (EIN: 431871840)\n[4] HOULDSWORTH RUSSO & COMPANY PC (EIN: 880374623)",
       "contexts_count": 10,
       "keyword_score": 0.5,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 4.3
+      "response_time_sec": 3.14
     },
     {
       "id": "both_002",
       "question": "Which organizations have assets over 100 million dollars?",
       "dataset": "both",
       "category": "Cross Dataset",
-      "answer": "# Organizations with Assets Over $100 Million\n\nAll 15 organizations in the provided dataset have assets exceeding $100 million. Here are the organizations ranked by total assets:\n\n1. **Howard Hughes Medical Institute** (MD) \u2013 $27.3 billion [1]\n2. **Emory University** (GA) \u2013 $22.2 billion [2]\n3. **MGB Pooled Holdings LLC** (MA) \u2013 $16.2 billion [3]\n4. **University of Pittsburgh** (PA) \u2013 $10.5 billion [4]\n5. **University of North Carolina at Chapel Hill** (NC) \u2013 $10.2 billion [5]\n6. **Allina Health System** (MN) \u2013 $5.97 billion [6]\n7. **Seattle Children's Hospital** (WA) \u2013 $5.58 billion [7]\n8. **Yale New Haven Hospital** (CT) \u2013 $5.45 billion [8]\n9. **Board of Regents Nevada System of Higher Education** (NV) \u2013 $4.27 billion [9]\n10. **Beth Israel Deaconess Medical Center** (MA) \u2013 $3.81 billion [10]\n11. **Yale New Haven Health Services** (CT) \u2013 $3.52 billion [11]\n12. **New York Society for the Relief of the** (NY) \u2013 $3.43 billion [12]\n13. **Central DuPage Hospital Association** (IL) \u2013 $3.35 billion [13]\n14. **The Trustees of Grinnell College** (IA) \u2013 $3.19 billion [14]\n15. **Provident Resources Group Inc** (LA) \u2013 $2.98 billion [15]\n\n---\n\n**Sources:**\n[1-15] IRS Financials data, Tax Year 2025",
+      "answer": "# Organizations with Assets Over $100 Million\n\nAll 15 organizations in the provided dataset have assets exceeding $100 million. Here are the organizations ranked by total assets:\n\n1. **Howard Hughes Medical Institute** (MD) - $27.3 billion [1]\n2. **Emory University** (GA) - $22.2 billion [2]\n3. **MGB Pooled Holdings LLC** (MA) - $16.2 billion [3]\n4. **University of Pittsburgh** (PA) - $10.5 billion [4]\n5. **University of North Carolina at Chapel Hill** (NC) - $10.2 billion [5]\n6. **Allina Health System** (MN) - $5.97 billion [6]\n7. **Seattle Children's Hospital** (WA) - $5.58 billion [7]\n8. **Yale New Haven Hospital** (CT) - $5.45 billion [8]\n9. **Board of Regents Nevada System of Higher Education** (NV) - $4.27 billion [9]\n10. **Beth Israel Deaconess Medical Center** (MA) - $3.81 billion [10]\n11. **Yale New Haven Health Services** (CT) - $3.52 billion [11]\n12. **New York Society for the Relief of the** (NY) - $3.43 billion [12]\n13. **Central DuPage Hospital Association** (IL) - $3.35 billion [13]\n14. **The Trustees of Grinnell College** (IA) - $3.19 billion [14]\n15. **Provident Resources Group Inc** (LA) - $2.98 billion [15]\n\n---\n\n**Sources:** IRS Form 990/990T filings, Tax Year 2025",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.32
+      "response_time_sec": 2.18
     },
     {
       "id": "both_003",
       "question": "Which health organizations have the most revenue?",
       "dataset": "both",
       "category": "Cross Dataset",
-      "answer": "# Health Organizations by Revenue\n\nBased on the IRS financial data provided, the health organizations with the most revenue are:\n\n1. **Beth Israel Deaconess Medical Center** (MA) - $3.1 billion [1]\n2. **Cabell Huntington Hospital Inc** (WV) - $877.0 million [2]\n3. **Main Line Healthcare** (PA) - $527.9 million [3]\n4. **East Tennessee Children's Hospital** (TN) - $365.4 million [6]\n5. **BOA Retiree Trust-BAC Medical** (TX) - $219.2 million [9]\n6. **Rush Medical Foundation** (MS) - $192.6 million [10]\n7. **Southern Healthcare Alliance** (TX) - $172.7 million [12]\n\nBeth Israel Deaconess Medical Center significantly leads the health organizations in this dataset, with total revenue exceeding $3.1 billion as of tax year 2025.\n\n---\n\n**Sources**\n[1]-[12] IRS Financials, Tax Year 2024-2025",
+      "answer": "# Health Organizations with the Most Revenue\n\nBased on the IRS financial data provided, the health organizations with the highest revenue are:\n\n1. **Beth Israel Deaconess Medical Center** (MA) - $3.1 billion [1]\n2. **Cabell Huntington Hospital Inc** (WV) - $877.0 million [2]\n3. **East Tennessee Children's Hospital** (TN) - $365.4 million [6]\n4. **Rush Medical Foundation** (MS) - $192.6 million [10]\n5. **Southern Healthcare Alliance** (TX) - $172.7 million [12]\n6. **BOA Retiree Trust-BAC Medical** (TX) - $219.2 million [9]\n\nBeth Israel Deaconess Medical Center significantly leads other health organizations in the dataset, with total revenue of approximately $3.1 billion in tax year 2025, followed distantly by Cabell Huntington Hospital at $877.0 million.\n\n---\n\n**Sources:**\n[1] IRS Financials - Beth Israel Deaconess Medical Center, 2025\n[2] IRS Financials - Cabell Huntington Hospital Inc, 2025\n[6] IRS Financials - East Tennessee Children's Hospital, 2025\n[9] IRS Financials - BOA Retiree Trust-BAC Medical, 2025\n[10] IRS Financials - Rush Medical Foundation, 2025\n[12] IRS Financials - Southern Healthcare Alliance, 2024",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.49
+      "response_time_sec": 2.93
     },
     {
       "id": "both_004",
       "question": "Which nonprofits reported the most program service revenue?",
       "dataset": "both",
       "category": "Cross Dataset",
-      "answer": "# Program Service Revenue Analysis\n\nI cannot answer this question based on the data provided. The dataset contains only **total revenue figures**, not **program service revenue** specifically.\n\nProgram service revenue is a distinct financial metric reported on IRS Form 990 that captures revenue directly related to an organization's charitable mission (such as patient fees for hospitals or tuition for educational institutions). This differs from total revenue, which includes contributions, grants, investment income, and other sources.\n\nTo accurately identify which nonprofits reported the most program service revenue, the actual program service revenue line items from their Form 990 filings would be required, which are not included in the current dataset.\n\n---\n\n## Sources\n\n[1-15] IRS Form 990 Financial Data (2024-2025 tax years)",
+      "answer": "I cannot answer this question based on the data provided. While the dataset includes **total revenue** figures for 15 nonprofits [1-15], it does not contain **program service revenue** information, which is a specific revenue line item distinct from total revenue.\n\nProgram service revenue typically represents income directly earned from providing the organization's charitable services (such as patient fees for hospitals or tuition for educational institutions), and would be reported separately on IRS Form 990 schedules. The data provided only shows aggregate total revenue figures.\n\nTo answer which nonprofits reported the most program service revenue, I would need access to the detailed revenue breakdown sections from their Form 990 filings.\n\n**Sources:**\nIRS Form 990 Financial Data (Tax Year 2024-2025) - Organizations listed [1-15]",
       "contexts_count": 5,
       "keyword_score": 0.75,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 2.87
+      "response_time_sec": 2.91
     },
     {
       "id": "both_005",
       "question": "Which foundations spent the most money?",
       "dataset": "both",
       "category": "Cross Dataset",
-      "answer": "# Organizations with Highest Spending\n\nBased on the IRS Form 990 data provided, the organizations that spent the most money (by total expenses) are:\n\n1. **Beth Israel Deaconess Medical Center** (MA) - $3.1 billion in expenses [1]\n2. **Cabell Huntington Hospital Inc** (WV) - $824.96 million in expenses [2]\n3. **Main Line Healthcare** (PA) - $527.86 million in expenses [3]\n4. **Illinois Institute of Technology** (IL) - $442.45 million in expenses [4]\n5. **Front Porch Communities and Services** (CA) - $376.32 million in expenses [5]\n\n**Important Note:** The data provided does not specifically identify any of these organizations as \"foundations.\" The organizations shown are primarily hospitals, healthcare systems, educational institutions, and other nonprofits filing Form 990 returns. If you are seeking information specifically about foundations (which typically file Form 990-PF), different data would be required.\n\n## Sources\nIRS Financials Form 990 filings for tax year 2025 (2024 for one entry), records [1]-[15]",
+      "answer": "# Organizations with Highest Spending (Tax Year 2024-2025)\n\nBased on the IRS Form 990 data provided, the organizations that spent the most money are:\n\n1. **Beth Israel Deaconess Medical Center** (MA) - $3.1 billion in total expenses [1]\n2. **Cabell Huntington Hospital Inc** (WV) - $825.0 million in total expenses [2]\n3. **Main Line Healthcare** (PA) - $527.9 million in total expenses [3]\n4. **Illinois Institute of Technology** (IL) - $442.5 million in total expenses [4]\n5. **Front Porch Communities and Services** (CA) - $376.3 million in total expenses [5]\n\n**Note:** The data provided does not include dedicated foundations (Form 990-PF filings). All organizations listed filed Form 990 returns, which are primarily hospitals, universities, healthcare systems, and other nonprofits rather than private or community foundations. To answer a question specifically about foundation spending, Form 990-PF data for foundations would be needed.\n\n---\n\n**Sources**\n- IRS Form 990 filings, Tax Years 2024-2025\n- Data fields: org_name, state, total_expenses",
       "contexts_count": 5,
       "keyword_score": 1.0,
       "contains_check": true,
       "passed": true,
       "status": "PASS",
-      "response_time_sec": 3.37
+      "response_time_sec": 3.27
     }
   ]
 }
