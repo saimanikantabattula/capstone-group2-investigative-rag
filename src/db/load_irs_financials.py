@@ -32,7 +32,7 @@ DB_NAME = os.getenv("DB_NAME", "capstone_rag")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASS = os.getenv("DB_PASS", "")
 
-MANIFEST_PATH = "data/manifests/irs_manifest_25k.csv"
+MANIFEST_PATH = "data/manifests/irs_manifest_full.csv"
 XML_BASE = "/Users/battulasaimanikanta/Documents/capstone data sets /dataset 1.0/unstructured"
 
 # XML namespaces used in IRS 990 filings

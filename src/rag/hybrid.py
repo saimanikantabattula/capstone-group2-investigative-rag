@@ -1,8 +1,8 @@
 """
-hybrid.py - v2
+hybrid.py - v3
 
 Hybrid query engine that routes questions to the right data source:
-- Geographic questions → PostgreSQL irs_index
+- Geographic questions → PostgreSQL irs_locations + irs_financials
 - Specific committee lookups → PostgreSQL fec_committees
 - Threshold questions → PostgreSQL fec_committees
 - Financial/ranking questions → PostgreSQL irs_financials or fec_committees
@@ -32,10 +32,18 @@ FINANCIAL_KEYWORDS = [
     "most receipts", "top pac", "top committee",
     "which nonprofits", "which organizations", "which hospitals",
     "which universities", "which foundations", "which charities",
+    "which colleges", "which schools", "which health", "which medical",
+    "which arts", "which housing", "which youth", "which children",
+    "which veterans", "which environmental", "which research",
+    "which community", "which social", "which education",
     "rank", "ranking", "top 10", "top 5", "list of",
     "how much did", "how much has", "how much money",
     "over 100 million", "over 1 billion", "over 10 million",
-    "more than", "at least", "based in", "located in", "cash on hand", "how much cash", "most cash",
+    "more than", "at least", "based in", "located in",
+    "cash on hand", "how much cash", "most cash",
+    "contributions and grants", "program service revenue", "executives over", "pay executives",
+    "filed 990", "990pf", "990ez", "990t",
+    "connections to", "linked to", "associated with",
 ]
 
 FEC_KEYWORDS = [
@@ -43,7 +51,9 @@ FEC_KEYWORDS = [
     "donation", "contribution", "expenditure", "disbursement",
     "election", "candidate", "party", "super pac",
     "actblue", "winred", "harris", "trump", "dnc", "rnc",
-    "democratic", "republican",
+    "democratic", "republican", "lobbyist", "house campaign",
+    "senate campaign", "presidential campaign", "lincoln project",
+    "individual contributions", "most individual",
 ]
 
 STATE_MAP = {
@@ -58,7 +68,7 @@ STATE_MAP = {
     "north carolina": "NC", "north dakota": "ND", "ohio": "OH", "oklahoma": "OK",
     "oregon": "OR", "pennsylvania": "PA", "rhode island": "RI", "south carolina": "SC",
     "south dakota": "SD", "tennessee": "TN", "texas": "TX", "utah": "UT",
-    "vermont": "VT", "virginia": "VA", "washington": "WA", "west virginia": "WV",
+    "vermont": "VT", "virginia": "VA", "washington state": "WA", "west virginia": "WV",
     "wisconsin": "WI", "wyoming": "WY",
 }
 
@@ -66,7 +76,8 @@ SPECIFIC_COMMITTEES = [
     "actblue", "winred", "harris for president", "harris victory",
     "trump", "biden", "dnc", "rnc", "lincoln project",
     "emily", "planned parenthood", "nra", "america first",
-    "priorities usa", "club for growth",
+    "priorities usa", "club for growth", "maga inc", "fairshake", "rnc", "republican national",
+    "democracy pac", "slf pac", "harris victory fund",
 ]
 
 THRESHOLD_MAP = {
@@ -112,10 +123,8 @@ def query_irs_by_state(state_abbr):
                    ROUND(f.total_assets) as total_assets
             FROM irs_financials f
             LEFT JOIN irs_locations l USING (ein)
-            WHERE UPPER(f.state) = %s
-              AND f.total_revenue IS NOT NULL
-            ORDER BY f.total_revenue DESC
-            LIMIT 10
+            WHERE UPPER(f.state) = %s AND f.total_revenue IS NOT NULL
+            ORDER BY f.total_revenue DESC LIMIT 10
         """, (state_abbr,))
         financial_rows = [dict(r) for r in cur.fetchall()]
 
@@ -123,8 +132,7 @@ def query_irs_by_state(state_abbr):
             SELECT org_name, state, city, return_type, tax_year
             FROM irs_locations
             WHERE UPPER(state) = %s
-            ORDER BY org_name
-            LIMIT 15
+            ORDER BY org_name LIMIT 15
         """, (state_abbr,))
         location_rows = [dict(r) for r in cur.fetchall()]
 
@@ -146,11 +154,9 @@ def query_fec_specific_committee(committee_name):
             FROM fec_committees
             WHERE LOWER("CMTE_NM") LIKE %s
               AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
-            ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC
-            LIMIT 5
+            ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 5
         """, (f"%{committee_name.lower()}%",))
-        rows = cur.fetchall()
-        return [dict(r) for r in rows]
+        return [dict(r) for r in cur.fetchall()]
     finally:
         cur.close()
         conn.close()
@@ -167,11 +173,9 @@ def query_fec_threshold(amount, field="TTL_RECEIPTS"):
             WHERE "{field}" IS NOT NULL AND "{field}" != ''
               AND "{field}" ~ '^[0-9.]+$'
               AND CAST("{field}" AS NUMERIC) >= %s
-            ORDER BY CAST("{field}" AS NUMERIC) DESC
-            LIMIT 20
+            ORDER BY CAST("{field}" AS NUMERIC) DESC LIMIT 20
         """, (amount,))
-        rows = cur.fetchall()
-        return [dict(r) for r in rows]
+        return [dict(r) for r in cur.fetchall()]
     finally:
         cur.close()
         conn.close()
@@ -182,91 +186,366 @@ def query_irs_financials(question):
     conn = get_db()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
-        if any(w in q for w in ["revenue", "raised", "money", "income", "funding"]):
+        # Return type queries — use irs_index
+        if any(w in q for w in ["990pf", "990ez", "990t"]) or "filed 990" in q:
+            if "990pf" in q: rt = "990PF"
+            elif "990ez" in q: rt = "990EZ"
+            elif "990t" in q: rt = "990T"
+            else: rt = "990"
+            cur.execute("""
+                SELECT "TAXPAYER_NAME" as org_name, "RETURN_TYPE" as return_type,
+                       "TAX_PERIOD" as tax_year, "EIN" as ein
+                FROM irs_index WHERE UPPER("RETURN_TYPE") = %s
+                ORDER BY "TAXPAYER_NAME" LIMIT 20
+            """, (rt,))
+
+        # Contributions and grants
+        elif any(w in q for w in ["contributions and grants", "most contributions", "most grants", "giving", "contributions and grant"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(contributions_grants) as contributions_grants,
+                       ROUND(total_revenue) as total_revenue
+                FROM irs_financials WHERE contributions_grants IS NOT NULL
+                ORDER BY contributions_grants DESC LIMIT 15
+            """)
+
+        # Program service revenue
+        elif any(w in q for w in ["program service", "program revenue", "service revenue"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(program_service_revenue) as program_service_revenue,
+                       ROUND(total_revenue) as total_revenue
+                FROM irs_financials WHERE program_service_revenue IS NOT NULL
+                ORDER BY program_service_revenue DESC LIMIT 15
+            """)
+
+        # Officer compensation with threshold
+        elif any(w in q for w in ["compensation", "salary", "officer", "executive", "pay"]):
+            if "over 1 million" in q or "over 1 million" in q or "1 million dollar" in q or "officers over 1" in q:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(officer_compensation) as officer_compensation,
+                           ROUND(total_revenue) as total_revenue
+                    FROM irs_financials
+                    WHERE officer_compensation IS NOT NULL AND officer_compensation >= 1000000
+                    ORDER BY officer_compensation DESC LIMIT 15
+                """)
+            elif "500 thousand" in q or "500k" in q:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(officer_compensation) as officer_compensation,
+                           ROUND(total_revenue) as total_revenue
+                    FROM irs_financials
+                    WHERE officer_compensation IS NOT NULL AND officer_compensation >= 500000
+                    ORDER BY officer_compensation DESC LIMIT 15
+                """)
+            else:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(officer_compensation) as officer_compensation,
+                           ROUND(total_revenue) as total_revenue
+                    FROM irs_financials WHERE officer_compensation IS NOT NULL
+                    ORDER BY officer_compensation DESC LIMIT 15
+                """)
+
+        # Arts organizations
+        elif any(w in q for w in ["arts", "museum", "theater", "theatre", "cultural", "symphony", "opera"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_assets) as total_assets,
+                       ROUND(total_revenue) as total_revenue
+                FROM irs_financials WHERE total_assets IS NOT NULL
+                AND (LOWER(org_name) LIKE '%art%' OR LOWER(org_name) LIKE '%museum%'
+                     OR LOWER(org_name) LIKE '%theater%' OR LOWER(org_name) LIKE '%symphony%'
+                     OR LOWER(org_name) LIKE '%cultural%' OR LOWER(org_name) LIKE '%theatre%'
+                     OR LOWER(org_name) LIKE '%opera%')
+                ORDER BY total_assets DESC LIMIT 15
+            """)
+
+        # Housing nonprofits
+        elif any(w in q for w in ["housing", "shelter", "homeless"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_liabilities) as total_liabilities,
+                       ROUND(total_assets) as total_assets,
+                       ROUND(total_revenue) as total_revenue
+                FROM irs_financials WHERE total_liabilities IS NOT NULL
+                AND (LOWER(org_name) LIKE '%housing%' OR LOWER(org_name) LIKE '%shelter%'
+                     OR LOWER(org_name) LIKE '%homeless%' OR LOWER(org_name) LIKE '%habitat%')
+                ORDER BY total_liabilities DESC LIMIT 15
+            """)
+
+        # Youth / children organizations
+        elif any(w in q for w in ["youth", "children", "child", "kids", "juvenile"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_assets) as total_assets,
+                       ROUND(total_revenue) as total_revenue
+                FROM irs_financials WHERE total_assets IS NOT NULL
+                AND (LOWER(org_name) LIKE '%youth%' OR LOWER(org_name) LIKE '%children%'
+                     OR LOWER(org_name) LIKE '%child%' OR LOWER(org_name) LIKE '%boys%'
+                     OR LOWER(org_name) LIKE '%girls%' OR LOWER(org_name) LIKE '%kids%'
+                     OR LOWER(org_name) LIKE '%juvenile%')
+                ORDER BY total_assets DESC LIMIT 15
+            """)
+
+        # Educational institutions with debt
+        elif ("debt" in q or "liabilit" in q) and any(w in q for w in ["education", "school", "university", "college", "institution"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_liabilities) as total_liabilities,
+                       ROUND(total_assets) as total_assets
+                FROM irs_financials WHERE total_liabilities IS NOT NULL
+                AND (LOWER(org_name) LIKE '%school%' OR LOWER(org_name) LIKE '%university%'
+                     OR LOWER(org_name) LIKE '%college%' OR LOWER(org_name) LIKE '%academy%'
+                     OR LOWER(org_name) LIKE '%institute%')
+                ORDER BY total_liabilities DESC LIMIT 15
+            """)
+
+        # Community foundations
+        elif "community foundation" in q:
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_assets) as total_assets,
+                       ROUND(contributions_grants) as contributions_grants
+                FROM irs_financials WHERE total_revenue IS NOT NULL
+                AND LOWER(org_name) LIKE '%community foundation%'
+                ORDER BY total_revenue DESC LIMIT 15
+            """)
+
+        # University / college — must come before generic asset check
+        elif any(w in q for w in ["university", "college"]):
+            order_col = "total_assets" if "asset" in q else "total_revenue"
+            cur.execute(f"""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_assets) as total_assets
+                FROM irs_financials WHERE {order_col} IS NOT NULL
+                AND (LOWER(org_name) LIKE '%university%' OR LOWER(org_name) LIKE '%college%')
+                ORDER BY {order_col} DESC LIMIT 15
+            """)
+        # Veterans — must come before generic asset check
+        elif any(w in q for w in ["veteran", "vfw", "american legion"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_assets) as total_assets,
+                       ROUND(total_revenue) as total_revenue
+                FROM irs_financials WHERE total_assets IS NOT NULL
+                AND (LOWER(org_name) LIKE '%veteran%' OR LOWER(org_name) LIKE '%vfw%'
+                     OR LOWER(org_name) LIKE '%american legion%')
+                ORDER BY total_assets DESC LIMIT 15
+            """)
+        # Environmental — must come before generic revenue check
+        elif any(w in q for w in ["environment", "conservation", "wildlife"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_assets) as total_assets
+                FROM irs_financials WHERE total_revenue IS NOT NULL
+                AND (LOWER(org_name) LIKE '%environment%' OR LOWER(org_name) LIKE '%conservation%'
+                     OR LOWER(org_name) LIKE '%wildlife%' OR LOWER(org_name) LIKE '%nature%')
+                ORDER BY total_revenue DESC LIMIT 15
+            """)
+        # Revenue queries
+        elif any(w in q for w in ["revenue", "raised", "money", "income", "funding"]):
             cur.execute("""
                 SELECT org_name, state, return_type, tax_year,
                        ROUND(total_revenue) as total_revenue,
                        ROUND(total_expenses) as total_expenses,
                        ROUND(total_assets) as total_assets
-                FROM irs_financials
-                WHERE total_revenue IS NOT NULL
+                FROM irs_financials WHERE total_revenue IS NOT NULL
                 ORDER BY total_revenue DESC LIMIT 15
             """)
+
+        # Expense queries
         elif any(w in q for w in ["expense", "spent", "spending", "cost"]):
             cur.execute("""
                 SELECT org_name, state, return_type, tax_year,
                        ROUND(total_expenses) as total_expenses,
                        ROUND(total_revenue) as total_revenue
-                FROM irs_financials
-                WHERE total_expenses IS NOT NULL
+                FROM irs_financials WHERE total_expenses IS NOT NULL
                 ORDER BY total_expenses DESC LIMIT 15
             """)
+
+        # Asset queries
         elif any(w in q for w in ["asset", "worth", "wealth", "large"]):
             cur.execute("""
                 SELECT org_name, state, return_type, tax_year,
                        ROUND(total_assets) as total_assets,
                        ROUND(total_liabilities) as total_liabilities,
                        ROUND(net_assets) as net_assets
-                FROM irs_financials
-                WHERE total_assets IS NOT NULL
+                FROM irs_financials WHERE total_assets IS NOT NULL
                 ORDER BY total_assets DESC LIMIT 15
             """)
-        elif any(w in q for w in ["compensation", "salary", "officer", "executive", "pay"]):
+
+        # Liabilities queries
+        elif any(w in q for w in ["liabilit", "debt", "owe"]):
             cur.execute("""
                 SELECT org_name, state, return_type, tax_year,
-                       ROUND(officer_compensation) as officer_compensation,
-                       ROUND(total_revenue) as total_revenue
-                FROM irs_financials
-                WHERE officer_compensation IS NOT NULL
-                ORDER BY officer_compensation DESC LIMIT 15
-            """)
-        elif any(w in q for w in ["hospital", "medical", "health"]):
-            cur.execute("""
-                SELECT org_name, state, return_type, tax_year,
-                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_liabilities) as total_liabilities,
                        ROUND(total_assets) as total_assets
-                FROM irs_financials
-                WHERE total_revenue IS NOT NULL
-                AND (LOWER(org_name) LIKE '%hospital%'
-                     OR LOWER(org_name) LIKE '%medical%'
-                     OR LOWER(org_name) LIKE '%health%')
-                ORDER BY total_revenue DESC LIMIT 15
+                FROM irs_financials WHERE total_liabilities IS NOT NULL
+                  AND total_liabilities > 0
+                ORDER BY total_liabilities DESC LIMIT 15
             """)
-        elif any(w in q for w in ["university", "college", "school", "education"]):
-            cur.execute("""
-                SELECT org_name, state, return_type, tax_year,
-                       ROUND(total_revenue) as total_revenue,
-                       ROUND(total_assets) as total_assets
-                FROM irs_financials
-                WHERE total_revenue IS NOT NULL
-                AND (LOWER(org_name) LIKE '%university%'
-                     OR LOWER(org_name) LIKE '%college%'
-                     OR LOWER(org_name) LIKE '%school%'
-                     OR LOWER(org_name) LIKE '%institute%')
-                ORDER BY total_revenue DESC LIMIT 15
-            """)
-        elif any(w in q for w in ["foundation", "charity", "charitable"]):
-            order_col = "net_assets" if "net asset" in q else "total_assets" if "asset" in q else "total_revenue"
+
+        # Surplus / deficit
+        elif any(w in q for w in ["surplus", "profit", "loss", "deficit"]):
+            if "loss" in q or "deficit" in q:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(total_revenue) as total_revenue,
+                           ROUND(total_expenses) as total_expenses,
+                           ROUND(total_revenue - total_expenses) as net_income
+                    FROM irs_financials
+                    WHERE total_revenue IS NOT NULL AND total_expenses IS NOT NULL
+                      AND total_revenue < total_expenses
+                    ORDER BY (total_revenue - total_expenses) ASC LIMIT 15
+                """)
+            else:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(total_revenue) as total_revenue,
+                           ROUND(total_expenses) as total_expenses,
+                           ROUND(total_revenue - total_expenses) as net_income
+                    FROM irs_financials
+                    WHERE total_revenue IS NOT NULL AND total_expenses IS NOT NULL
+                      AND total_revenue > total_expenses
+                    ORDER BY (total_revenue - total_expenses) DESC LIMIT 15
+                """)
+
+        # Hospital / medical / health
+        elif any(w in q for w in ["hospital", "medical", "health system", "healthcare"]):
+            order_col = "total_assets" if "asset" in q else "total_liabilities" if "liabilit" in q else "total_revenue"
             cur.execute(f"""
                 SELECT org_name, state, return_type, tax_year,
                        ROUND(total_revenue) as total_revenue,
                        ROUND(total_assets) as total_assets,
-                       ROUND(net_assets) as net_assets
-                FROM irs_financials
-                WHERE (LOWER(org_name) LIKE '%foundation%' OR return_type = '990PF')
-                  AND {order_col} IS NOT NULL
+                       ROUND(total_liabilities) as total_liabilities
+                FROM irs_financials WHERE {order_col} IS NOT NULL
+                AND (LOWER(org_name) LIKE '%hospital%' OR LOWER(org_name) LIKE '%medical%'
+                     OR LOWER(org_name) LIKE '%health%' OR LOWER(org_name) LIKE '%healthcare%')
                 ORDER BY {order_col} DESC LIMIT 15
             """)
+
+        # University / college
+        elif any(w in q for w in ["university", "college", "school", "education"]):
+            order_col = "total_assets" if "asset" in q else "total_revenue"
+            cur.execute(f"""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_assets) as total_assets
+                FROM irs_financials WHERE {order_col} IS NOT NULL
+                AND (LOWER(org_name) LIKE '%university%' OR LOWER(org_name) LIKE '%college%'
+                     OR LOWER(org_name) LIKE '%school%' OR LOWER(org_name) LIKE '%institute%')
+                ORDER BY {order_col} DESC LIMIT 15
+            """)
+
+        # Foundation / charity
+        elif any(w in q for w in ["foundation", "charity", "charitable"]):
+            if "net asset" in q:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(net_assets) as net_assets,
+                           ROUND(total_assets) as total_assets
+                    FROM irs_financials
+                    WHERE (LOWER(org_name) LIKE '%foundation%' OR return_type = '990PF')
+                      AND net_assets IS NOT NULL
+                    ORDER BY net_assets DESC LIMIT 15
+                """)
+            elif "asset" in q:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(total_assets) as total_assets,
+                           ROUND(net_assets) as net_assets
+                    FROM irs_financials
+                    WHERE (LOWER(org_name) LIKE '%foundation%' OR return_type = '990PF')
+                      AND total_assets IS NOT NULL
+                    ORDER BY total_assets DESC LIMIT 15
+                """)
+            elif "contribution" in q or "grant" in q:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(contributions_grants) as contributions_grants,
+                           ROUND(total_assets) as total_assets
+                    FROM irs_financials
+                    WHERE (LOWER(org_name) LIKE '%foundation%' OR return_type = '990PF')
+                      AND contributions_grants IS NOT NULL
+                    ORDER BY contributions_grants DESC LIMIT 15
+                """)
+            else:
+                cur.execute("""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(total_revenue) as total_revenue,
+                           ROUND(total_assets) as total_assets,
+                           ROUND(net_assets) as net_assets
+                    FROM irs_financials
+                    WHERE (LOWER(org_name) LIKE '%foundation%' OR return_type = '990PF')
+                      AND total_revenue IS NOT NULL
+                    ORDER BY total_revenue DESC LIMIT 15
+                """)
+
+        # Research organizations
+        elif any(w in q for w in ["research", "institute", "science", "technology"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_assets) as total_assets,
+                       ROUND(total_revenue) as total_revenue
+                FROM irs_financials WHERE total_assets IS NOT NULL
+                AND (LOWER(org_name) LIKE '%research%' OR LOWER(org_name) LIKE '%institute%'
+                     OR LOWER(org_name) LIKE '%science%' OR LOWER(org_name) LIKE '%technology%')
+                ORDER BY total_assets DESC LIMIT 15
+            """)
+
+        # Veterans organizations
+        elif any(w in q for w in ["veteran", "military", "vfw", "american legion"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_assets) as total_assets,
+                       ROUND(total_revenue) as total_revenue
+                FROM irs_financials WHERE total_assets IS NOT NULL
+                AND (LOWER(org_name) LIKE '%veteran%' OR LOWER(org_name) LIKE '%vfw%'
+                     OR LOWER(org_name) LIKE '%american legion%' OR LOWER(org_name) LIKE '%military%')
+                ORDER BY total_assets DESC LIMIT 15
+            """)
+
+        # Environmental organizations
+        elif any(w in q for w in ["environment", "conservation", "wildlife", "nature"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_assets) as total_assets
+                FROM irs_financials WHERE total_revenue IS NOT NULL
+                AND (LOWER(org_name) LIKE '%environment%' OR LOWER(org_name) LIKE '%conservation%'
+                     OR LOWER(org_name) LIKE '%wildlife%' OR LOWER(org_name) LIKE '%nature%'
+                     OR LOWER(org_name) LIKE '%ecology%')
+                ORDER BY total_revenue DESC LIMIT 15
+            """)
+
+        # Social service organizations
+        elif any(w in q for w in ["social service", "human service", "community service"]):
+            cur.execute("""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_assets) as total_assets
+                FROM irs_financials WHERE total_revenue IS NOT NULL
+                AND (LOWER(org_name) LIKE '%service%' OR LOWER(org_name) LIKE '%community%'
+                     OR LOWER(org_name) LIKE '%social%' OR LOWER(org_name) LIKE '%human%')
+                ORDER BY total_revenue DESC LIMIT 15
+            """)
+
+        # Default — top by revenue
         else:
             cur.execute("""
                 SELECT org_name, state, return_type, tax_year,
                        ROUND(total_revenue) as total_revenue,
                        ROUND(total_expenses) as total_expenses,
                        ROUND(total_assets) as total_assets
-                FROM irs_financials
-                WHERE total_revenue IS NOT NULL
+                FROM irs_financials WHERE total_revenue IS NOT NULL
                 ORDER BY total_revenue DESC LIMIT 15
             """)
+
         rows = cur.fetchall()
         return [dict(r) for r in rows]
     finally:
@@ -279,7 +558,47 @@ def query_fec_committees(question):
     conn = get_db()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
-        if any(w in q for w in ["spent", "spending", "expenditure", "disbursement"]):
+        if any(w in q for w in ["house campaign", "house committee"]):
+            cur.execute("""
+                SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
+                       "TTL_RECEIPTS", "TTL_DISB", "cycle"
+                FROM fec_committees WHERE "CMTE_TP" = 'H'
+                  AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
+            """)
+        elif any(w in q for w in ["senate campaign", "senate committee"]):
+            cur.execute("""
+                SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
+                       "TTL_RECEIPTS", "TTL_DISB", "cycle"
+                FROM fec_committees WHERE "CMTE_TP" = 'S'
+                  AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
+            """)
+        elif any(w in q for w in ["presidential campaign", "presidential committee"]):
+            cur.execute("""
+                SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
+                       "TTL_RECEIPTS", "TTL_DISB", "cycle"
+                FROM fec_committees WHERE "CMTE_TP" = 'P'
+                  AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
+            """)
+        elif any(w in q for w in ["lobbyist", "registrant"]):
+            cur.execute("""
+                SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
+                       "TTL_RECEIPTS", "TTL_DISB", "cycle"
+                FROM fec_committees WHERE "CMTE_TP" IN ('V', 'W')
+                  AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
+            """)
+        elif any(w in q for w in ["independent expenditure", "super pac"]):
+            cur.execute("""
+                SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
+                       "TTL_RECEIPTS", "TTL_DISB", "cycle"
+                FROM fec_committees WHERE "CMTE_TP" IN ('O', 'U', 'N')
+                  AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
+            """)
+        elif any(w in q for w in ["spent", "spending", "expenditure", "disbursement"]):
             cur.execute("""
                 SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST", "CMTE_CITY",
                        "TTL_DISB", "TTL_RECEIPTS", "INDV_CONTB",
@@ -308,7 +627,7 @@ def query_fec_committees(question):
                   AND CAST("DEBTS_OWED_BY_CMTE" AS NUMERIC) > 0
                 ORDER BY CAST("DEBTS_OWED_BY_CMTE" AS NUMERIC) DESC LIMIT 15
             """)
-        elif any(w in q for w in ["individual", "donor", "person"]):
+        elif any(w in q for w in ["individual contribution", "individual donor", "indv"]):
             cur.execute("""
                 SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
                        "INDV_CONTB", "TTL_RECEIPTS", "cycle"
@@ -317,18 +636,36 @@ def query_fec_committees(question):
                   AND "INDV_CONTB" ~ '^[0-9.]+$'
                 ORDER BY CAST("INDV_CONTB" AS NUMERIC) DESC LIMIT 15
             """)
+        elif "democratic" in q:
+            cur.execute("""
+                SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
+                       "TTL_RECEIPTS", "TTL_DISB", "cycle"
+                FROM fec_committees
+                WHERE ("CMTE_PTY_AFFILIATION" = 'DEM' OR "CAND_PTY_AFFILIATION" = 'DEM'
+                       OR LOWER("CMTE_NM") LIKE '%democrat%')
+                  AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
+            """)
+        elif "republican" in q:
+            cur.execute("""
+                SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
+                       "TTL_RECEIPTS", "TTL_DISB", "cycle"
+                FROM fec_committees
+                WHERE ("CMTE_PTY_AFFILIATION" = 'REP' OR "CAND_PTY_AFFILIATION" = 'REP'
+                       OR LOWER("CMTE_NM") LIKE '%republican%')
+                  AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
+            """)
         else:
             cur.execute("""
                 SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST", "CMTE_CITY",
-                       "TTL_RECEIPTS", "TTL_DISB", "INDV_CONTB",
-                       "COH_COP", "cycle"
+                       "TTL_RECEIPTS", "TTL_DISB", "INDV_CONTB", "COH_COP", "cycle"
                 FROM fec_committees
                 WHERE "TTL_RECEIPTS" IS NOT NULL AND "TTL_RECEIPTS" != ''
                   AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
                 ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
             """)
-        rows = cur.fetchall()
-        return [dict(r) for r in rows]
+        return [dict(r) for r in cur.fetchall()]
     finally:
         cur.close()
         conn.close()
@@ -383,7 +720,6 @@ def hybrid_ask(question, dataset="both", top_k=5):
     # ── 1. Geographic: query by state ──
     state_abbr, state_name = detect_state(question)
     if state_abbr:
-        # FEC geographic question
         if use_fec and dataset in ("fec", "both"):
             try:
                 conn = get_db()
@@ -392,40 +728,31 @@ def hybrid_ask(question, dataset="both", top_k=5):
                     SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
                            "TTL_RECEIPTS", "TTL_DISB", "cycle"
                     FROM fec_committees
-                    WHERE UPPER("CMTE_ST") = %s
-                      AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
-                    ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC
-                    LIMIT 20
+                    WHERE UPPER("CMTE_ST") = %s AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                    ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 20
                 """, (state_abbr,))
                 rows = [dict(r) for r in cur.fetchall()]
-                cur.close()
-                conn.close()
+                cur.close(); conn.close()
                 if rows:
                     context = format_rows_as_context(rows, "FEC")
                     answer = generate_answer_from_data(question, context, "FEC political finance")
-                    citations = [Citation(
-                        source="FEC", file_name="fec_committees (PostgreSQL)",
-                        org_name=r.get("CMTE_NM", ""), ein="", object_id="",
-                        snippet=f"State: {r.get('CMTE_ST','N/A')} | Receipts: {r.get('TTL_RECEIPTS','N/A')} | Cycle: {r.get('cycle','N/A')}",
-                        distance=0.0,
-                    ) for r in rows[:5]]
+                    citations = [Citation(source="FEC", file_name="fec_committees (PostgreSQL)",
+                        org_name=r.get("CMTE_NM",""), ein="", object_id="",
+                        snippet=f"State: {r.get('CMTE_ST','N/A')} | Receipts: {r.get('TTL_RECEIPTS','N/A')}",
+                        distance=0.0) for r in rows[:5]]
                     return RAGResponse(answer=answer, citations=citations, sources_used=["FEC Committees (PostgreSQL)"])
             except Exception as e:
                 print(f"FEC state query failed: {e}, falling back to RAG")
-
-        # IRS geographic question
         elif dataset in ("irs", "both"):
             try:
                 rows = query_irs_by_state(state_abbr)
                 if rows:
                     context = format_rows_as_context(rows, "IRS Financials")
                     answer = generate_answer_from_data(question, context, "IRS nonprofit filings")
-                    citations = [Citation(
-                        source="IRS", file_name="irs_financials (PostgreSQL)",
-                        org_name=r.get("org_name", ""), ein="", object_id="",
-                        snippet=f"State: {r.get('state','N/A')} | Revenue: {r.get('total_revenue','N/A')} | Return: {r.get('return_type','N/A')}",
-                        distance=0.0,
-                    ) for r in rows[:5]]
+                    citations = [Citation(source="IRS", file_name="irs_financials (PostgreSQL)",
+                        org_name=r.get("org_name",""), ein="", object_id="",
+                        snippet=f"State: {r.get('state','N/A')} | Revenue: {r.get('total_revenue','N/A')}",
+                        distance=0.0) for r in rows[:5]]
                     return RAGResponse(answer=answer, citations=citations, sources_used=["IRS Financials (PostgreSQL)"])
             except Exception as e:
                 print(f"IRS state query failed: {e}, falling back to RAG")
@@ -438,17 +765,15 @@ def hybrid_ask(question, dataset="both", top_k=5):
             if rows:
                 context = format_rows_as_context(rows, "FEC")
                 answer = generate_answer_from_data(question, context, "FEC political finance")
-                citations = [Citation(
-                    source="FEC", file_name="fec_committees (PostgreSQL)",
-                    org_name=r.get("CMTE_NM", ""), ein="", object_id="",
-                    snippet=f"Receipts: {r.get('TTL_RECEIPTS','N/A')} | Disbursements: {r.get('TTL_DISB','N/A')} | Cycle: {r.get('cycle','N/A')}",
-                    distance=0.0,
-                ) for r in rows[:5]]
+                citations = [Citation(source="FEC", file_name="fec_committees (PostgreSQL)",
+                    org_name=r.get("CMTE_NM",""), ein="", object_id="",
+                    snippet=f"Receipts: {r.get('TTL_RECEIPTS','N/A')} | Disbursements: {r.get('TTL_DISB','N/A')}",
+                    distance=0.0) for r in rows[:5]]
                 return RAGResponse(answer=answer, citations=citations, sources_used=["FEC Committees (PostgreSQL)"])
         except Exception as e:
             print(f"Specific committee query failed: {e}, falling back to RAG")
 
-    # ── 3. Threshold questions: over 100 million etc ──
+    # ── 3. Threshold questions ──
     matched_threshold = next((v for k, v in THRESHOLD_MAP.items() if k in q_lower), None)
     if matched_threshold and use_fec and dataset in ("fec", "both"):
         try:
@@ -457,29 +782,25 @@ def hybrid_ask(question, dataset="both", top_k=5):
             if rows:
                 context = format_rows_as_context(rows, "FEC")
                 answer = generate_answer_from_data(question, context, "FEC political finance")
-                citations = [Citation(
-                    source="FEC", file_name="fec_committees (PostgreSQL)",
-                    org_name=r.get("CMTE_NM", ""), ein="", object_id="",
-                    snippet=f"Receipts: {r.get('TTL_RECEIPTS','N/A')} | Disbursements: {r.get('TTL_DISB','N/A')} | Cycle: {r.get('cycle','N/A')}",
-                    distance=0.0,
-                ) for r in rows[:5]]
+                citations = [Citation(source="FEC", file_name="fec_committees (PostgreSQL)",
+                    org_name=r.get("CMTE_NM",""), ein="", object_id="",
+                    snippet=f"Receipts: {r.get('TTL_RECEIPTS','N/A')} | Disbursements: {r.get('TTL_DISB','N/A')}",
+                    distance=0.0) for r in rows[:5]]
                 return RAGResponse(answer=answer, citations=citations, sources_used=["FEC Committees (PostgreSQL)"])
         except Exception as e:
             print(f"Threshold query failed: {e}, falling back to RAG")
 
     # ── 4. Financial IRS questions ──
-    if use_db and dataset in ("irs", "both") and not use_fec:
+    if use_db and dataset in ("irs", "both") and (not use_fec or "executive" in q_lower or "officer" in q_lower):
         try:
             rows = query_irs_financials(question)
             if rows:
                 context = format_rows_as_context(rows, "IRS Financials")
                 answer = generate_answer_from_data(question, context, "IRS nonprofit finance")
-                citations = [Citation(
-                    source="IRS", file_name="irs_financials (PostgreSQL)",
-                    org_name=r.get("org_name", ""), ein="", object_id="",
-                    snippet=f"Revenue: {r.get('total_revenue','N/A')} | Expenses: {r.get('total_expenses','N/A')} | State: {r.get('state','N/A')}",
-                    distance=0.0,
-                ) for r in rows[:5]]
+                citations = [Citation(source="IRS", file_name="irs_financials (PostgreSQL)",
+                    org_name=r.get("org_name",""), ein="", object_id="",
+                    snippet=f"Revenue: {r.get('total_revenue','N/A')} | State: {r.get('state','N/A')}",
+                    distance=0.0) for r in rows[:5]]
                 return RAGResponse(answer=answer, citations=citations, sources_used=["IRS Financials (PostgreSQL)"])
         except Exception as e:
             print(f"PostgreSQL query failed: {e}, falling back to RAG")
@@ -491,12 +812,10 @@ def hybrid_ask(question, dataset="both", top_k=5):
             if rows:
                 context = format_rows_as_context(rows, "FEC")
                 answer = generate_answer_from_data(question, context, "FEC political finance")
-                citations = [Citation(
-                    source="FEC", file_name="fec_committees (PostgreSQL)",
-                    org_name=r.get("CMTE_NM", ""), ein="", object_id="",
-                    snippet=f"Receipts: {r.get('TTL_RECEIPTS','N/A')} | Disbursements: {r.get('TTL_DISB','N/A')} | Cycle: {r.get('cycle','N/A')}",
-                    distance=0.0,
-                ) for r in rows[:5]]
+                citations = [Citation(source="FEC", file_name="fec_committees (PostgreSQL)",
+                    org_name=r.get("CMTE_NM",""), ein="", object_id="",
+                    snippet=f"Receipts: {r.get('TTL_RECEIPTS','N/A')} | Disbursements: {r.get('TTL_DISB','N/A')}",
+                    distance=0.0) for r in rows[:5]]
                 return RAGResponse(answer=answer, citations=citations, sources_used=["FEC Committees (PostgreSQL)"])
         except Exception as e:
             print(f"FEC PostgreSQL query failed: {e}, falling back to RAG")
