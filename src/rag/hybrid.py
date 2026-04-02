@@ -31,7 +31,7 @@ FINANCIAL_KEYWORDS = [
     "total revenue", "total expenses", "total assets",
     "most receipts", "top pac", "top committee",
     "which nonprofits", "which organizations", "which hospitals",
-    "which universities", "which foundations", "which charities",
+    "which universit", "which foundations", "which charities",
     "which colleges", "which schools", "which health", "which medical",
     "which arts", "which housing", "which youth", "which children",
     "which veterans", "which environmental", "which research",
@@ -40,7 +40,7 @@ FINANCIAL_KEYWORDS = [
     "how much did", "how much has", "how much money",
     "over 100 million", "over 1 billion", "over 10 million",
     "more than", "at least", "based in", "located in",
-    "cash on hand", "how much cash", "most cash",
+    "cash on hand", "how much cash", "most cash", "individual contribution", "most individual",
     "contributions and grants", "program service revenue", "executives over", "pay executives",
     "filed 990", "990pf", "990ez", "990t",
     "connections to", "linked to", "associated with",
@@ -48,12 +48,12 @@ FINANCIAL_KEYWORDS = [
 
 FEC_KEYWORDS = [
     "pac", "committee", "campaign", "political", "fec",
-    "donation", "contribution", "expenditure", "disbursement",
+    "donation", "expenditure", "disbursement",
     "election", "candidate", "party", "super pac",
     "actblue", "winred", "harris", "trump", "dnc", "rnc",
     "democratic", "republican", "lobbyist", "house campaign",
     "senate campaign", "presidential campaign", "lincoln project",
-    "individual contributions", "most individual",
+    "individual contributions", "most individual", "individual contribution", "lobbyist pac", "lobbyist", "fec committees",
 ]
 
 STATE_MAP = {
@@ -68,7 +68,7 @@ STATE_MAP = {
     "north carolina": "NC", "north dakota": "ND", "ohio": "OH", "oklahoma": "OK",
     "oregon": "OR", "pennsylvania": "PA", "rhode island": "RI", "south carolina": "SC",
     "south dakota": "SD", "tennessee": "TN", "texas": "TX", "utah": "UT",
-    "vermont": "VT", "virginia": "VA", "washington state": "WA", "west virginia": "WV",
+    "vermont": "VT", "virginia": "VA", "washington state": "WA", "nonprofits in washington": "WA", "based in washington": "WA", "west virginia": "WV",
     "wisconsin": "WI", "wyoming": "WY",
 }
 
@@ -76,7 +76,7 @@ SPECIFIC_COMMITTEES = [
     "actblue", "winred", "harris for president", "harris victory",
     "trump", "biden", "dnc", "rnc", "lincoln project",
     "emily", "planned parenthood", "nra", "america first",
-    "priorities usa", "club for growth", "maga inc", "fairshake", "rnc", "republican national",
+    "priorities usa", "club for growth", "maga inc", "fairshake", "rnc", "republican national committee", "republican national",
     "democracy pac", "slf pac", "harris victory fund",
 ]
 
@@ -187,7 +187,7 @@ def query_irs_financials(question):
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
         # Return type queries — use irs_index
-        if any(w in q for w in ["990pf", "990ez", "990t"]) or "filed 990" in q:
+        if any(w in q for w in ["990pf", "990ez", "990t", "990 return"]) or "filed 990" in q:
             if "990pf" in q: rt = "990PF"
             elif "990ez" in q: rt = "990EZ"
             elif "990t" in q: rt = "990T"
@@ -221,7 +221,7 @@ def query_irs_financials(question):
 
         # Officer compensation with threshold
         elif any(w in q for w in ["compensation", "salary", "officer", "executive", "pay"]):
-            if "over 1 million" in q or "over 1 million" in q or "1 million dollar" in q or "officers over 1" in q:
+            if any(w in q for w in ["over 1 million", "1 million dollar", "officers over", "over a million"]):
                 cur.execute("""
                     SELECT org_name, state, return_type, tax_year,
                            ROUND(officer_compensation) as officer_compensation,
@@ -230,7 +230,7 @@ def query_irs_financials(question):
                     WHERE officer_compensation IS NOT NULL AND officer_compensation >= 1000000
                     ORDER BY officer_compensation DESC LIMIT 15
                 """)
-            elif "500 thousand" in q or "500k" in q:
+            elif any(w in q for w in ["500 thousand", "500k", "over 500", "executives over"]):
                 cur.execute("""
                     SELECT org_name, state, return_type, tax_year,
                            ROUND(officer_compensation) as officer_compensation,
@@ -315,14 +315,14 @@ def query_irs_financials(question):
             """)
 
         # University / college — must come before generic asset check
-        elif any(w in q for w in ["university", "college"]):
+        elif any(w in q for w in ["universit", "college"]):
             order_col = "total_assets" if "asset" in q else "total_revenue"
             cur.execute(f"""
                 SELECT org_name, state, return_type, tax_year,
                        ROUND(total_revenue) as total_revenue,
                        ROUND(total_assets) as total_assets
                 FROM irs_financials WHERE {order_col} IS NOT NULL
-                AND (LOWER(org_name) LIKE '%university%' OR LOWER(org_name) LIKE '%college%')
+                AND (LOWER(org_name) LIKE '%universit%' OR LOWER(org_name) LIKE '%college%')
                 ORDER BY {order_col} DESC LIMIT 15
             """)
         # Veterans — must come before generic asset check
@@ -430,7 +430,7 @@ def query_irs_financials(question):
             """)
 
         # University / college
-        elif any(w in q for w in ["university", "college", "school", "education"]):
+        elif any(w in q for w in ["universit", "college", "school", "education"]):
             order_col = "total_assets" if "asset" in q else "total_revenue"
             cur.execute(f"""
                 SELECT org_name, state, return_type, tax_year,
@@ -586,7 +586,10 @@ def query_fec_committees(question):
             cur.execute("""
                 SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
                        "TTL_RECEIPTS", "TTL_DISB", "cycle"
-                FROM fec_committees WHERE "CMTE_TP" IN ('V', 'W')
+                FROM fec_committees
+                WHERE (LOWER("CMTE_NM") LIKE '%lobbyist%'
+                       OR LOWER("CMTE_NM") LIKE '%registrant%'
+                       OR "CMTE_TP" IN ('V', 'W'))
                   AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
                 ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 15
             """)
@@ -728,7 +731,8 @@ def hybrid_ask(question, dataset="both", top_k=5):
                     SELECT "CMTE_NM", "CMTE_TP", "CMTE_ST",
                            "TTL_RECEIPTS", "TTL_DISB", "cycle"
                     FROM fec_committees
-                    WHERE UPPER("CMTE_ST") = %s AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
+                    WHERE UPPER("CMTE_ST") = %s
+                      AND "TTL_RECEIPTS" ~ '^[0-9.]+$'
                     ORDER BY CAST("TTL_RECEIPTS" AS NUMERIC) DESC LIMIT 20
                 """, (state_abbr,))
                 rows = [dict(r) for r in cur.fetchall()]
