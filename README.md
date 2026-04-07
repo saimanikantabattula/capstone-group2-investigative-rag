@@ -2,7 +2,7 @@
 
 **Team:** Sai Manikanta Battula · Bhavani Danthuri · Ability Chikanya · Hanok Naidu Suravarapu  
 **University:** Yeshiva University  
-**Date:** March 2026
+
 
 ---
 
