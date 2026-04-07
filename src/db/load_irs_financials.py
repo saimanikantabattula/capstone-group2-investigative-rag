@@ -32,7 +32,7 @@ DB_NAME = os.getenv("DB_NAME", "capstone_rag")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASS = os.getenv("DB_PASS", "")
 
-MANIFEST_PATH = "data/manifests/irs_manifest_full.csv"
+MANIFEST_PATH = "data/manifests/irs_manifest_new.csv"
 XML_BASE = "/Users/battulasaimanikanta/Documents/capstone data sets /dataset 1.0/unstructured"
 
 # XML namespaces used in IRS 990 filings
@@ -183,6 +183,10 @@ def parse_xml(xml_path):
 def find_xml_file(xml_base, object_id, xml_batch_id):
     # files are stored as XML_BATCH_ID/OBJECT_ID_public.xml
     if object_id and xml_batch_id:
+        # Try double-nested path first (XML_BATCH_ID/XML_BATCH_ID/OBJECT_ID_public.xml)
+        path = Path(xml_base) / xml_batch_id / xml_batch_id / f"{object_id}_public.xml"
+        if path.exists():
+            return path
         path = Path(xml_base) / xml_batch_id / f"{object_id}_public.xml"
         if path.exists():
             return path
@@ -216,7 +220,7 @@ def main():
     if existing > 0:
         print(f"Found {existing} existing rows, clearing table for fresh load...")
         cur = conn.cursor()
-        cur.execute("TRUNCATE TABLE irs_financials")
+        # cur.execute("TRUNCATE TABLE irs_financials")  # disabled to preserve existing data
         conn.commit()
         cur.close()
 

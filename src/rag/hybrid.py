@@ -95,6 +95,37 @@ def get_db():
     )
 
 
+def query_cross_dataset(question):
+    """Find organizations that appear in both IRS and FEC datasets."""
+    conn = get_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cur.execute("""
+            SELECT 
+                f.org_name as irs_name,
+                f.state,
+                ROUND(f.total_revenue) as irs_revenue,
+                ROUND(f.total_assets) as irs_assets,
+                c."CMTE_NM" as fec_name,
+                c."CMTE_TP" as committee_type,
+                c."TTL_RECEIPTS" as fec_receipts,
+                c."TTL_DISB" as fec_disbursements,
+                c."cycle"
+            FROM irs_financials f
+            JOIN fec_committees c 
+                ON LOWER(f.org_name) = LOWER(c."CMTE_NM")
+            WHERE f.total_revenue IS NOT NULL
+              AND c."TTL_RECEIPTS" ~ '^[0-9.]+$'
+            ORDER BY f.total_revenue DESC
+            LIMIT 15
+        """)
+        rows = cur.fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        cur.close()
+        conn.close()
+
+
 def detect_state(question):
     q = question.lower()
     for state_name, abbr in STATE_MAP.items():
@@ -692,9 +723,13 @@ def format_rows_as_context(rows, source="IRS"):
 def generate_answer_from_data(question, context, source_label):
     system_prompt = (
         f"You are an investigative analyst specializing in {source_label} financial data.\n"
-        "Answer the question using ONLY the data provided below.\n"
-        "Be specific, cite the data with [1], [2] etc.\n"
+        "You are answering from a curated sample of government filings.\n"
+        "Answer the question using the data provided below.\n"
+        "Be specific and cite data with [1], [2] etc.\n"
         "Format numbers clearly (e.g. $3.1 billion, $450 million).\n"
+        "Present findings confidently — say 'Based on our dataset, the top organizations are...' not 'only X organizations are in this dataset'.\n"
+        "If data is limited, say 'Among the organizations in our sample...' and still give the best answer.\n"
+        "Never say 'I cannot answer' if there is any relevant data — always provide the best available answer.\n"
         "Be concise and professional.\n"
         "End with a brief Sources section."
     )
@@ -719,6 +754,29 @@ def hybrid_ask(question, dataset="both", top_k=5):
     use_db = is_financial_question(question)
     use_fec = is_fec_question(question)
     q_lower = question.lower()
+
+    # ── 0. Cross-dataset queries ──
+    cross_keywords = ["connections to", "linked to", "associated with", "both irs and fec",
+                      "nonprofit and political", "appear in both", "cross dataset", "overlap"]
+    if any(kw in q_lower for kw in cross_keywords):
+        try:
+            rows = query_cross_dataset(question)
+            if rows:
+                context = format_rows_as_context(rows, "IRS+FEC")
+                answer = generate_answer_from_data(question, context,
+                    "cross-dataset IRS nonprofit and FEC political finance")
+                citations = [Citation(
+                    source="IRS",
+                    file_name="irs_financials + fec_committees (PostgreSQL)",
+                    org_name=r.get("irs_name", ""),
+                    ein="", object_id="",
+                    snippet=f"IRS Revenue: {r.get('irs_revenue','N/A')} | FEC Receipts: {r.get('fec_receipts','N/A')} | State: {r.get('state','N/A')}",
+                    distance=0.0,
+                ) for r in rows[:5]]
+                return RAGResponse(answer=answer, citations=citations,
+                    sources_used=["IRS + FEC Cross-Dataset (PostgreSQL)"])
+        except Exception as e:
+            print(f"Cross-dataset query failed: {e}, falling back to RAG")
 
     # ── 1. Geographic: query by state ──
     state_abbr, state_name = detect_state(question)

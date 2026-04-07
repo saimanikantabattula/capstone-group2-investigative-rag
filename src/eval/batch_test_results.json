@@ -1,46 +1,34 @@
 {
-  "timestamp": "2026-04-02T19:28:54.877695",
+  "timestamp": "2026-04-07T17:33:45.330325",
   "total": 109,
-  "passed": 103,
-  "failed": 6,
-  "accuracy_pct": 94.5,
-  "avg_response_time": 3.28,
+  "passed": 105,
+  "failed": 4,
+  "accuracy_pct": 96.3,
+  "avg_response_time": 3.18,
   "failed_questions": [
     {
-      "question": "Which foundations raised the most in contributions?",
+      "question": "Which nonprofits pay officers over 1 million dollars?",
       "dataset": "irs",
-      "reason": "Contains fail pattern: 'i cannot answer'",
-      "answer_preview": "I cannot answer this question based on the provided data. The dataset contains **total revenue figures** for these organizations, but does not include"
+      "reason": "Financial question but no numbers in answer",
+      "answer_preview": "Based on the provided source documents, I cannot identify which nonprofits pay officers over 1 million dollars. \n\nThe documents provided do not contai"
     },
     {
-      "question": "Which lobbyist PACs raised the most money?",
-      "dataset": "fec",
-      "reason": "Contains fail pattern: 'i cannot answer'",
-      "answer_preview": "I cannot answer this question based on the provided data. The dataset contains **no lobbyist PACs** (committee type \"L\"). \n\nThe committees shown are c"
+      "question": "Which nonprofits pay officers over 500 thousand dollars?",
+      "dataset": "irs",
+      "reason": "Contains fail pattern: 'not present in'",
+      "answer_preview": "Based on the provided source documents, I cannot identify which nonprofits pay officers over $500,000 because the documents do not contain officer com"
     },
     {
-      "question": "Which FEC committees are based in New York?",
-      "dataset": "fec",
-      "reason": "Contains fail pattern: 'no committees'",
-      "answer_preview": "Based on the FEC data provided, **no committees are based in New York**.\n\nAll twenty records in the dataset show committees with a state code (CMTE_ST"
-    },
-    {
-      "question": "Which FEC committees are based in California?",
-      "dataset": "fec",
-      "reason": "Contains fail pattern: 'no committees'",
-      "answer_preview": "Based on the provided FEC data, **no committees are based in California**.\n\nAll 20 records in the dataset show committees with a state code of \"DC\" (D"
-    },
-    {
-      "question": "Which nonprofits have connections to political committees?",
-      "dataset": "both",
-      "reason": "Contains fail pattern: 'does not contain'",
-      "answer_preview": "Based on the FEC data provided, I cannot identify any nonprofits with connections to political committees, as the dataset does not contain information"
+      "question": "Which nonprofit health systems are the largest?",
+      "dataset": "irs",
+      "reason": "Contains fail pattern: 'not present in'",
+      "answer_preview": "# Nonprofit Health Systems in Our Dataset\n\nBased on our sample of IRS filings, **there are no nonprofit health systems included in this dataset**. \n\nT"
     },
     {
       "question": "Which nonprofits pay their executives over 500 thousand?",
       "dataset": "both",
       "reason": "Contains fail pattern: 'i cannot answer'",
-      "answer_preview": "Based on the provided source documents, I cannot answer this question. \n\nThe IRS 990 filings included in the sources [1-5] do not contain executive co"
+      "answer_preview": "Based on the provided source documents, I cannot answer this question. \n\nThe IRS 990 filings included in the documents [1-5] do not contain the specif"
     }
   ],
   "all_results": [
@@ -49,511 +37,511 @@
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.86,
-      "answer_preview": "# Nonprofits with Highest Revenue\n\nBased on IRS financial data, the nonprofits that raised the most money are:\n\n**Top 5 by Total Revenue:**\n\n1. **Mass General Brigham Incorporated & (MA)** - $23.5 bil"
+      "response_time": 3.63,
+      "answer_preview": "# Nonprofits That Raised the Most Money\n\nBased on our dataset, the top organizations by total revenue are:\n\n1. **Mass General Brigham Incorporated** (MA) \u2013 $23.5 billion [1]\n2. **Mass General Brigham "
     },
     {
       "question": "Which nonprofits have the highest total assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.43,
-      "answer_preview": "# Nonprofits with Highest Total Assets\n\nBased on IRS financial data, the nonprofits with the largest total assets are:\n\n1. **THE WELLCOME TRUST** - $54.2 billion [1][2]\n2. **MASS GENERAL BRIGHAM INCOR"
+      "response_time": 2.53,
+      "answer_preview": "# Nonprofits with Highest Total Assets\n\nBased on our dataset, the top organizations by total assets are:\n\n1. **The Regents of the University of California** (CA) \u2014 $103.1 billion [1]\n\n2. **President a"
     },
     {
       "question": "Which nonprofits reported the most expenses?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.9,
-      "answer_preview": "# Nonprofits with Highest Expenses\n\nBased on the IRS financial data provided, the nonprofits reporting the most expenses are:\n\n1. **Mass General Brigham Incorporated & (MA)** - $22.7 billion [1]\n2. **"
+      "response_time": 2.87,
+      "answer_preview": "# Nonprofits with the Highest Reported Expenses\n\nBased on our dataset, the organizations with the most expenses are:\n\n1. **Mass General Brigham Incorporated** (MA) \u2013 $22.7 billion [1]\n   - Most recent"
     },
     {
       "question": "Which nonprofits have the highest total liabilities?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.46,
-      "answer_preview": "# Nonprofits with Highest Total Liabilities\n\nBased on IRS financial data, the top five nonprofits by total liabilities are:\n\n1. **THE WELLCOME TRUST** (MD) - $9.99 billion [1]\n2. **MASS GENERAL BRIGHA"
+      "response_time": 2.78,
+      "answer_preview": "# Nonprofits with the Highest Total Liabilities\n\nBased on our dataset, the top nonprofits by total liabilities are:\n\n1. **CHI NEBRASKA** \u2013 $37.6 billion [1]\n2. **NATIONAL RURAL UTILITIES COOPERATIVE**"
     },
     {
       "question": "Which nonprofits have the most net assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.34,
-      "answer_preview": "# Nonprofits with the Most Net Assets\n\nBased on the IRS financial data provided, the nonprofits with the highest net assets are:\n\n1. **THE WELLCOME TRUST** (MD) - $44.2 billion [2]\n2. **MASS GENERAL B"
+      "response_time": 3.06,
+      "answer_preview": "# Nonprofits with the Most Net Assets\n\nBased on our dataset, the top organizations by net assets are:\n\n1. **President and Fellows of Harvard College** \u2014 $59.5 billion [3]\n2. **THE WELLCOME TRUST** \u2014 $"
     },
     {
       "question": "Which nonprofits reported the most contributions and grants?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.11,
-      "answer_preview": "# Nonprofits with Highest Contributions and Grants\n\nBased on the IRS financial data provided, the nonprofit organizations that reported the most contributions and grants are:\n\n1. **Battelle Memorial I"
+      "response_time": 3.19,
+      "answer_preview": "# Nonprofits with the Most Contributions and Grants\n\nBased on our dataset, the top organizations by contributions and grants reported are:\n\n1. **Fidelity Investments Charitable Gift Fund** (MA) \u2014 $15."
     },
     {
       "question": "Which nonprofits reported the most program service revenue?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.46,
-      "answer_preview": "# Nonprofits with Most Program Service Revenue\n\n**Mass General Brigham Incorporated & (Massachusetts)** reported the highest program service revenue at **$16.5 billion** [1], significantly exceeding a"
+      "response_time": 2.7,
+      "answer_preview": "# Nonprofits with the Most Program Service Revenue\n\nBased on our dataset, the top organizations by program service revenue are:\n\n1. **Mass General Brigham Incorporated** (MA) \u2013 $16.5 billion [1]\n2. **"
     },
     {
       "question": "Which nonprofits pay their officers the most?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 8.51,
-      "answer_preview": "Based on the provided source documents, I cannot definitively answer which nonprofits pay their officers the most.\n\nHere's what the documents reveal:\n\n- **MAXIMUMGOOD INC**: Peter Dunn serves as Execu"
+      "response_time": 9.69,
+      "answer_preview": "Based on the provided source documents, I cannot definitively answer which nonprofits pay their officers the most.\n\nThe documents contain limited compensation data:\n\n- **MAXIMUMGOOD INC**: Peter Dunn,"
     },
     {
       "question": "List the top 10 nonprofits by revenue",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.46,
-      "answer_preview": "# Top 10 Nonprofits by Revenue\n\n| Rank | Organization | State | Total Revenue |\n|------|--------------|-------|---------------|\n| 1 | Mass General Brigham Incorporated & [1] | MA | $23.5 billion |\n| 2"
+      "response_time": 3.88,
+      "answer_preview": "# Top 10 Nonprofits by Revenue\n\nBased on our dataset, here are the top 10 nonprofits ranked by total revenue:\n\n| Rank | Organization | State | Revenue |\n|------|--------------|-------|---------|\n| 1 |"
     },
     {
       "question": "List the top 10 nonprofits by assets",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.53,
-      "answer_preview": "# Top 10 Nonprofits by Total Assets\n\n| Rank | Organization | State | Total Assets |\n|------|--------------|-------|--------------|\n| 1 | THE WELLCOME TRUST | DC/MD | $54.2 billion |\n| 2 | MASS GENERAL"
+      "response_time": 3.22,
+      "answer_preview": "# Top 10 Nonprofits by Total Assets\n\nBased on our dataset, here are the leading nonprofit organizations ranked by total assets:\n\n| Rank | Organization | State | Total Assets |\n|------|--------------|-"
     },
     {
       "question": "Which nonprofits have revenue over 1 billion dollars?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.58,
-      "answer_preview": "# Nonprofits with Revenue Over $1 Billion\n\nBased on the IRS financial data provided, **all 15 organizations** listed have total revenue exceeding $1 billion:\n\n1. **MASS GENERAL BRIGHAM INCORPORATED & "
+      "response_time": 2.93,
+      "answer_preview": "# Nonprofits with Revenue Over $1 Billion\n\nBased on our dataset, **all 15 organizations** in this sample have revenue exceeding $1 billion. Here are the top performers:\n\n**Largest by Revenue:**\n\n1. **"
     },
     {
       "question": "Which nonprofits have revenue over 100 million dollars?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.77,
-      "answer_preview": "# Nonprofits with Revenue Over $100 Million\n\nAll **15 nonprofits** in the provided dataset have revenue exceeding $100 million. Here they are ranked by total revenue:\n\n1. **MASS GENERAL BRIGHAM INCORP"
+      "response_time": 2.88,
+      "answer_preview": "# Nonprofits with Revenue Over $100 Million\n\nBased on our dataset, **all 15 organizations** have revenue exceeding $100 million. Here are the top revenue generators:\n\n## Largest by Total Revenue:\n\n1. "
     },
     {
       "question": "Which nonprofits have assets over 1 billion dollars?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.05,
-      "answer_preview": "# Nonprofits with Assets Over $1 Billion\n\nBased on the IRS financial data provided, the following nonprofits have total assets exceeding $1 billion:\n\n1. **THE WELLCOME TRUST** \u2013 $54.2 billion [1][2]\n2"
+      "response_time": 2.76,
+      "answer_preview": "# Nonprofits with Assets Over $1 Billion\n\nBased on our dataset, **all 15 organizations** have assets exceeding $1 billion. Here are the largest:\n\n**Top 5 by Total Assets:**\n\n1. **The Regents of the Un"
     },
     {
       "question": "Which nonprofits have assets over 500 million dollars?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.21,
-      "answer_preview": "# Nonprofits with Assets Over $500 Million\n\nBased on the IRS financial data provided, the following nonprofits have total assets exceeding $500 million:\n\n1. **THE WELLCOME TRUST** - $54.2 billion [1]["
+      "response_time": 2.93,
+      "answer_preview": "# Nonprofits with Assets Over $500 Million\n\nBased on our dataset, **all 15 organizations** have assets exceeding $500 million. Here are the top nonprofits by total assets:\n\n1. **THE REGENTS OF THE UNI"
     },
     {
       "question": "Which nonprofits have assets over 100 million dollars?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.46,
-      "answer_preview": "# Nonprofits with Assets Over $100 Million\n\nBased on the IRS financial data provided, **all 11 unique organizations listed have assets exceeding $100 million**:\n\n1. **THE WELLCOME TRUST** (DC/MD) - $5"
+      "response_time": 1.95,
+      "answer_preview": "# Nonprofits with Assets Over $100 Million\n\nBased on our dataset, **one organization** has total assets exceeding $100 million:\n\n**THE REGENTS OF THE UNIVERSITY OF CALIFORNIA** (CA) \u2014 $103.1 billion i"
     },
     {
       "question": "Which nonprofits reported losses?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.82,
-      "answer_preview": "# Nonprofits Reporting Losses\n\nAll 15 organizations in the provided data reported losses (negative net income):\n\n1. **Prisma Health-University Medical Group** (SC): -$452.7 million [1]\n2. **Sharp Heal"
+      "response_time": 3.2,
+      "answer_preview": "# Nonprofits Reporting Losses\n\nBased on our dataset, **all 15 organizations reported losses** (negative net income). Here are the top organizations by loss magnitude:\n\n**Largest Losses:**\n\n1. **Manhat"
     },
     {
       "question": "Which nonprofits had a surplus in 2024?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.65,
-      "answer_preview": "# Nonprofits with Surpluses in 2024\n\nAll 15 nonprofits in the dataset reported surpluses (positive net income) in 2024. Here are the organizations ranked by surplus amount:\n\n1. **Orlando Health Inc** "
+      "response_time": 2.74,
+      "answer_preview": "# Nonprofits with Surpluses in 2024\n\nBased on our dataset, **all 15 organizations reported surpluses in 2024**. Here are the top performers by surplus amount:\n\n## Leading Organizations by Net Income:\n"
     },
     {
       "question": "Which nonprofits have debt over 10 million dollars?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.06,
-      "answer_preview": "# Nonprofits with Debt Over $10 Million\n\nBased on the IRS financial data provided, **all 15 nonprofits listed have total liabilities exceeding $10 million**. \n\nThe organizations with the highest debt "
+      "response_time": 2.78,
+      "answer_preview": "# Nonprofits with Debt Over $10 Million\n\nBased on our dataset, **8 organizations** have total liabilities exceeding $10 million:\n\n1. **CHI NEBRASKA** (NE) \u2013 $37.6 billion in liabilities [1]\n2. **NATIO"
     },
     {
       "question": "Which nonprofits pay officers over 1 million dollars?",
       "dataset": "irs",
-      "status": "PASS",
-      "reason": "OK",
-      "response_time": 2.41,
-      "answer_preview": "Based on the provided source documents, I cannot identify which nonprofits pay officers over 1 million dollars.\n\nWhile the documents include IRS 990 filings from five nonprofits [1][2][3][4][5], the e"
+      "status": "FAIL",
+      "reason": "Financial question but no numbers in answer",
+      "response_time": 2.45,
+      "answer_preview": "Based on the provided source documents, I cannot identify which nonprofits pay officers over 1 million dollars. \n\nThe documents provided do not contain detailed officer compensation information or sal"
     },
     {
       "question": "Which nonprofits pay officers over 500 thousand dollars?",
       "dataset": "irs",
-      "status": "PASS",
-      "reason": "OK",
-      "response_time": 2.91,
-      "answer_preview": "Based on the provided source documents, I cannot identify any nonprofits that pay officers over $500,000. \n\nThe documents provided contain limited officer compensation information. Source [3] shows of"
+      "status": "FAIL",
+      "reason": "Contains fail pattern: 'not present in'",
+      "response_time": 3.19,
+      "answer_preview": "Based on the provided source documents, I cannot identify which nonprofits pay officers over $500,000 because the documents do not contain officer compensation information at that level of detail.\n\nTh"
     },
     {
       "question": "Which hospitals raised the most money?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.22,
-      "answer_preview": "# Hospitals That Raised the Most Money\n\nBased on total revenue, the hospitals that raised the most money are:\n\n1. **Mass General Brigham Incorporated & Co.** (MA) - $23.5 billion [1]\n2. **Northside Ho"
+      "response_time": 2.76,
+      "answer_preview": "# Hospitals with the Most Revenue\n\nBased on our dataset, the top hospitals by total revenue are:\n\n1. **Corewell Health Group Return** (MI) - $9.7 billion [7]\n2. **Northside Hospital Inc** (GA) - $7.8 "
     },
     {
       "question": "Which hospitals have the most assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.18,
-      "answer_preview": "# Hospitals with the Most Assets\n\nBased on the IRS financial data provided, the hospitals with the largest asset bases are:\n\n1. **MASS GENERAL BRIGHAM INCORPORATED & (MA)** - $28.3 billion [3]\n2. **CE"
+      "response_time": 2.65,
+      "answer_preview": "# Hospitals with the Most Assets\n\nBased on our dataset, **no hospitals appear in this sample**. The organizations listed are primarily universities, educational institutions, charitable gift funds, an"
     },
     {
       "question": "Which hospitals spent the most money?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.3,
-      "answer_preview": "# Hospital Spending Analysis\n\nBased on the IRS financial data provided, the hospitals with the highest total expenses are:\n\n1. **Mass General Brigham Incorporated** (MA): $22.7 billion [1]\n2. **Norths"
+      "response_time": 2.88,
+      "answer_preview": "# Hospital Spending Analysis\n\nBased on the dataset provided, the hospitals that spent the most money are:\n\n1. **Mass General Brigham Incorporated** (MA) - $22.7 billion in expenses [1]\n2. **Corewell H"
     },
     {
       "question": "Which universities reported the highest revenue?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.94,
-      "answer_preview": "# Highest Revenue Universities\n\nBased on the IRS financial data provided, the universities with the highest reported revenues are:\n\n1. **University Health Network** (IL) - $2.66 billion [1]\n2. **The R"
+      "response_time": 2.66,
+      "answer_preview": "# Highest Revenue Universities\n\nBased on our dataset, the top universities by total revenue are:\n\n1. **University of Pennsylvania** - $9.9 billion [1]\n2. **Vanderbilt University Medical Center** - $6."
     },
     {
       "question": "Which universities have the most assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.2,
-      "answer_preview": "# Universities with the Most Assets\n\nBased on IRS financial data, the universities with the largest asset bases are:\n\n1. **The Royal Institution for the Advancement of Learning McGill University** - $"
+      "response_time": 2.55,
+      "answer_preview": "# Universities with the Most Assets\n\nBased on our dataset, the top universities by total assets are:\n\n1. **The Regents of the University of California** (CA) \u2014 $103.1 billion [1]\n2. **President and Fe"
     },
     {
       "question": "Which colleges raised the most money?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.85,
-      "answer_preview": "# Colleges That Raised the Most Money\n\nBased on total revenue, the top colleges are:\n\n1. **University Health Network (IL)** - $2.66 billion [1]\n2. **The Research Foundation for The State University of"
+      "response_time": 2.9,
+      "answer_preview": "# Top Fundraising Colleges\n\nBased on our dataset, the colleges that raised the most money are:\n\n**Top 5 by Total Revenue:**\n\n1. **University of Pennsylvania** \u2013 $9.9 billion [1]\n2. **Vanderbilt Univer"
     },
     {
       "question": "Which foundations have the most net assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.35,
-      "answer_preview": "# Foundations with the Most Net Assets\n\nBased on the IRS financial data provided, the foundations with the highest net assets are:\n\n1. **THE WELLCOME TRUST** - $44.2 billion [2]\n   - Total assets: $54"
+      "response_time": 2.74,
+      "answer_preview": "# Foundations with the Most Net Assets\n\nBased on our dataset, the foundations and major institutions with the largest net assets are:\n\n1. **President and Fellows of Harvard College** \u2013 $59.5 billion ["
     },
     {
       "question": "Which foundations spent the most money?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.05,
-      "answer_preview": "# Top Spending Organizations\n\nBased on the IRS financial data provided, the organizations with the highest expenses are:\n\n1. **Mass General Brigham Incorporated & Associates (MA)** - $22.7 billion [1]"
+      "response_time": 3.06,
+      "answer_preview": "# Foundations with Highest Spending\n\nBased on our dataset, the organizations that spent the most money are:\n\n1. **Mass General Brigham Incorporated** (MA) - $22.7 billion in expenses [1]\n2. **Mass Gen"
     },
     {
       "question": "Which foundations raised the most in contributions?",
       "dataset": "irs",
-      "status": "FAIL",
-      "reason": "Contains fail pattern: 'i cannot answer'",
-      "response_time": 2.21,
-      "answer_preview": "I cannot answer this question based on the provided data. The dataset contains **total revenue figures** for these organizations, but does not include **contributions received** as a separate line ite"
+      "status": "PASS",
+      "reason": "OK",
+      "response_time": 3.49,
+      "answer_preview": "Based on our dataset, **the top foundations by total revenue are:**\n\n1. **Mass General Brigham Incorporated** (MA) - $23.5 billion [1] and $22.7 billion [2] in total revenue across filing periods\n\n2. "
     },
     {
       "question": "Which health systems have the highest revenue?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.81,
-      "answer_preview": "# Highest Revenue Health Systems\n\nBased on IRS financial data, the top health systems by total revenue are:\n\n1. **Mass General Brigham Incorporated & (MA)** - $23.5 billion [1]\n2. **Battelle Memorial "
+      "response_time": 3.06,
+      "answer_preview": "# Highest Revenue Health Systems\n\nBased on our dataset, the top health systems by revenue are:\n\n1. **Mass General Brigham Incorporated** (MA) \u2013 $23.5 billion [1]\n2. **Corewell Health Group Return** (M"
     },
     {
       "question": "Which medical centers have the most assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.25,
-      "answer_preview": "# Medical Centers with Most Assets\n\nBased on IRS financial data, the medical centers with the largest asset holdings are:\n\n1. **MASS GENERAL BRIGHAM INCORPORATED & (MA)** - $28.3 billion [3]\n2. **MGB "
+      "response_time": 2.87,
+      "answer_preview": "# Medical Centers with the Most Assets\n\nBased on our dataset, the medical centers with the largest asset bases are:\n\n1. **The Regents of the University of California** (CA) \u2013 $103.1 billion in total a"
     },
     {
       "question": "Which research institutes have the most assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.15,
-      "answer_preview": "# Research Institutes with the Most Assets\n\nBased on the IRS financial data provided, the research institutes with the largest asset bases are:\n\n1. **The Wellcome Trust** - $54.2 billion [1][2]\n2. **M"
+      "response_time": 2.48,
+      "answer_preview": "# Research Institutes with the Most Assets\n\nBased on our dataset, the leading research institutes by total assets are:\n\n1. **The Regents of the University of California** (CA) \u2014 **$103.1 billion** [1]"
     },
     {
       "question": "Which community organizations raised the most?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.94,
-      "answer_preview": "# Community Organizations by Total Revenue\n\nBased on the IRS financial data provided, **Mass General Brigham Incorporated & (MA) raised the most**, with total revenue of **$23.5 billion** [1].\n\nThe to"
+      "response_time": 3.58,
+      "answer_preview": "# Top Community Organizations by Revenue\n\nBased on our dataset, the organizations that raised the most revenue are:\n\n1. **Mass General Brigham Incorporated** (MA) \u2014 $23.5 billion [1]\n2. **Fidelity Inv"
     },
     {
       "question": "Which arts organizations have the most assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.05,
-      "answer_preview": "# Arts Organizations by Total Assets\n\nBased on the IRS financial data provided, the arts organizations with the most assets are:\n\n1. **National Gallery of Art** (MD) - $1.93 billion in total assets [7"
+      "response_time": 2.97,
+      "answer_preview": "# Arts Organizations with the Most Assets\n\nBased on our dataset, the top arts organizations by total assets are:\n\n1. **Metropolitan Museum of Art** (NY) \u2013 $6.0 billion in assets [5]\n   - Most recent f"
     },
     {
       "question": "Which social service organizations have the most revenue?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.26,
-      "answer_preview": "# Top Social Service Organizations by Revenue\n\nBased on IRS nonprofit financial data, the social service organizations with the most revenue are:\n\n1. **Mass General Brigham Incorporated** (MA) - $23.5"
+      "response_time": 2.55,
+      "answer_preview": "# Highest Revenue Social Service Organizations\n\nBased on our dataset, the top social service organizations by revenue are:\n\n1. **Mass General Brigham Incorporated** (MA) \u2013 $23.5 billion [1]\n2. **Fidel"
     },
     {
       "question": "Which housing nonprofits have the most liabilities?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.46,
-      "answer_preview": "# Housing Nonprofits with the Most Liabilities\n\nBased on IRS financial data, the housing nonprofits with the highest liabilities are:\n\n1. **Presbyterian Homes Housing & Assisted Living** (MN) - $418.6"
+      "response_time": 3.39,
+      "answer_preview": "# Housing Nonprofits with the Most Liabilities\n\nBased on our dataset, the top housing nonprofits by total liabilities are:\n\n1. **Presbyterian Homes Housing & Assisted Living (MN)** - $418.6 million [1"
     },
     {
       "question": "Which youth organizations have the most assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.24,
-      "answer_preview": "# Youth Organizations with the Most Assets\n\nBased on IRS nonprofit financial data, the youth organizations with the largest asset holdings are:\n\n1. **Children's Hospital Corporation** (MA) - $8.9 bill"
+      "response_time": 3.94,
+      "answer_preview": "# Youth Organizations with the Most Assets\n\nBased on our dataset, the top youth organizations by total assets are:\n\n1. **CHILDREN'S HOSPITAL MEDICAL CENTER** (OH) - $9.1 billion [1]\n2. **Children's Ho"
     },
     {
       "question": "Which environmental nonprofits have the highest revenue?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.46,
-      "answer_preview": "# Environmental Nonprofits by Revenue\n\nBased on IRS financial data, the environmental nonprofits with the highest revenues are:\n\n1. **Marine Environmental Sciences Consortium** (AL) \u2013 $39.5 million [2"
+      "response_time": 2.86,
+      "answer_preview": "# Highest Revenue Environmental Nonprofits\n\nBased on our dataset, the top environmental nonprofits by revenue are:\n\n1. **National Fish and Wildlife Foundation** (DC) \u2013 $415.5 million [1]\n2. **The Cons"
     },
     {
       "question": "Which veterans organizations have the most assets?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.96,
-      "answer_preview": "# Veterans Organizations with the Most Assets\n\nBased on IRS financial data, the veterans organizations with the largest assets are:\n\n1. **Disabled American Veterans** (KY) - $654.7 million [1]\n2. **Ve"
+      "response_time": 2.41,
+      "answer_preview": "# Veterans Organizations with the Most Assets\n\nBased on our dataset, the top veterans organizations by total assets are:\n\n1. **Disabled American Veterans** (KY) - **$654.7 million** [1]\n2. **Veterans "
     },
     {
       "question": "Which nonprofit health systems are the largest?",
       "dataset": "irs",
-      "status": "PASS",
-      "reason": "OK",
-      "response_time": 2.65,
-      "answer_preview": "# Largest Nonprofit Health Systems\n\nBased on IRS financial data, the largest nonprofit health systems by total assets are:\n\n1. **Mass General Brigham Incorporated & Affiliates** - $28.3 billion in tot"
+      "status": "FAIL",
+      "reason": "Contains fail pattern: 'not present in'",
+      "response_time": 3.27,
+      "answer_preview": "# Nonprofit Health Systems in Our Dataset\n\nBased on our sample of IRS filings, **there are no nonprofit health systems included in this dataset**. \n\nThe organizations represented are primarily:\n- **Un"
     },
     {
       "question": "Which nonprofits are based in California?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.89,
-      "answer_preview": "# California-Based Nonprofits\n\nThe data provided identifies **20 California-based nonprofits**:\n\n## Major Health Systems (with financial data):\n1. **SCRIPPS HEALTH** [1] \u2013 $4.9 billion revenue, $9.1 b"
+      "response_time": 3.28,
+      "answer_preview": "# California-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in California:\n\n## Major Organizations (by revenue)\n\n[1] **University of Southern California** \u2013 $5.1 billion in"
     },
     {
       "question": "Which nonprofits are based in New York?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.11,
-      "answer_preview": "# New York-Based Nonprofits\n\nThe following nonprofits are based in New York (NY):\n\n**Larger Organizations (with financial data):**\n1. The Research Foundation for The State University of New York - $1."
+      "response_time": 3.51,
+      "answer_preview": "# New York-Based Nonprofits\n\nBased on our dataset, there are numerous nonprofits based in New York. Here are the major organizations by total revenue:\n\n## Largest NY Nonprofits (by Revenue)\n\n1. **The "
     },
     {
       "question": "Which nonprofits are based in Texas?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 5.7,
-      "answer_preview": "# Texas-Based Nonprofits\n\nBased on the IRS nonprofit filings data, the following organizations are based in Texas (TX):\n\n## Major Healthcare Systems\n- Methodist Hospitals of Dallas [1] - $2.08 billion"
+      "response_time": 3.14,
+      "answer_preview": "# Texas-Based Nonprofits\n\nBased on our dataset, here are the Texas (TX) nonprofits identified:\n\n## Major Healthcare Systems\n- **Memorial Hermann Health System** [1] \u2013 $7.6 billion in revenue, $12.1 bi"
     },
     {
       "question": "Which nonprofits are based in Florida?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 5.31,
-      "answer_preview": "# Florida-Based Nonprofits\n\nBased on the IRS filings data provided, the following nonprofits are based in Florida (FL):\n\n## Large Healthcare Systems\n1. **Orlando Health Inc** [1] - Total revenue: $4.8"
+      "response_time": 3.69,
+      "answer_preview": "# Florida-Based Nonprofits\n\nBased on our dataset, here are the nonprofits based in Florida:\n\n## Large Healthcare Organizations\n\nThe largest Florida-based nonprofits by revenue are:\n\n1. **Adventist Hea"
     },
     {
       "question": "Which nonprofits are based in Illinois?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.03,
-      "answer_preview": "# Illinois-Based Nonprofits\n\nBased on the IRS filing data provided, the following nonprofits are based in Illinois:\n\n**Large Healthcare and Service Organizations:**\n- OSF Healthcare System [1] - $3.9 "
+      "response_time": 3.79,
+      "answer_preview": "# Illinois-Based Nonprofits\n\nBased on our dataset, there are numerous nonprofits based in Illinois. Here are the major organizations:\n\n## Largest Illinois Nonprofits by Revenue\n\n1. **Feeding America**"
     },
     {
       "question": "Which nonprofits are based in Pennsylvania?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.44,
-      "answer_preview": "# Pennsylvania-Based Nonprofits\n\nBased on the IRS financial data provided, the following nonprofits are based in Pennsylvania (PA):\n\n## Large Organizations (by revenue):\n1. **ALLEGHENY COUNTY SCHOOLS "
+      "response_time": 4.16,
+      "answer_preview": "# Pennsylvania-Based Nonprofits\n\nBased on our dataset, there are numerous nonprofits based in Pennsylvania. Here are the key organizations:\n\n## Major Organizations by Revenue\n\nThe largest Pennsylvania"
     },
     {
       "question": "Which nonprofits are based in Ohio?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.96,
-      "answer_preview": "# Ohio-Based Nonprofits\n\nBased on the IRS nonprofit filings data provided, the following organizations are based in Ohio [1-20]:\n\n**Large Revenue Organizations:**\n1. BATTELLE MEMORIAL INSTITUTE \u2013 $13."
+      "response_time": 3.73,
+      "answer_preview": "# Ohio-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Ohio [1-20]:\n\n## Major Organizations by Revenue\n\n**Largest Ohio Nonprofits:**\n- **Battelle Memorial Institute** \u2013 $"
     },
     {
       "question": "Which nonprofits are based in Georgia?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.15,
-      "answer_preview": "# Georgia-Based Nonprofits\n\nBased on the IRS financial data provided, the following nonprofits are based in Georgia (GA):\n\n## Large Healthcare and Financial Institutions:\n- NORTHSIDE HOSPITAL INC [1] "
+      "response_time": 3.78,
+      "answer_preview": "# Georgia-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Georgia (GA):\n\n## Major Healthcare Organizations\n- **NORTHSIDE HOSPITAL INC** [1][2] - Total revenue: $7.8 billi"
     },
     {
       "question": "Which nonprofits are based in Michigan?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 4.55,
-      "answer_preview": "# Michigan-Based Nonprofits\n\nBased on the IRS nonprofit filings data provided, the following organizations are based in Michigan (state: MI):\n\n## Large Healthcare Organizations\n- **McLaren Health Plan"
+      "response_time": 3.48,
+      "answer_preview": "# Michigan-Based Nonprofits\n\nBased on our dataset, there are numerous nonprofits based in Michigan. Here are the key organizations identified:\n\n## Major Healthcare Organizations (by revenue):\n\n1. **Co"
     },
     {
       "question": "Which nonprofits are based in North Carolina?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 60.97,
-      "answer_preview": "# North Carolina-Based Nonprofits\n\nThe data identifies **20 nonprofit organizations based in North Carolina (NC)**:\n\n## Major Healthcare Systems\n1. MOSES H CONE MEMORIAL HOSPITAL [1] - $2.31 billion r"
+      "response_time": 2.97,
+      "answer_preview": "# North Carolina-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in North Carolina:\n\n## Major Healthcare and Research Organizations\n\n- **Duke University Health System Inc** "
     },
     {
       "question": "Which nonprofits are based in New Jersey?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.11,
-      "answer_preview": "# New Jersey-Based Nonprofits\n\nBased on the IRS filings data, the following nonprofits are based in New Jersey:\n\n## Major Organizations by Revenue\n\n1. **CONSORTIUM MANAGEMENT GROUP INC** [1] \u2013 $630.6 "
+      "response_time": 3.65,
+      "answer_preview": "# New Jersey-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in New Jersey:\n\n## Major Organizations by Revenue\n\nThe largest New Jersey nonprofits in our sample include:\n\n1. "
     },
     {
       "question": "Which nonprofits are based in Virginia?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.67,
-      "answer_preview": "# Virginia-Based Nonprofits\n\nBased on IRS filings, the following nonprofits are based in Virginia:\n\n## Major Organizations (by revenue):\n1. **The Aerospace Corporation** [1] - $1.37 billion in revenue"
+      "response_time": 3.21,
+      "answer_preview": "# Virginia-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Virginia:\n\n## Major Organizations by Revenue\n\n**Largest Virginia nonprofits include:**\n\n1. **National Rural Uti"
     },
     {
       "question": "Which nonprofits are based in Washington?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.48,
-      "answer_preview": "# Nonprofits Based in Washington\n\nBased on the IRS financial data provided, the following nonprofits are based in Washington state:\n\n**Large Organizations (by total revenue):**\n- SOUND HEALTH & WELLNE"
+      "response_time": 3.45,
+      "answer_preview": "# Washington-Based Nonprofits\n\nBased on our dataset, there are numerous nonprofits based in Washington state. Here are the organizations identified:\n\n## Major Organizations by Revenue\n\nThe largest Was"
     },
     {
       "question": "Which nonprofits are based in Massachusetts?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.12,
-      "answer_preview": "# Massachusetts-Based Nonprofits\n\nBased on the IRS financial data provided, the following nonprofits are based in Massachusetts (state = MA):\n\n## Major Healthcare Organizations:\n1. **Mass General Brig"
+      "response_time": 4.85,
+      "answer_preview": "# Massachusetts-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Massachusetts (MA):\n\n## Major Organizations by Revenue:\n\n1. **Mass General Brigham Incorporated** [1][2] \u2014"
     },
     {
       "question": "Which nonprofits are based in Tennessee?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.18,
-      "answer_preview": "# Tennessee-Based Nonprofits\n\nBased on the IRS nonprofit filings data, the following organizations are based in Tennessee (TN):\n\n## Healthcare & Medical Organizations\n- BAPTIST MEMORIAL HOSPITAL [1] -"
+      "response_time": 3.59,
+      "answer_preview": "# Tennessee-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Tennessee (TN):\n\n## Major Healthcare Organizations\n\n1. **Vanderbilt University Medical Center** \u2013 $6.9 billion"
     },
     {
       "question": "Which nonprofits are based in Colorado?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.43,
-      "answer_preview": "# Colorado-Based Nonprofits\n\nBased on the IRS nonprofit filings data provided, the following organizations are based in Colorado (state = CO):\n\n## Large Organizations with Financial Data:\n1. **UNIVERS"
+      "response_time": 3.17,
+      "answer_preview": "# Colorado-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Colorado:\n\n## Major Organizations (by Revenue)\n\n1. **Poudre Valley Health Care Inc** \u2013 $842.3 million in revenu"
     },
     {
       "question": "Which nonprofits are based in Maryland?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.63,
-      "answer_preview": "# Maryland-Based Nonprofits\n\nBased on the IRS nonprofit filings data, the following organizations are based in Maryland (MD):\n\n## Major Organizations by Revenue:\n\n1. **National Gallery of Art** [1] \u2013 "
+      "response_time": 3.28,
+      "answer_preview": "# Maryland-Based Nonprofits\n\nBased on our dataset, Maryland is home to numerous nonprofits across various sectors. Here are the major organizations identified:\n\n## Largest Maryland Nonprofits (by Reve"
     },
     {
       "question": "Which nonprofits are based in Indiana?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.08,
-      "answer_preview": "# Indiana-Based Nonprofits\n\nBased on the IRS nonprofit filings data provided, the following organizations are based in Indiana (state: IN):\n\n## Major Healthcare Organizations\n- **MDWISE MEDICAID NETWO"
+      "response_time": 3.17,
+      "answer_preview": "# Indiana-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Indiana:\n\n## Major Healthcare Organizations\n- **MDWISE INC** [3][4][6] \u2013 Total revenue up to $1.96 billion, asse"
     },
     {
       "question": "Which nonprofits are based in Minnesota?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.75,
-      "answer_preview": "# Minnesota-Based Nonprofits\n\nBased on the IRS nonprofit filings data provided, the following organizations are based in Minnesota (state: MN):\n\n**Larger Organizations (with financial data):**\n1. Nati"
+      "response_time": 3.69,
+      "answer_preview": "# Minnesota-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Minnesota (MN):\n\n## Major Healthcare and Educational Organizations\n- **HMO Minnesota** \u2014 $3.1 billion in total"
     },
     {
       "question": "Which nonprofits are based in Arizona?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.0,
-      "answer_preview": "# Arizona-Based Nonprofits\n\nBased on the IRS financial data provided, the following nonprofits are based in Arizona (AZ):\n\n## Large Nonprofits by Revenue:\n\n1. **Yuma Regional Medical Center** [1] - $8"
+      "response_time": 3.34,
+      "answer_preview": "# Arizona-Based Nonprofits\n\nBased on our dataset, the following nonprofits are based in Arizona:\n\n## Major Organizations by Revenue\n\nThe largest Arizona nonprofits in our sample include:\n\n1. **MERCY C"
     },
     {
       "question": "Which organizations filed 990PF returns?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.87,
-      "answer_preview": "Based on the provided source documents, I cannot determine which organizations filed 990PF returns. \n\nThe documents provided are all labeled as \"IRS 990\" filings, not 990PF (Form 990-PF, which is the "
+      "response_time": 2.88,
+      "answer_preview": "Based on the provided source documents, I cannot definitively identify which organizations filed 990PF returns (private foundation returns). \n\nThe documents provided are all labeled as \"IRS 990\" filin"
     },
     {
       "question": "Which organizations filed 990EZ returns?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.72,
-      "answer_preview": "Based on the provided source documents, I cannot determine which organizations filed 990EZ returns. \n\nThe documents show IRS 990 filings for five organizations [1][2][3][4][5], but the excerpts provid"
+      "response_time": 2.49,
+      "answer_preview": "Based on the provided source documents, I cannot identify which organizations filed 990EZ returns. \n\nThe documents reference IRS Form 990 filings for five organizations [1][2][3][4][5], but none of th"
     },
     {
       "question": "Which organizations filed 990T returns?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.61,
-      "answer_preview": "Based on the provided source documents, I cannot determine which organizations filed 990T returns.\n\nThe documents provided contain excerpts from Form 990 filings (not 990T filings) for five organizati"
+      "response_time": 2.25,
+      "answer_preview": "Based on the provided source documents, I cannot identify which organizations filed 990T returns. \n\nThe documents contain excerpts from Form 990 filings for five organizations [1][2][3][4][5], but non"
     },
     {
       "question": "Which organizations filed 990 returns?",
       "dataset": "irs",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.64,
+      "response_time": 2.05,
       "answer_preview": "Based on the source documents provided, the following organizations filed 990 returns:\n\n1. GURNIAK & ASSOCIATES LLC (EIN: 832624392) [1]\n2. COOKE LAVENDER MASSEY & COMPANY PC (EIN: 541451058) [2]\n3. B"
     },
     {
@@ -561,360 +549,360 @@
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.89,
-      "answer_preview": "# Top PAC Spenders in 2024\n\nBased on total disbursements (TTL_DISB) in 2024, the PACs that spent the most money were:\n\n1. **ActBlue** - $3.79 billion [1]\n2. **WinRed** - $1.68 billion [2]\n3. **Harris "
+      "response_time": 3.17,
+      "answer_preview": "# Top PAC Spending in 2024\n\nBased on our dataset, the organizations that spent the most money in 2024 were:\n\n1. **ActBlue** - $3.79 billion [1]\n2. **WinRed** - $1.68 billion [2]\n3. **Harris Victory Fu"
     },
     {
       "question": "Which committees raised the most money in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 4.1,
-      "answer_preview": "# Top Money-Raising Committees in 2024\n\nBased on total receipts, the committees that raised the most money in 2024 were:\n\n1. **ActBlue** - $3.8 billion [1]\n   - Total Receipts: $3,821,173,165.20\n   - "
+      "response_time": 3.79,
+      "answer_preview": "# Top Money-Raising Committees in 2024\n\nBased on our dataset, the committees that raised the most money in 2024 are:\n\n**1. ActBlue - $3.8 billion** [1]\n   - Total receipts: $3,821,173,165.20\n   - Prim"
     },
     {
       "question": "Which committees raised the most money in 2026?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.66,
-      "answer_preview": "# 2026 Committee Fundraising\n\nBased on the available data, only **two committees** have 2026 cycle records:\n\n1. **ActBlue** - $1.24 billion in total receipts [5]\n2. **WinRed** - $469.6 million in tota"
+      "response_time": 2.89,
+      "answer_preview": "# Committees with Highest Fundraising in 2026\n\nBased on our dataset, among the organizations filing 2026 financial data, the top fundraisers are:\n\n1. **ActBlue** - $1.24 billion in total receipts [5]\n"
     },
     {
       "question": "Which Super PACs spent the most in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.76,
-      "answer_preview": "# Top Super PACs by Spending in 2024\n\nBased on FEC data, the Super PACs with the highest total disbursements in 2024 were:\n\n1. **Harris Victory Fund** - $1.31 billion [1]\n2. **Never Surrender, Inc.** "
+      "response_time": 2.74,
+      "answer_preview": "# Top Super PACs by 2024 Spending\n\nBased on our dataset, the Super PACs (committees with type \"O\") that spent the most in 2024 were:\n\n1. **MAKE AMERICA GREAT AGAIN INC.** - $456.8 million [4]\n2. **SMP"
     },
     {
       "question": "Which Democratic committees raised the most?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.74,
-      "answer_preview": "Based on the provided FEC filings, the Democratic committees that raised the most are:\n\n**2024 Election Cycle:**\n1. Democratic Majority, Inc. - $8.05 million [1]\n2. Democratic Power, Inc. - $7.09 mill"
+      "response_time": 2.15,
+      "answer_preview": "# Democratic Committees with Highest Fundraising\n\nBased on the provided FEC filings, the Democratic committees that raised the most are:\n\n1. **Democratic Majority, Inc.** - $8.05 million in 2024 [1]\n2"
     },
     {
       "question": "Which Republican committees raised the most?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.05,
-      "answer_preview": "Based on the provided FEC filings, **ELECTING MAJORITY MAKING EFFECTIVE REPUBLICANS PAC** raised the most money among the Republican committees listed.\n\nThis committee raised:\n- **$2.08 million in the"
+      "response_time": 2.56,
+      "answer_preview": "Based on the provided FEC filings, the Republican committee that raised the most money is the **ELECTING MAJORITY MAKING EFFECTIVE REPUBLICANS PAC** (Committee ID: C00592089) from Minnesota.\n\nAcross t"
     },
     {
       "question": "Which presidential campaign committees raised the most?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.48,
-      "answer_preview": "# Presidential Campaign Committees by Total Receipts\n\nBased on the FEC data provided, the presidential campaign committees that raised the most are:\n\n**1. Harris for President** - $1.175 billion [1]\n "
+      "response_time": 2.97,
+      "answer_preview": "# Presidential Campaign Committees with Highest Fundraising\n\nBased on our dataset, the top presidential campaign committees by total receipts are:\n\n1. **Harris for President** - $1.18 billion [1]\n2. *"
     },
     {
       "question": "Which Senate campaign committees spent the most?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.54,
-      "answer_preview": "# Senate Campaign Committee Spending Analysis\n\nBased on total disbursements (spending) in the 2024 cycle, the Senate campaign committees that spent the most are:\n\n1. **Friends of Sherrod Brown** (Ohio"
+      "response_time": 2.97,
+      "answer_preview": "# Top Spending Senate Campaign Committees (2024 Cycle)\n\nBased on our dataset, the top Senate campaign committees by total disbursements are:\n\n1. **Friends of Sherrod Brown** (Ohio) \u2013 **$99.6 million**"
     },
     {
       "question": "Which House campaign committees raised the most?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.26,
-      "answer_preview": "# House Campaign Committees with Highest Receipts\n\nBased on the FEC data provided, the top House campaign committees by total receipts are:\n\n1. **Alexandria Ocasio-Cortez for Congress (NY)** - $23.7 m"
+      "response_time": 2.46,
+      "answer_preview": "# Top House Campaign Committees by Total Receipts\n\nBased on our dataset, the top House campaign committees that raised the most are:\n\n1. **Alexandria Ocasio-Cortez for Congress** - $23.7 million [1]\n2"
     },
     {
       "question": "Which PACs raised over 100 million dollars?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.66,
-      "answer_preview": "# PACs That Raised Over $100 Million\n\nBased on the FEC data provided, the following PACs raised over $100 million:\n\n1. **ACTBLUE** [1] - $3.82 billion (2024 cycle)\n2. **WINRED** [2] - $1.69 billion (2"
+      "response_time": 3.69,
+      "answer_preview": "# PACs That Raised Over $100 Million\n\nBased on our dataset, **all 20 organizations listed raised over $100 million**. Here are the top organizations:\n\n**Over $1 Billion:**\n- **ActBlue** [1]: $3.8 bill"
     },
     {
       "question": "Which committees raised over 1 billion dollars?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.41,
-      "answer_preview": "# Committees That Raised Over $1 Billion\n\nBased on the FEC data provided, **five committees** raised over $1 billion:\n\n1. **ACTBLUE** (2024 cycle) - $3.82 billion [1]\n2. **WINRED** - $1.69 billion [2]"
+      "response_time": 2.38,
+      "answer_preview": "# Committees That Raised Over $1 Billion\n\nBased on our dataset, **five committees raised over $1 billion** in the 2024 election cycle:\n\n1. **ActBlue** - $3.82 billion [1]\n2. **WinRed** - $1.69 billion"
     },
     {
       "question": "Which committees spent over 100 million dollars?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.24,
-      "answer_preview": "# Committees with Over $100 Million in Spending\n\nThe following committees spent over $100 million in the 2024 cycle:\n\n1. **ACTBLUE** - $3.79 billion [1]\n2. **WINRED** - $1.68 billion [2]\n3. **HARRIS V"
+      "response_time": 4.7,
+      "answer_preview": "# Committees That Spent Over $100 Million\n\nBased on our dataset, **all 20 committees** in this sample spent over $100 million. Here are the committees organized by total disbursements:\n\n**Top Spenders"
     },
     {
       "question": "Which committees have the most cash on hand?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.77,
-      "answer_preview": "# Committees with the Most Cash on Hand\n\nBased on the FEC data provided, the top committees by cash on hand (COH_COP) are:\n\n1. **MAGA INC.** - $310.9 million [1][2]\n2. **FAIRSHAKE** - $191.3 million ["
+      "response_time": 3.77,
+      "answer_preview": "# Committees with the Most Cash on Hand\n\nBased on our dataset, the top committees by cash on hand (COH) are:\n\n1. **MAGA INC.** - $310.9 million [1][2]\n   - Massachusetts-based Super PAC (V type)\n   - "
     },
     {
       "question": "Which committees have the most individual contributions?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.1,
-      "answer_preview": "# Committees with the Most Individual Contributions\n\nBased on the 2024 FEC data provided, the top committees by individual contributions are:\n\n1. **ACTBLUE** - $3.76 billion [1]\n2. **WINRED** - $1.62 "
+      "response_time": 3.69,
+      "answer_preview": "# Committees with the Most Individual Contributions\n\nBased on our dataset, the top committees by individual contributions in the 2024 cycle are:\n\n1. **ActBlue** - $3.76 billion [1]\n2. **WinRed** - $1."
     },
     {
       "question": "Which committees have the most debt?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.53,
-      "answer_preview": "Based on the provided FEC filings, **none of the committees have any debt**. All five committees listed show $0.00 in debts owed:\n\n- DEFEND OUR MAJORITY [1]\n- MAJORITY MAKERS FUND [2]\n- THREE FOR THE "
+      "response_time": 1.94,
+      "answer_preview": "Based on the provided FEC filings, **none of the committees have any debt**. All five committees listed show $0.00 in debts owed [1][2][3][4][5].\n\nThe committees with the most debt are tied at zero do"
     },
     {
       "question": "List the top 10 committees by receipts",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.36,
-      "answer_preview": "# Top 10 Committees by Receipts (2024 Cycle)\n\n| Rank | Committee | Receipts | Type | State |\n|------|-----------|----------|------|-------|\n| 1 | ACTBLUE [1] | $3.82 billion | V | MA |\n| 2 | WINRED [2"
+      "response_time": 3.79,
+      "answer_preview": "# Top 10 Committees by Receipts\n\nBased on our dataset, here are the top 10 committees ranked by total receipts:\n\n1. **ACTBLUE** \u2013 $3.82 billion [1]\n2. **WINRED** \u2013 $1.69 billion [2]\n3. **HARRIS VICTOR"
     },
     {
       "question": "List the top 10 committees by disbursements",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.99,
-      "answer_preview": "# Top 10 Committees by Disbursements\n\nBased on the FEC data provided, here are the top 10 committees ranked by total disbursements:\n\n1. **ACTBLUE** (MA) - $3.79 billion [1]\n2. **WINRED** (VA) - $1.68 "
+      "response_time": 4.1,
+      "answer_preview": "# Top 10 Committees by Disbursements\n\nBased on our dataset, here are the top 10 committees ranked by total disbursements:\n\n| Rank | Committee Name | Disbursements | State |\n|------|---|---|---|\n| 1 | "
     },
     {
       "question": "Which party committees raised the most in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.56,
-      "answer_preview": "# Party Committee Fundraising in 2024\n\nBased on the 2024 FEC data, the top fundraising party committees were:\n\n1. **ActBlue** (Democratic vendor/platform) - **$3.82 billion** in total receipts [1]\n2. "
+      "response_time": 3.38,
+      "answer_preview": "# Party Committees Fundraising in 2024\n\nBased on our dataset, the top party committees by total receipts in 2024 were:\n\n1. **Democratic National Committee (DNC Services Corp)** - $683.7 million [8]\n2."
     },
     {
       "question": "Which independent expenditure committees spent the most?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.93,
-      "answer_preview": "# Independent Expenditure Committees with Highest Spending\n\nBased on the 2024 cycle data provided, the independent expenditure committees (CMTE_TP: O) that spent the most are:\n\n1. **MAKE AMERICA GREAT"
+      "response_time": 3.19,
+      "answer_preview": "# Top Independent Expenditure Committee Spenders (2024)\n\nBased on our dataset, the independent expenditure committees (Type O) that spent the most are:\n\n1. **MAKE AMERICA GREAT AGAIN INC.** - $456.8 m"
     },
     {
       "question": "Which lobbyist PACs raised the most money?",
       "dataset": "fec",
-      "status": "FAIL",
-      "reason": "Contains fail pattern: 'i cannot answer'",
-      "response_time": 2.32,
-      "answer_preview": "I cannot answer this question based on the provided data. The dataset contains **no lobbyist PACs** (committee type \"L\"). \n\nThe committees shown are classified as:\n- **Type \"V\"** (Super PACs) - ActBlu"
+      "status": "PASS",
+      "reason": "OK",
+      "response_time": 3.57,
+      "answer_preview": "# Lobbyist PACs by Fundraising\n\nBased on the 2024 cycle data in our dataset, I need to clarify an important limitation: **the data provided does not identify which committees are specifically \"lobbyis"
     },
     {
       "question": "How much did ActBlue raise in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.53,
-      "answer_preview": "# ActBlue 2024 Fundraising\n\nBased on FEC data, ActBlue raised a combined total of **$5.06 billion** in 2024 across two filing records:\n\n- **$3.82 billion** [1]\n- **$1.24 billion** [2]\n\n**Total: $5,061"
+      "response_time": 2.25,
+      "answer_preview": "Based on our FEC dataset, **ActBlue raised $5.06 billion in 2024**.\n\nThis figure combines two separate 2024 filings:\n- First filing: $3.82 billion [1]\n- Second filing: $1.24 billion [2]\n- **Total: $5,"
     },
     {
       "question": "How much did WinRed raise in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.95,
-      "answer_preview": "Based on the FEC data provided, WinRed raised **$2.16 billion in 2024**.\n\nThis consists of two separate FEC filings for the 2024 cycle:\n- $1.69 billion [1]\n- $469.6 million [2]\n\n**Total: $2,155,023,84"
+      "response_time": 2.05,
+      "answer_preview": "Based on FEC filings, WinRed raised **$2.156 billion in 2024**.\n\nThis figure comprises two separate filings from the 2024 cycle:\n- **$1.686 billion** [1]\n- **$469.6 million** [2]\n\nThese represent tota"
     },
     {
       "question": "What did Harris for President report in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.12,
-      "answer_preview": "# Harris for President 2024 FEC Report\n\nBased on FEC filings for the 2024 cycle, **Harris for President** reported:\n\n- **Total Receipts:** $1.175 billion [1]\n- **Total Disbursements:** $1.175 billion "
+      "response_time": 2.56,
+      "answer_preview": "# Harris for President 2024 FEC Filings\n\nBased on our dataset, **Harris for President** reported the following in the 2024 election cycle:\n\n**Financial Summary:**\n- **Total Receipts:** $1.175 billion\n"
     },
     {
       "question": "How much did the DNC raise in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.77,
-      "answer_preview": "# DNC 2024 Fundraising\n\nBased on FEC data for 2024, the Democratic National Committee (DNC Services Corp / Democratic National Committee) raised **$683.7 million** in total receipts [1].\n\nThis figure "
+      "response_time": 2.76,
+      "answer_preview": "# DNC 2024 Fundraising\n\nBased on the FEC filings provided, the Democratic National Committee (DNC) raised **$840.1 million** in 2024.\n\nThis figure combines:\n\n- **DNC Services Corp / Democratic Nationa"
     },
     {
       "question": "How much did the RNC raise in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.55,
-      "answer_preview": "Based on the FEC data provided, I cannot definitively answer the question about total RNC fundraising in 2024.\n\nThe data shows only one RNC-related committee entry [1]:\n- **Red Dawn RNC JFC** (a joint"
+      "response_time": 2.77,
+      "answer_preview": "Based on the available FEC data in our sample, the Red Dawn RNC Joint Fundraising Committee (registered in Virginia) reported **$0 in total receipts** for the 2024 cycle [1].\n\nHowever, this appears to"
     },
     {
       "question": "What did the Lincoln Project report in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.35,
-      "answer_preview": "# The Lincoln Project 2024 FEC Reporting\n\nBased on FEC filings for the 2024 cycle, The Lincoln Project (a Super PAC [1][2]) reported:\n\n**Combined 2024 Activity:**\n- **Total Receipts:** $30.0 million ("
+      "response_time": 2.46,
+      "answer_preview": "# The Lincoln Project 2024 FEC Reporting\n\nBased on our dataset, The Lincoln Project reported the following for the 2024 election cycle:\n\n## Financial Summary\n\n**Total Receipts:** $30.0 million\n**Total"
     },
     {
       "question": "How much did America First Action raise?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.94,
-      "answer_preview": "# America First Action Fundraising\n\nThere are two committees with \"America First Action\" in their name with different fundraising totals:\n\n- **America First Action, Inc.** (Committee ID: C00637512) ra"
+      "response_time": 2.31,
+      "answer_preview": "# America First Action Fundraising\n\nBased on the FEC filings, there are two committees with \"America First Action\" in their name:\n\n**America First Action, Inc.** (Committee ID: C00637512) raised **$56"
     },
     {
       "question": "What did Harris Victory Fund report in 2024?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.1,
-      "answer_preview": "# Harris Victory Fund 2024 Reports\n\nBased on FEC data for the 2024 cycle, Harris Victory Fund (a national committee based in DC) reported:\n\n- **Total Receipts:** $1.31 billion [1]\n- **Total Disburseme"
+      "response_time": 2.81,
+      "answer_preview": "# Harris Victory Fund 2024 Reporting\n\nBased on our dataset, **Harris Victory Fund** (registered in DC) reported the following for the 2024 election cycle[1][3]:\n\n- **Total Receipts:** $1.31 billion\n- "
     },
     {
       "question": "Which FEC committees are based in New York?",
       "dataset": "fec",
-      "status": "FAIL",
-      "reason": "Contains fail pattern: 'no committees'",
-      "response_time": 1.77,
-      "answer_preview": "Based on the FEC data provided, **no committees are based in New York**.\n\nAll twenty records in the dataset show committees with a state code (CMTE_ST) of \"DC\" (Washington, D.C.). There are no entries"
+      "status": "PASS",
+      "reason": "OK",
+      "response_time": 3.89,
+      "answer_preview": "# FEC Committees Based in New York\n\nBased on our dataset, **20 FEC committees are based in New York** (CMTE_ST: NY). Here are the major ones by total receipts:\n\n## Top New York-Based Committees (2024 "
     },
     {
       "question": "Which FEC committees are based in California?",
       "dataset": "fec",
-      "status": "FAIL",
-      "reason": "Contains fail pattern: 'no committees'",
-      "response_time": 1.95,
-      "answer_preview": "Based on the provided FEC data, **no committees are based in California**.\n\nAll 20 records in the dataset show committees with a state code of \"DC\" (District of Columbia) [1-20], indicating they are a"
+      "status": "PASS",
+      "reason": "OK",
+      "response_time": 4.2,
+      "answer_preview": "# California-Based FEC Committees\n\nBased on our dataset, the following FEC committees are based in California (CMTE_ST: CA):\n\n## Major Committees by Total Receipts:\n\n1. **Katie Porter for Senate** [1]"
     },
     {
       "question": "Which FEC committees are based in Texas?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.35,
-      "answer_preview": "# FEC Committees Based in Texas\n\nBased on the provided FEC data, **two committees are based in Texas (TX)**:\n\n1. **AMERICA PAC** [11] - A non-connected committee (CMTE_TP: O) with $263.5 million in to"
+      "response_time": 4.2,
+      "answer_preview": "# FEC Committees Based in Texas\n\nBased on our dataset, there are **12 unique FEC committees** based in Texas (CMTE_ST: TX):\n\n## Major Committees by Type\n\n**Super PACs/Outside Spending (O):**\n- AMERICA"
     },
     {
       "question": "Which FEC committees are based in Florida?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 1.89,
-      "answer_preview": "Based on the FEC data provided, only **one committee is based in Florida**:\n\n**FAIRSHAKE** [12] - a Super PAC (CMTE_TP: O) based in FL with $260.1 million in total receipts and $195.8 million in total"
+      "response_time": 3.89,
+      "answer_preview": "# FEC Committees Based in Florida\n\nBased on our dataset, there are **14 distinct Florida-based FEC committees** (accounting for duplicate entries across election cycles):\n\n**Super PACs & Other Committ"
     },
     {
       "question": "Which FEC committees are based in Washington?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 7.22,
-      "answer_preview": "# FEC Committees Based in Washington (DC)\n\nAll of the committees in the provided dataset are based in Washington, DC (CMTE_ST: DC). Here are the unique committees:\n\n1. **HARRIS VICTORY FUND** [1]\n2. *"
+      "response_time": 3.17,
+      "answer_preview": "# FEC Committees Based in Washington\n\nBased on our dataset, the FEC committees based in Washington State (WA) include:\n\n**State Party Committees:**\n- Washington State Democratic Central Committee [1]\n"
     },
     {
       "question": "Which PACs in New York raised the most money?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 3.36,
-      "answer_preview": "# PACs in New York: Analysis\n\nBased on the provided data, **there are no PACs located in New York**. \n\nAll committees in the dataset have `CMTE_ST: DC` (Washington, D.C.) as their state of registratio"
+      "response_time": 3.79,
+      "answer_preview": "# Top PACs Raising Money in New York (2024)\n\nBased on our dataset, the top organizations by total receipts in New York during the 2024 cycle are:\n\n1. **American Values 2024** - $51.5 million [1]\n2. **"
     },
     {
       "question": "Which campaign committees are from Texas?",
       "dataset": "fec",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.1,
-      "answer_preview": "# Texas Campaign Committees\n\nBased on the FEC data provided, **two campaign committees are from Texas (TX)**:\n\n1. **AMERICA PAC** [11]\n   - Committee Type: O (Other)\n   - Total Receipts: $263.5 millio"
+      "response_time": 5.32,
+      "answer_preview": "# Texas Campaign Committees\n\nBased on our dataset, there are **15 distinct campaign committees from Texas (TX)**:\n\n## By Committee Type:\n\n**Presidential (P):**\n- MERCER FOR PRESIDENT [3][4] - $192.0 m"
     },
     {
       "question": "Which nonprofits have connections to political committees?",
       "dataset": "both",
-      "status": "FAIL",
-      "reason": "Contains fail pattern: 'does not contain'",
-      "response_time": 3.35,
-      "answer_preview": "Based on the FEC data provided, I cannot identify any nonprofits with connections to political committees, as the dataset does not contain information about nonprofit organizations.\n\nThe data shows on"
+      "status": "PASS",
+      "reason": "OK",
+      "response_time": 3.89,
+      "answer_preview": "# Nonprofits with Connections to Political Committees\n\nBased on our dataset, the following organizations operate as nonprofits with direct connections to political committees:\n\n## Primary Nonprofit Or"
     },
     {
       "question": "Which health organizations have the most revenue?",
       "dataset": "both",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.06,
-      "answer_preview": "# Health Organizations by Total Revenue\n\nBased on IRS financial data, the health organizations with the most revenue are:\n\n1. **Mass General Brigham Incorporated & (MA)** - $23.5 billion [1]\n2. **Batt"
+      "response_time": 2.66,
+      "answer_preview": "# Top Health Organizations by Revenue\n\nBased on our dataset, the largest health organizations by total revenue are:\n\n1. **Mass General Brigham Incorporated** (MA) - $23.5 billion [1]\n2. **Fidelity Inv"
     },
     {
       "question": "Which organizations have assets over 100 million dollars?",
       "dataset": "both",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.44,
-      "answer_preview": "# Organizations with Assets Over $100 Million\n\nBased on the IRS financial data provided, **all 11 unique organizations listed have assets exceeding $100 million**:\n\n1. **THE WELLCOME TRUST** - $54.2 b"
+      "response_time": 2.05,
+      "answer_preview": "# Organizations with Assets Over $100 Million\n\nBased on our dataset, **one organization** has assets exceeding $100 million:\n\n**THE REGENTS OF THE UNIVERSITY OF CALIFORNIA** (California) \u2014 $103.1 bill"
     },
     {
       "question": "Which nonprofits pay their executives over 500 thousand?",
       "dataset": "both",
       "status": "FAIL",
       "reason": "Contains fail pattern: 'i cannot answer'",
-      "response_time": 2.32,
-      "answer_preview": "Based on the provided source documents, I cannot answer this question. \n\nThe IRS 990 filings included in the sources [1-5] do not contain executive compensation information. While these are 990 forms "
+      "response_time": 2.46,
+      "answer_preview": "Based on the provided source documents, I cannot answer this question. \n\nThe IRS 990 filings included in the documents [1-5] do not contain the specific executive compensation data needed to identify "
     },
     {
       "question": "Which foundations have the most assets?",
       "dataset": "both",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.2,
-      "answer_preview": "# Foundations with the Most Assets\n\nBased on the IRS financial data provided, the foundations with the largest total assets are:\n\n1. **The Wellcome Trust** \u2014 $54.2 billion [1][2]\n2. **Mass General Bri"
+      "response_time": 2.87,
+      "answer_preview": "# Foundations with the Most Assets\n\nBased on our dataset, the organizations with the largest asset bases are:\n\n1. **THE REGENTS OF THE UNIVERSITY OF CALIFORNIA** - $103.1 billion [1]\n2. **President an"
     },
     {
       "question": "Which educational institutions have the most debt?",
       "dataset": "both",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.44,
-      "answer_preview": "# Educational Institutions with the Most Debt\n\nBased on IRS nonprofit financial data, the educational institutions with the highest total liabilities are:\n\n1. **The Royal Institution for the Advanceme"
+      "response_time": 3.07,
+      "answer_preview": "# Educational Institutions with the Most Debt\n\nBased on our dataset, the top educational institutions by total liabilities are:\n\n1. **University of Virginia Investment** (VA) - $13.9 billion [1]\n2. **"
     },
     {
       "question": "Which social service nonprofits have the most assets?",
       "dataset": "both",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.25,
-      "answer_preview": "# Social Service Nonprofits with Most Assets\n\nBased on the IRS financial data provided, the social service nonprofits with the largest assets are:\n\n1. **The Wellcome Trust** \u2013 $54.2 billion [1]\n2. **M"
+      "response_time": 4.1,
+      "answer_preview": "# Social Service Nonprofits with the Most Assets\n\nBased on our dataset, I need to clarify an important finding: **the organizations with the largest asset bases in this sample are primarily educationa"
     },
     {
       "question": "Which community foundations raised the most?",
       "dataset": "both",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.36,
-      "answer_preview": "# Community Foundations with Highest Revenue\n\nBased on IRS financial data, the community foundations that raised the most are:\n\n1. **Christian Community Foundation Inc** (CO) - $263.2 million in total"
+      "response_time": 2.03,
+      "answer_preview": "# Top Community Foundations by Total Revenue\n\nBased on our dataset, the community foundations that raised the most are:\n\n1. **California Community Foundation** (CA) \u2013 $270.7 million in total revenue ["
     },
     {
       "question": "Which nonprofit hospitals have the highest revenue?",
       "dataset": "both",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.25,
-      "answer_preview": "# Highest Revenue Nonprofit Hospitals\n\nBased on IRS financial data, the top nonprofit hospitals by revenue are:\n\n1. **Mass General Brigham Incorporated & (MA)** - $23.5 billion [1]\n2. **Northside Hosp"
+      "response_time": 2.68,
+      "answer_preview": "# Highest Revenue Nonprofit Hospitals\n\nBased on our dataset, the top nonprofit hospitals by revenue are:\n\n1. **Mass General Brigham Incorporated** (MA) \u2014 $23.5 billion [1]\n2. **Corewell Health Group**"
     },
     {
       "question": "Which research organizations have the most assets?",
       "dataset": "both",
       "status": "PASS",
       "reason": "OK",
-      "response_time": 2.66,
-      "answer_preview": "# Research Organizations with the Most Assets\n\nBased on IRS nonprofit financial data, the research organizations with the largest asset bases are:\n\n1. **The Wellcome Trust** - $54.2 billion [1][2]\n2. "
+      "response_time": 3.07,
+      "answer_preview": "# Research Organizations with the Most Assets\n\nBased on our dataset, the top research organizations by total assets are:\n\n1. **The Regents of the University of California** (CA) \u2014 $103.1 billion [1]\n2"
     }
   ]
 }
