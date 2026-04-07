@@ -80,7 +80,7 @@ flowchart TB
 
 | Table | Rows | Description |
 |---|---|---|
-| `irs_financials` | 50,000 | Financial data extracted from IRS 990 XMLs — revenue, expenses, assets, liabilities, officer compensation |
+| `irs_financials` | 378,272 | Financial data extracted from IRS 990 XMLs — revenue, expenses, assets, liabilities, officer compensation |
 | `irs_index` | 100,000 | IRS filing index — org names, EINs, return types, tax periods |
 | `irs_locations` | 1,216,026 | Location data extracted from all XML files — state, city, zip for 1.2M organizations |
 | `fec_committees` | 38,793 | FEC committee financial summaries — total receipts, disbursements, cash on hand, individual contributions |
@@ -214,7 +214,7 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 | Cross Dataset | 5 | 5 | **100%** |
 | **OVERALL** | **25** | **25** | **100%** |
 
-**Average response time:** 3.17 seconds  
+**Average response time:** 2.98 seconds  
 **Average keyword score:** 85.1%
 
 ### Extended Batch Test (109 Questions)
@@ -222,8 +222,8 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 | Metric | Value |
 |---|---|
 | Total Questions | 109 |
-| Passed | 103 (94.5%) |
-| Failed | 6 (5.5%) |
+| Passed | 105 (96.3%) |
+| Failed | 4 (3.7%) |
 | Average Response Time | 2.98 seconds |
 | Routing Coverage (1000 questions) | 98.7% routed to PostgreSQL |
 
