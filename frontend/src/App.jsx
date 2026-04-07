@@ -182,12 +182,12 @@ export default function App() {
         {/* Stats */}
         <div className="stats-bar">
           <div className="stat-item">
-            <span className="stat-value">100K+</span>
-            <span className="stat-label">IRS Filings Indexed</span>
+            <span className="stat-value">1.2M+</span>
+            <span className="stat-label">Organizations in Database</span>
           </div>
           <div className="stat-item">
-            <span className="stat-value">75K</span>
-            <span className="stat-label">Document Chunks</span>
+            <span className="stat-value">100K+</span>
+            <span className="stat-label">Indexed Chunks</span>
           </div>
           <div className="stat-item">
             <span className="stat-value">38K+</span>
