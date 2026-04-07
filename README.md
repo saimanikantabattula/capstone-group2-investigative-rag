@@ -1,8 +1,7 @@
 # Capstone Group 2 — Investigative RAG (IRS 990 + FEC)
 
 **Team:** Sai Manikanta Battula · Bhavani Danthuri · Ability Chikanya · Hanok Naidu Suravarapu  
-**University:** Yeshiva University  
-
+**University:** Yeshiva University
 
 ---
 
@@ -21,6 +20,7 @@ An evidence-based question-answering system that lets anyone ask plain English q
 - *"Which PACs spent the most in 2024?"* → ActBlue $3.79B, WinRed $1.68B, Harris Victory Fund $1.31B...
 - *"Which nonprofits are based in New York?"* → SelfHelp Community Services $117.9M, Governors Island Corporation $385.9M assets...
 - *"How much did ActBlue raise in 2024?"* → ActBlue raised $5.06 billion in combined receipts
+- *"Which nonprofits have connections to political committees?"* → Development Now for Chicago: $81.5M IRS revenue + $102M FEC receipts
 
 ---
 
@@ -48,11 +48,13 @@ flowchart TB
   E --> F["Sentence Embeddings\nall-MiniLM-L6-v2"]
   F --> G["ChromaDB\n74K IRS + 26K FEC chunks"]
   H["User Question"] --> I["Hybrid Router"]
+  I -->|"Cross-dataset"| J["IRS + FEC JOIN"]
   I -->|"Financial question"| D
   I -->|"Document question"| G
-  D --> J["Language Model\ngenerates cited answer"]
-  G --> J
-  J --> K["Answer + Citations\nwith IRS.gov / FEC.gov links"]
+  D --> K["Language Model\ngenerates cited answer"]
+  G --> K
+  J --> K
+  K --> L["Answer + Citations\nwith IRS.gov / FEC.gov links"]
 ```
 
 ---
@@ -80,10 +82,10 @@ flowchart TB
 
 | Table | Rows | Description |
 |---|---|---|
-| `irs_financials` | 378,272 | Financial data extracted from IRS 990 XMLs — revenue, expenses, assets, liabilities, officer compensation |
+| `irs_financials` | 378,272 | Financial data — revenue, expenses, assets, liabilities, officer compensation |
 | `irs_index` | 100,000 | IRS filing index — org names, EINs, return types, tax periods |
-| `irs_locations` | 1,216,026 | Location data extracted from all XML files — state, city, zip for 1.2M organizations |
-| `fec_committees` | 38,793 | FEC committee financial summaries — total receipts, disbursements, cash on hand, individual contributions |
+| `irs_locations` | 1,216,026 | Location data — state, city, zip for 1.2M organizations |
+| `fec_committees` | 38,793 | FEC committee data — receipts, disbursements, cash on hand |
 
 ### ChromaDB Collections
 
@@ -94,23 +96,42 @@ flowchart TB
 
 ---
 
+## Cross-Dataset Queries
+
+One of the most powerful features of our system is finding organizations that appear in **both IRS and FEC datasets**, revealing nonprofit-political connections.
+
+**Example:** *"Which nonprofits have connections to political committees?"*
+
+| Organization | IRS Revenue | FEC Receipts | Connection |
+|---|---|---|---|
+| Development Now for Chicago | $81.5M | $102M | Both IRS nonprofit + FEC committee |
+| Democracy Matters | Active | Active | Appears in both datasets |
+| International Brotherhood of Teamsters | Active | Active | Union with political committee |
+
+This is powered by a SQL JOIN between `irs_financials` and `fec_committees` on organization name matching.
+
+---
+
 ## Hybrid Query Engine
 
-The core of the system is a hybrid router (`src/rag/hybrid.py`) that automatically decides the best data source for each question:
+The system automatically routes each question to the best data source:
 
 ```
 User Question
      │
-     ├── Geographic question? (e.g. "based in New York")
+     ├── Cross-dataset? (e.g. "connections to political committees")
+     │        └── JOIN irs_financials + fec_committees → PostgreSQL
+     │
+     ├── Geographic? (e.g. "based in New York")
      │        └── Query irs_locations or fec_committees by state → PostgreSQL
      │
      ├── Specific committee? (e.g. "ActBlue", "WinRed", "Harris")
      │        └── Query fec_committees by name → PostgreSQL
      │
-     ├── Threshold question? (e.g. "over 100 million")
+     ├── Threshold? (e.g. "over 100 million")
      │        └── Query fec_committees with numeric filter → PostgreSQL
      │
-     ├── Financial/ranking question? (e.g. "most revenue", "highest assets")
+     ├── Financial/ranking? (e.g. "most revenue", "highest assets")
      │        └── Query irs_financials or fec_committees → PostgreSQL
      │
      └── Document/text question?
@@ -132,11 +153,11 @@ We implemented a full evaluation pipeline using **DeepEval v3.9.2**.
 We created 25 carefully chosen test questions covering all areas of the system. Each question has:
 - A question string
 - Expected keywords that must appear in the answer
-- An `expected_contains` value — the single most important term that must be present
+- An `expected_contains` value — the most critical term that must be present
 - A dataset label (irs / fec / both)
 - A category label for breakdown analysis
 
-Example ground truth entry:
+Example entry:
 ```python
 {
     "id": "fec_003",
@@ -150,20 +171,17 @@ Example ground truth entry:
 
 **Step 2 — Evaluation Script (`src/eval/evaluate.py`)**
 
-The evaluation script:
-1. Loops through all 25 ground truth questions
-2. Runs each question through the RAG system (`hybrid_ask`)
-3. Scores each answer:
-   - **Keyword score** — what percentage of expected keywords appear in the answer
-   - **Contains check** — does the most critical expected term appear in the answer
-   - **Pass/Fail** — passes if keyword score ≥ 50% AND contains check passes
-4. Records response time for each question
+The script:
+1. Runs all 25 ground truth questions through the RAG system
+2. Scores each answer using keyword matching and contains check
+3. Pass/Fail — passes if keyword score ≥ 50% AND contains check passes
+4. Records response time
 5. Saves results to `src/eval/evaluation_results.json`
 6. Generates a PDF report via `src/eval/eval_report.py`
 
 **Step 3 — Batch Tester (`src/eval/batch_test.py`)**
 
-For broader testing without manual review, we built a batch tester with 109 questions using rule-based quality checks:
+Extended testing across 109 questions using rule-based quality checks (zero extra evaluation cost):
 
 ```
 FAIL if answer contains:
@@ -187,10 +205,10 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/evaluate.py
 # Run batch test (109 questions)
 DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py
 
-# Run batch test for IRS only
+# Run IRS questions only
 DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py --dataset irs
 
-# Run batch test for FEC only
+# Run FEC questions only
 DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py --dataset fec
 
 # Run quick sample of 20 random questions
@@ -215,29 +233,31 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 | **OVERALL** | **25** | **25** | **100%** |
 
 **Average response time:** 2.98 seconds  
-**Average keyword score:** 85.1%
+**Average keyword score:** 85.1%  
+**Total revenue tracked in database:** $681.6 billion
 
 ### Extended Batch Test (109 Questions)
 
 | Metric | Value |
 |---|---|
 | Total Questions | 109 |
-| Passed | 105 (96.3%) |
+| Passed | **105 (96.3%)** |
 | Failed | 4 (3.7%) |
 | Average Response Time | 2.98 seconds |
 | Routing Coverage (1000 questions) | 98.7% routed to PostgreSQL |
 
-### Why 6 Questions Failed
+### Why 4 Questions Failed
 
-The 6 failures are **data coverage issues**, not system bugs:
+The remaining failures are **data coverage issues**, not system bugs:
 
 | Question | Reason |
 |---|---|
-| Which foundations raised the most in contributions? | No foundation contribution data in our 50K sample |
+| Which nonprofits pay officers over 1 million? | Large orgs with high compensation not in our 31% sample |
+| Which nonprofits pay executives over 500K? | Same — officer compensation data missing for those orgs |
+| Which foundations raised the most in contributions? | Foundation contribution fields empty in current sample |
 | Which lobbyist PACs raised the most? | CMTE_TP V/W not present in our 2024/2026 FEC data |
-| FEC committees in NY/CA | Those specific committees not in our dataset |
-| Nonprofits with connections to political committees | Requires cross-dataset JOIN not yet implemented |
-| Nonprofits paying executives over 500K | Zero rows with officer_compensation > 500K in sample |
+
+Loading more IRS XML data will fix the first two failures.
 
 ---
 
@@ -250,7 +270,7 @@ capstone-group2-investigative-rag/
 │   │   └── main.py                 # FastAPI backend
 │   ├── rag/
 │   │   ├── answer.py               # ChromaDB RAG engine
-│   │   └── hybrid.py               # Hybrid query router
+│   │   └── hybrid.py               # Hybrid query router + cross-dataset JOIN
 │   ├── ingest/
 │   │   ├── irs_ingest.py           # IRS XML → ChromaDB
 │   │   ├── fec_ingest.py           # FEC PDF → ChromaDB
@@ -274,7 +294,7 @@ capstone-group2-investigative-rag/
 │           └── DatasetToggle.jsx
 ├── data/
 │   └── manifests/
-│       └── irs_manifest_clean.csv  # 24,839 IRS filing manifest
+│       └── irs_manifest_clean.csv
 └── README.md
 ```
 
@@ -303,7 +323,7 @@ pip install -r requirements.txt
 ### 3. Environment Variables
 ```bash
 cp .env.example .env
-# Edit .env and add your keys
+# Edit .env and add your API key and DB password
 ```
 
 ### 4. Start Backend
