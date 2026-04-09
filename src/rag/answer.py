@@ -117,6 +117,32 @@ def build_citation_list(citations):
     return "\n".join(lines)
 
 
+def reciprocal_rank_fusion(irs_citations, fec_citations, k=60):
+    """
+    Reciprocal Rank Fusion — combines IRS and FEC results into one ranked list.
+    Formula: RRF_score = sum(1 / (k + rank)) for each list
+    Higher score = more relevant across both sources.
+    """
+    scores = {}
+    all_citations = {}
+
+    # Score IRS results
+    for rank, citation in enumerate(irs_citations, start=1):
+        key = citation.file_name
+        scores[key] = scores.get(key, 0) + 1 / (k + rank)
+        all_citations[key] = citation
+
+    # Score FEC results
+    for rank, citation in enumerate(fec_citations, start=1):
+        key = citation.file_name
+        scores[key] = scores.get(key, 0) + 1 / (k + rank)
+        all_citations[key] = citation
+
+    # Sort by RRF score descending
+    ranked_keys = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
+    return [all_citations[k] for k in ranked_keys]
+
+
 def generate_answer(context, citation_list, query):
     system_prompt = (
         "You are an investigative intelligence analyst specializing in nonprofit finance "
@@ -150,17 +176,24 @@ def ask(query, dataset="both", top_k=TOP_K):
     all_citations = []
     sources_used = []
 
+    irs_citations = []
+    fec_citations = []
+
     if dataset in ("irs", "both"):
-        irs = retrieve(IRS_COLLECTION, query, k=top_k)
-        all_citations.extend(irs)
-        if irs:
+        irs_citations = retrieve(IRS_COLLECTION, query, k=top_k)
+        if irs_citations:
             sources_used.append("IRS 990")
 
     if dataset in ("fec", "both"):
-        fec = retrieve(FEC_COLLECTION, query, k=top_k)
-        all_citations.extend(fec)
-        if fec:
+        fec_citations = retrieve(FEC_COLLECTION, query, k=top_k)
+        if fec_citations:
             sources_used.append("FEC Filings")
+
+    # Apply RRF fusion when both sources are used
+    if irs_citations and fec_citations:
+        all_citations = reciprocal_rank_fusion(irs_citations, fec_citations)
+    else:
+        all_citations = irs_citations + fec_citations
 
     if not all_citations:
         return RAGResponse(
