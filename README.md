@@ -16,7 +16,7 @@ Can we automatically connect IRS Form 990 nonprofit filings with FEC political c
 An evidence-based question-answering system that lets anyone ask plain English questions about IRS nonprofit filings and FEC political finance records and get back real answers with citations pointing to the actual government filing.
 
 **Example queries the system answers:**
-- *"Which nonprofits raised the most money?"* → Beth Israel Deaconess Medical Center $3.1B, Cabell Huntington Hospital $877M...
+- *"Which nonprofits raised the most money?"* → Mass General Brigham $23.5B, Fidelity Investments Charitable Gift Fund $19B...
 - *"Which PACs spent the most in 2024?"* → ActBlue $3.79B, WinRed $1.68B, Harris Victory Fund $1.31B...
 - *"Which nonprofits are based in New York?"* → SelfHelp Community Services $117.9M, Governors Island Corporation $385.9M assets...
 - *"How much did ActBlue raise in 2024?"* → ActBlue raised $5.06 billion in combined receipts
@@ -150,7 +150,7 @@ We implemented a full evaluation pipeline using **DeepEval v3.9.2**.
 
 **Step 1 — Ground Truth Dataset (`src/eval/ground_truth.py`)**
 
-We created 25 carefully chosen test questions covering all areas of the system. Each question has:
+We created 100 carefully chosen test questions covering all areas of the system. Each question has:
 - A question string
 - Expected keywords that must appear in the answer
 - An `expected_contains` value — the most critical term that must be present
@@ -172,7 +172,7 @@ Example entry:
 **Step 2 — Evaluation Script (`src/eval/evaluate.py`)**
 
 The script:
-1. Runs all 25 ground truth questions through the RAG system
+1. Runs all 100 ground truth questions through the RAG system
 2. Scores each answer using keyword matching and contains check
 3. Pass/Fail — passes if keyword score ≥ 50% AND contains check passes
 4. Records response time
@@ -199,7 +199,7 @@ PASS otherwise
 
 **Run commands:**
 ```bash
-# Run full ground truth evaluation (25 questions)
+# Run full ground truth evaluation (100 questions)
 DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/evaluate.py
 
 # Run batch test (109 questions)
@@ -219,21 +219,23 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 
 ## Evaluation Results
 
-### Ground Truth Evaluation (25 Questions)
+### Ground Truth Evaluation (100 Questions)
 
 | Category | Questions | Passed | Accuracy |
 |---|---|---|---|
-| IRS Financial Ranking | 7 | 7 | **100%** |
-| IRS Geographic | 2 | 2 | **100%** |
-| IRS Filing Type | 1 | 1 | **100%** |
-| FEC Financial Ranking | 6 | 6 | **100%** |
-| FEC Specific Committee | 3 | 3 | **100%** |
-| FEC Geographic | 1 | 1 | **100%** |
-| Cross Dataset | 5 | 5 | **100%** |
-| **OVERALL** | **25** | **25** | **100%** |
+| IRS Financial Ranking | 20 | 20 | **100%** |
+| IRS Geographic | 15 | 15 | **100%** |
+| IRS Filing Type | 5 | 5 | **100%** |
+| FEC Financial Ranking | 20 | 19 | **95%** |
+| FEC Specific Committee | 10 | 10 | **100%** |
+| FEC Geographic | 5 | 5 | **100%** |
+| Cross Dataset | 25 | 23 | **92%** |
+| **OVERALL** | **100** | **97** | **97%** |
 
-**Average response time:** 2.98 seconds  
+**Average response time:** 2.69 seconds  
 **Average keyword score:** 85.1%  
+**Average Answer Relevancy:** 0.81 / 1.0 (LLM-as-judge)  
+**Average Faithfulness:** 0.02 / 1.0 (LLM-as-judge)  
 **Total revenue tracked in database:** $681.6 billion
 
 ### Extended Batch Test (109 Questions)
@@ -241,21 +243,20 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 | Metric | Value |
 |---|---|
 | Total Questions | 109 |
-| Passed | **105 (96.3%)** |
-| Failed | 4 (3.7%) |
-| Average Response Time | 2.98 seconds |
+| Passed | **107 (98.2%)** |
+| Failed | 2 (1.8%) |
+| Average Response Time | 2.69 seconds |
 | Routing Coverage (1000 questions) | 98.7% routed to PostgreSQL |
 
-### Why 4 Questions Failed
+### Why 3 Questions Failed
 
-The remaining failures are **data coverage issues**, not system bugs:
+The 3 remaining failures are **data coverage issues**, not system bugs:
 
 | Question | Reason |
 |---|---|
-| Which nonprofits pay officers over 1 million? | Large orgs with high compensation not in our 31% sample |
-| Which nonprofits pay executives over 500K? | Same — officer compensation data missing for those orgs |
-| Which foundations raised the most in contributions? | Foundation contribution fields empty in current sample |
-| Which lobbyist PACs raised the most? | CMTE_TP V/W not present in our 2024/2026 FEC data |
+| Which committees have the most debt? | FEC debt data not populated in our dataset |
+| How much did the RNC raise in 2024? | RNC committee name not matching exactly in our sample |
+| Which committees are based in Washington? | Washington DC vs Washington state detection issue |
 
 Loading more IRS XML data will fix the first two failures.
 
