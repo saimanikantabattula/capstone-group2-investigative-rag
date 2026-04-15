@@ -150,7 +150,7 @@ We implemented a full evaluation pipeline using **DeepEval v3.9.2**.
 
 **Step 1 — Ground Truth Dataset (`src/eval/ground_truth.py`)**
 
-We created 25 carefully chosen test questions covering all areas of the system. Each question has:
+We created 100 carefully chosen test questions covering all areas of the system. Each question has:
 - A question string
 - Expected keywords that must appear in the answer
 - An `expected_contains` value — the most critical term that must be present
@@ -236,6 +236,12 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 **Average keyword score:** 85.1%  
 **Total revenue tracked in database:** $681.6 billion
 
+**Average response time:** 2.69 seconds 
+**Average keyword score:** 85.1% 
+**Average Answer Relevancy:** 0.81 / 1.0 (LLM-as-judge)
+**Average Faithfulness:** 0.02 / 1.0
+(LLM-as-judge)
+
 ### Extended Batch Test (109 Questions)
 
 | Metric | Value |
@@ -246,7 +252,7 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 | Average Response Time | 2.98 seconds |
 | Routing Coverage (1000 questions) | 98.7% routed to PostgreSQL |
 
-### Why 4 Questions Failed
+### Why 3 Questions Failed
 
 The remaining failures are **data coverage issues**, not system bugs:
 
