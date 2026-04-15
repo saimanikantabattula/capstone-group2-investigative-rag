@@ -263,6 +263,7 @@ The remaining failures are **data coverage issues**, not system bugs:
 | Which foundations raised the most in contributions? | Foundation contribution fields empty in current sample |
 | Which lobbyist PACs raised the most? | CMTE_TP V/W not present in our 2024/2026 FEC data |
 
+
 Loading more IRS XML data will fix the first two failures.
 
 ---
