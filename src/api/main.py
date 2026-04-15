@@ -29,6 +29,8 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:3000",
         os.getenv("FRONTEND_URL", "*"),
+        "https://capstone-group2-investigative-rag.vercel.app",
+        "https://*.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
