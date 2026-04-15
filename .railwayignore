@@ -1,0 +1,9 @@
+chroma_db/
+data/
+capstone_backup.sql
+*.sql
+__pycache__/
+.venv/
+node_modules/
+frontend/node_modules/
+*.pyc
