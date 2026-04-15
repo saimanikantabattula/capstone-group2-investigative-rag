@@ -172,7 +172,7 @@ Example entry:
 **Step 2 — Evaluation Script (`src/eval/evaluate.py`)**
 
 The script:
-1. Runs all 25 ground truth questions through the RAG system
+1. Runs all 100 ground truth questions through the RAG system
 2. Scores each answer using keyword matching and contains check
 3. Pass/Fail — passes if keyword score ≥ 50% AND contains check passes
 4. Records response time
@@ -231,10 +231,6 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 | FEC Geographic | 1 | 1 | **100%** |
 | Cross Dataset | 5 | 5 | **100%** |
 | **OVERALL** | **25** | **25** | **100%** |
-
-**Average response time:** 2.98 seconds  
-**Average keyword score:** 85.1%  
-**Total revenue tracked in database:** $681.6 billion
 
 **Average response time:** 2.69 seconds 
 **Average keyword score:** 85.1% 
