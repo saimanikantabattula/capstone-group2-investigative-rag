@@ -60,6 +60,37 @@ class QueryResponse(BaseModel):
     sources_used: list[str]
 
 
+@app.get("/test-search2")
+def test_search2():
+    """Debug vector search."""
+    import os, urllib.request, json
+    try:
+        # Test embedding
+        url = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
+        hf_token = os.getenv("HF_TOKEN", "")
+        data = json.dumps({"inputs": "Gates Foundation mission"}).encode()
+        req = urllib.request.Request(url, data=data, headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {hf_token}"
+        })
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            vector = json.loads(resp.read())
+        
+        # Test Pinecone query with this vector
+        from pinecone import Pinecone
+        pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY", ""))
+        index = pc.Index(os.getenv("PINECONE_INDEX", "investigative-rag"))
+        results = index.query(vector=vector, top_k=3, namespace="irs", include_metadata=True)
+        
+        return {
+            "status": "ok",
+            "embedding_dim": len(vector),
+            "pinecone_results": len(results.matches),
+            "first_match": results.matches[0].metadata.get("org_name") if results.matches else None
+        }
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
 @app.get("/test-search")
 def test_search():
     """Test full vector search pipeline."""
