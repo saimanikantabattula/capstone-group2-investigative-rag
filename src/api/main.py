@@ -60,6 +60,24 @@ class QueryResponse(BaseModel):
     sources_used: list[str]
 
 
+@app.get("/test-embedding")
+def test_embedding():
+    """Test HuggingFace embedding API."""
+    import urllib.request, json, os
+    url = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
+    hf_token = os.getenv("HF_TOKEN", "")
+    data = json.dumps({"inputs": "test query"}).encode()
+    req = urllib.request.Request(url, data=data, headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {hf_token}"
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            result = json.loads(resp.read())
+            return {"status": "ok", "embedding_dim": len(result), "token_set": bool(hf_token)}
+    except Exception as e:
+        return {"status": "error", "error": str(e), "token_set": bool(hf_token)}
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
