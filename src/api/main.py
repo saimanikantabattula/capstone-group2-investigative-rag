@@ -60,6 +60,19 @@ class QueryResponse(BaseModel):
     sources_used: list[str]
 
 
+@app.get("/test-pinecone")
+def test_pinecone():
+    """Test Pinecone connection."""
+    import os
+    try:
+        from pinecone import Pinecone
+        pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY", ""))
+        index = pc.Index(os.getenv("PINECONE_INDEX", "investigative-rag"))
+        stats = index.describe_index_stats()
+        return {"status": "ok", "total_vectors": stats.total_vector_count, "namespaces": list(stats.namespaces.keys())}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
 @app.get("/test-embedding")
 def test_embedding():
     """Test HuggingFace embedding API."""
