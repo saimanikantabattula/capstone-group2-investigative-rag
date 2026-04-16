@@ -14,7 +14,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from src.rag.hybrid import hybrid_ask
+try:
+    from src.rag.hybrid import hybrid_ask
+    RAG_AVAILABLE = True
+except Exception as e:
+    print(f"RAG not available: {e}")
+    RAG_AVAILABLE = False
 
 
 app = FastAPI(
@@ -86,6 +91,8 @@ def query(req: QueryRequest):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
+    if not RAG_AVAILABLE:
+        return {"answer": "RAG system not available in this deployment.", "citations": [], "sources_used": []}
     result = hybrid_ask(
         question=req.question,
         dataset=req.dataset,
