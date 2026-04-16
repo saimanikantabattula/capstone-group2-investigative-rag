@@ -74,7 +74,7 @@ flowchart TB
 
 | Component | Technology | Purpose |
 |---|---|---|
-| Vector Database | ChromaDB | Semantic search across document chunks |
+| Vector Database | Pinecone | Cloud vector search — 100K+ embeddings in cloud |
 | Relational Database | PostgreSQL | Structured financial and committee data |
 | Embedding Model | all-MiniLM-L6-v2 | Convert text to vectors for similarity search |
 | Language Model | LLM API (Python SDK) | Generate cited answers from retrieved evidence |
