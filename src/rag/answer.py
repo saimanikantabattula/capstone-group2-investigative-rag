@@ -52,8 +52,27 @@ _pinecone_index = None
 def get_embed_model():
     global _embed_model
     if _embed_model is None and EMBEDDINGS_AVAILABLE:
-        _embed_model = SentenceTransformer(EMBED_MODEL)
+        try:
+            _embed_model = SentenceTransformer(EMBED_MODEL)
+        except Exception as e:
+            print(f"Could not load embedding model: {e}")
     return _embed_model
+
+def get_embedding_via_api(text):
+    """Get embedding via HuggingFace API - no local model needed."""
+    import urllib.request, json
+    url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
+    data = json.dumps({"inputs": text, "options": {"wait_for_model": True}}).encode()
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read())
+            if isinstance(result, list) and isinstance(result[0], list):
+                return result[0]
+            return result
+    except Exception as e:
+        print(f"HuggingFace API error: {e}")
+        return None
 
 
 def get_pinecone_index():
@@ -96,7 +115,12 @@ def search_pinecone(query, namespace, k=TOP_K):
         if model is None or index is None:
             return []
 
-        query_vector = model.encode(query).tolist()
+        if model:
+            query_vector = model.encode(query).tolist()
+        else:
+            query_vector = get_embedding_via_api(query)
+            if not query_vector:
+                return []
         results = index.query(
             vector=query_vector,
             top_k=k,
