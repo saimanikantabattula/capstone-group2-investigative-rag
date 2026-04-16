@@ -61,9 +61,10 @@ def get_embed_model():
 def get_embedding_via_api(text):
     """Get embedding via HuggingFace API - no local model needed."""
     import urllib.request, json
-    url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
+    url = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
     data = json.dumps({"inputs": text, "options": {"wait_for_model": True}}).encode()
-    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+    hf_token = os.getenv("HF_TOKEN", "")
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json", "Authorization": f"Bearer {hf_token}"})
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
             result = json.loads(resp.read())
