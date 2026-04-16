@@ -16,6 +16,18 @@
 
 ---
 
+## Live Demo
+
+| Service | URL | Status |
+|---|---|---|
+| **Frontend** | https://capstone-group2-investigative-rag.vercel.app | ✅ Live |
+| **Backend API** | https://capstone-group2-investigative-rag.onrender.com | ✅ Live |
+| **API Health** | https://capstone-group2-investigative-rag.onrender.com/health | ✅ Live |
+| **Database** | Supabase PostgreSQL — 378K IRS rows + 38K FEC rows | ✅ Live |
+| **Vector Search** | Pinecone — 100,835 vectors (74K IRS + 26K FEC) | ✅ Live |
+
+---
+
 ## Research Question
 
 Can we automatically connect IRS Form 990 nonprofit filings with FEC political committee filings to uncover financial and organizational links, and answer investigative questions with cited evidence?
