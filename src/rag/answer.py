@@ -116,7 +116,7 @@ def search_pinecone(query, namespace, k=TOP_K):
     try:
         model = get_embed_model()
         index = get_pinecone_index()
-        if model is None or index is None:
+        if index is None:
             return []
 
         if model:
