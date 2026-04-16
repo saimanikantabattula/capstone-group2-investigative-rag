@@ -1,17 +1,32 @@
 """
 answer.py
 
-Retrieves relevant chunks from ChromaDB for a given query,
-builds a context block, and calls the language model API to generate
-a cited answer. Returns structured output with answer text
-and source citations.
+RAG engine using Pinecone for vector search.
+Uses all-MiniLM-L6-v2 for embeddings (same model used during ingestion).
+Implements Reciprocal Rank Fusion (RRF) to combine IRS and FEC results.
 """
 
 import os
-import re
 from dataclasses import dataclass, field
+from typing import List
 
 import anthropic as _llm_client
+
+# Pinecone
+try:
+    from pinecone import Pinecone
+    PINECONE_AVAILABLE = True
+except ImportError:
+    PINECONE_AVAILABLE = False
+
+# Sentence Transformers
+try:
+    from sentence_transformers import SentenceTransformer
+    EMBEDDINGS_AVAILABLE = True
+except ImportError:
+    EMBEDDINGS_AVAILABLE = False
+
+# ChromaDB (fallback)
 try:
     import chromadb
     from chromadb.utils import embedding_functions
@@ -19,94 +34,174 @@ try:
 except ImportError:
     CHROMADB_AVAILABLE = False
 
-
-CHROMA_PATH = os.getenv("CHROMA_PATH", "/Users/battulasaimanikanta/Documents/capstone-group2-investigative-rag/chroma_db")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "")
+PINECONE_INDEX = os.getenv("PINECONE_INDEX", "investigative-rag")
+CHROMA_PATH = os.getenv("CHROMA_PATH", "chroma_db")
 IRS_COLLECTION = os.getenv("IRS_COLLECTION", "irs_filings_25k")
 FEC_COLLECTION = os.getenv("FEC_COLLECTION", "fec_filings")
 LLM_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+LLM_MODEL = "claude-haiku-4-5-20251001"
 TOP_K = int(os.getenv("TOP_K", "5"))
 EMBED_MODEL = "all-MiniLM-L6-v2"
-LLM_MODEL = "claude-haiku-4-5-20251001"
+RRF_K = 60
+
+_embed_model = None
+_pinecone_index = None
+
+
+def get_embed_model():
+    global _embed_model
+    if _embed_model is None and EMBEDDINGS_AVAILABLE:
+        _embed_model = SentenceTransformer(EMBED_MODEL)
+    return _embed_model
+
+
+def get_pinecone_index():
+    global _pinecone_index
+    if _pinecone_index is None and PINECONE_AVAILABLE and PINECONE_API_KEY:
+        pc = Pinecone(api_key=PINECONE_API_KEY)
+        _pinecone_index = pc.Index(PINECONE_INDEX)
+    return _pinecone_index
 
 
 @dataclass
 class Citation:
     source: str
     file_name: str
-    org_name: str = ""
-    ein: str = ""
-    object_id: str = ""
-    snippet: str = ""
-    distance: float = 0.0
+    org_name: str
+    ein: str
+    object_id: str
+    snippet: str
+    distance: float
 
 
 @dataclass
 class RAGResponse:
     answer: str
-    citations: list[Citation] = field(default_factory=list)
-    sources_used: list[str] = field(default_factory=list)
+    citations: List[Citation] = field(default_factory=list)
+    sources_used: List[str] = field(default_factory=list)
 
 
-def get_embedding_function():
-    return embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name=EMBED_MODEL
-    )
+def clean_text(text):
+    if not text:
+        return ""
+    return " ".join(text.split())[:800]
 
 
-def get_chroma_client():
+def search_pinecone(query, namespace, k=TOP_K):
+    """Search Pinecone index for similar chunks."""
+    try:
+        model = get_embed_model()
+        index = get_pinecone_index()
+        if model is None or index is None:
+            return []
+
+        query_vector = model.encode(query).tolist()
+        results = index.query(
+            vector=query_vector,
+            top_k=k,
+            namespace=namespace,
+            include_metadata=True
+        )
+
+        citations = []
+        seen = set()
+        for match in results.matches:
+            meta = match.metadata or {}
+            file_name = meta.get("file_name", match.id)
+            if file_name in seen:
+                continue
+            seen.add(file_name)
+            citations.append(Citation(
+                source=meta.get("source", namespace.upper()),
+                file_name=file_name,
+                org_name=meta.get("org_name", ""),
+                ein=meta.get("ein", ""),
+                object_id=meta.get("object_id", ""),
+                snippet=clean_text(meta.get("text", "")),
+                distance=round(1 - match.score, 4),
+            ))
+        return citations
+    except Exception as e:
+        print(f"Pinecone search error ({namespace}): {e}")
+        return []
+
+
+def search_chromadb(collection_name, query, k=TOP_K):
+    """Fallback to ChromaDB if Pinecone not available."""
     if not CHROMADB_AVAILABLE:
-        raise RuntimeError("ChromaDB not installed")
-    return chromadb.PersistentClient(path=CHROMA_PATH)
+        return []
+    try:
+        ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=EMBED_MODEL)
+        client = chromadb.PersistentClient(path=CHROMA_PATH)
+        col = client.get_collection(name=collection_name, embedding_function=ef)
+        results = col.query(query_texts=[query], n_results=k)
 
+        citations = []
+        seen = set()
+        ids = results.get("ids", [[]])[0]
+        docs = results.get("documents", [[]])[0]
+        metas = results.get("metadatas", [[]])[0]
+        dists = results.get("distances", [[]])[0]
 
-def clean_text(text, max_chars=300):
-    text = re.sub(r"\s+", " ", text).strip()
-    if len(text) <= max_chars:
-        return text
-    return text[:max_chars].rsplit(" ", 1)[0] + "..."
+        for doc_id, doc, meta, dist in zip(ids, docs, metas, dists):
+            meta = meta or {}
+            file_name = meta.get("file_name", doc_id)
+            if file_name in seen:
+                continue
+            seen.add(file_name)
+            citations.append(Citation(
+                source=meta.get("source", "UNKNOWN"),
+                file_name=file_name,
+                org_name=meta.get("org_name", ""),
+                ein=meta.get("ein", ""),
+                object_id=meta.get("object_id", ""),
+                snippet=clean_text(doc),
+                distance=round(dist, 4),
+            ))
+        return citations
+    except Exception as e:
+        print(f"ChromaDB search error ({collection_name}): {e}")
+        return []
 
 
 def retrieve(collection_name, query, k=TOP_K):
-    try:
-        client = get_chroma_client()
-        ef = get_embedding_function()
-        col = client.get_collection(name=collection_name, embedding_function=ef)
-        results = col.query(query_texts=[query], n_results=k)
-    except Exception as e:
-        print(f"Could not query collection {collection_name}: {e}")
-        return []
+    """Retrieve from Pinecone (primary) or ChromaDB (fallback)."""
+    namespace = "irs" if "irs" in collection_name.lower() else "fec"
 
-    citations = []
-    ids = results.get("ids", [[]])[0]
-    docs = results.get("documents", [[]])[0]
-    metas = results.get("metadatas", [[]])[0]
-    dists = results.get("distances", [[]])[0]
+    if PINECONE_AVAILABLE and PINECONE_API_KEY:
+        results = search_pinecone(query, namespace, k)
+        if results:
+            return results
 
-    seen = set()
-    for doc_id, doc, meta, dist in zip(ids, docs, metas, dists):
-        meta = meta or {}
-        file_name = meta.get("file_name", doc_id)
-        if file_name in seen:
-            continue
-        seen.add(file_name)
-        citations.append(Citation(
-            source=meta.get("source", "UNKNOWN"),
-            file_name=file_name,
-            org_name=meta.get("org_name", ""),
-            ein=meta.get("ein", ""),
-            object_id=meta.get("object_id", ""),
-            snippet=clean_text(doc),
-            distance=round(dist, 4),
-        ))
+    return search_chromadb(collection_name, query, k)
 
-    return citations
+
+def reciprocal_rank_fusion(irs_citations, fec_citations, k=RRF_K):
+    """Combine IRS and FEC results using RRF."""
+    scores = {}
+    all_citations = {}
+
+    for rank, citation in enumerate(irs_citations, start=1):
+        key = citation.file_name
+        scores[key] = scores.get(key, 0) + 1 / (k + rank)
+        all_citations[key] = citation
+
+    for rank, citation in enumerate(fec_citations, start=1):
+        key = citation.file_name
+        scores[key] = scores.get(key, 0) + 1 / (k + rank)
+        all_citations[key] = citation
+
+    ranked_keys = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
+    return [all_citations[k] for k in ranked_keys]
 
 
 def build_context(citations):
     parts = []
     for i, c in enumerate(citations, start=1):
         if c.source == "IRS":
-            header = f"[{i}] IRS 990 | Org: {c.org_name or 'Unknown'} | EIN: {c.ein or 'N/A'} | File: {c.file_name}"
+            header = f"[{i}] IRS 990 | Org: {c.org_name or 'Unknown'} | EIN: {c.ein or 'N/A'}"
         else:
             header = f"[{i}] FEC Filing | File: {c.file_name}"
         parts.append(f"{header}\n{c.snippet}")
@@ -123,32 +218,6 @@ def build_citation_list(citations):
     return "\n".join(lines)
 
 
-def reciprocal_rank_fusion(irs_citations, fec_citations, k=60):
-    """
-    Reciprocal Rank Fusion — combines IRS and FEC results into one ranked list.
-    Formula: RRF_score = sum(1 / (k + rank)) for each list
-    Higher score = more relevant across both sources.
-    """
-    scores = {}
-    all_citations = {}
-
-    # Score IRS results
-    for rank, citation in enumerate(irs_citations, start=1):
-        key = citation.file_name
-        scores[key] = scores.get(key, 0) + 1 / (k + rank)
-        all_citations[key] = citation
-
-    # Score FEC results
-    for rank, citation in enumerate(fec_citations, start=1):
-        key = citation.file_name
-        scores[key] = scores.get(key, 0) + 1 / (k + rank)
-        all_citations[key] = citation
-
-    # Sort by RRF score descending
-    ranked_keys = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
-    return [all_citations[k] for k in ranked_keys]
-
-
 def generate_answer(context, citation_list, query):
     system_prompt = (
         "You are an investigative intelligence analyst specializing in nonprofit finance "
@@ -156,18 +225,15 @@ def generate_answer(context, citation_list, query):
         "Answer questions using only the provided source documents.\n"
         "Use inline citations like [1], [2] when referencing sources.\n"
         "Be concise, factual, and professional.\n"
-        "If the documents do not contain enough information, say so clearly.\n"
         "Never fabricate numbers or organization names.\n"
         "End every answer with a Sources section."
     )
-
     user_message = (
         f"Question: {query}\n\n"
         f"--- SOURCE DOCUMENTS ---\n{context}\n\n"
         f"--- CITATION REFERENCES ---\n{citation_list}\n\n"
-        "Answer using only the source documents above. Use inline citations."
+        "Answer using only the source documents above."
     )
-
     api = _llm_client.Anthropic(api_key=LLM_API_KEY)
     response = api.messages.create(
         model=LLM_MODEL,
@@ -188,14 +254,13 @@ def ask(query, dataset="both", top_k=TOP_K):
     if dataset in ("irs", "both"):
         irs_citations = retrieve(IRS_COLLECTION, query, k=top_k)
         if irs_citations:
-            sources_used.append("IRS 990")
+            sources_used.append("IRS 990 (Pinecone)" if PINECONE_AVAILABLE and PINECONE_API_KEY else "IRS 990")
 
     if dataset in ("fec", "both"):
         fec_citations = retrieve(FEC_COLLECTION, query, k=top_k)
         if fec_citations:
-            sources_used.append("FEC Filings")
+            sources_used.append("FEC Filings (Pinecone)" if PINECONE_AVAILABLE and PINECONE_API_KEY else "FEC Filings")
 
-    # Apply RRF fusion when both sources are used
     if irs_citations and fec_citations:
         all_citations = reciprocal_rank_fusion(irs_citations, fec_citations)
     else:
@@ -203,7 +268,7 @@ def ask(query, dataset="both", top_k=TOP_K):
 
     if not all_citations:
         return RAGResponse(
-            answer="No relevant documents found. Try rephrasing your question or selecting a different dataset.",
+            answer="No relevant documents found. Try rephrasing your question.",
             citations=[],
             sources_used=[],
         )
@@ -218,6 +283,6 @@ def ask(query, dataset="both", top_k=TOP_K):
 
     return RAGResponse(
         answer=answer_text,
-        citations=all_citations,
+        citations=all_citations[:10],
         sources_used=sources_used,
     )
