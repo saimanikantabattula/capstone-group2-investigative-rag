@@ -68,9 +68,12 @@ def get_embedding_via_api(text):
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
             result = json.loads(resp.read())
-            if isinstance(result, list) and isinstance(result[0], list):
-                return result[0]
-            return result
+            # Handle both flat list [0.1, 0.2...] and nested [[0.1, 0.2...]]
+            if isinstance(result, list):
+                if isinstance(result[0], list):
+                    return result[0]  # nested format
+                return result  # flat format
+            return None
     except Exception as e:
         print(f"HuggingFace API error: {e}")
         return None
