@@ -60,6 +60,20 @@ class QueryResponse(BaseModel):
     sources_used: list[str]
 
 
+@app.get("/test-search")
+def test_search():
+    """Test full vector search pipeline."""
+    try:
+        from src.rag.answer import retrieve
+        results = retrieve("irs_filings_25k", "Gates Foundation mission", k=3)
+        return {
+            "status": "ok",
+            "results_count": len(results),
+            "first_result": results[0].org_name if results else None
+        }
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
 @app.get("/test-pinecone")
 def test_pinecone():
     """Test Pinecone connection."""
