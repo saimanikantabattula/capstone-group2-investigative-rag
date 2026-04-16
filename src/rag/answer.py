@@ -12,8 +12,12 @@ import re
 from dataclasses import dataclass, field
 
 import anthropic as _llm_client
-import chromadb
-from chromadb.utils import embedding_functions
+try:
+    import chromadb
+    from chromadb.utils import embedding_functions
+    CHROMADB_AVAILABLE = True
+except ImportError:
+    CHROMADB_AVAILABLE = False
 
 
 CHROMA_PATH = os.getenv("CHROMA_PATH", "/Users/battulasaimanikanta/Documents/capstone-group2-investigative-rag/chroma_db")
@@ -50,6 +54,8 @@ def get_embedding_function():
 
 
 def get_chroma_client():
+    if not CHROMADB_AVAILABLE:
+        raise RuntimeError("ChromaDB not installed")
     return chromadb.PersistentClient(path=CHROMA_PATH)
 
 
