@@ -10,8 +10,8 @@
 | Service | URL |
 |---|---|
 | **Frontend** | https://capstone-group2-investigative-rag.vercel.app |
-| **Backend API** | https://capstone-group2-investigative-rag-production.up.railway.app |
-| **API Health** | https://capstone-group2-investigative-rag-production.up.railway.app/health |
+| **Backend API** | https://capstone-group2-investigative-rag.onrender.com |
+| **API Health** | https://capstone-group2-investigative-rag.onrender.com/health |
 | **Database** | Supabase PostgreSQL — 378K IRS rows + 38K FEC rows |
 
 ---
