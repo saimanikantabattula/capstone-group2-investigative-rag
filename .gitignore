@@ -25,3 +25,6 @@ __pycache__/
 chroma_db/
 capstone_backup.sql
 .deepeval/
+
+src/eval/evaluation_report.pdf
+src/eval/batch_test_results.json

@@ -1,14 +1,19 @@
-# Use Cases (IRS 990 + FEC)
+# Use Cases — Investigative RAG
 
-## IRS 990
-1) Given EIN or org name, summarize key details and cite evidence from the XML.
-2) Find organizations by year/period and retrieve mission/program text with citations.
-3) Compare two nonprofits (2024 vs 2025) and cite the most relevant filing sections.
+## IRS 990 Queries
+1. Which nonprofits raised the most money? → Returns top orgs by total revenue
+2. Which hospitals have the most assets? → Filters by org name keywords
+3. Which nonprofits are based in California? → Queries irs_locations by state
+4. Which organizations filed 990PF returns? → Filters by return type
+5. Find nonprofits with high officer compensation → Queries officer_compensation field
 
-## FEC
-4) Rank committees by receipts/spending using committee summary CSV.
-5) Given a filing PDF, retrieve evidence passages relevant to a question.
-6) Compare two committees’ filings and cite supporting passages.
+## FEC Political Finance Queries
+6. Which PACs spent the most in 2024? → Ranks by total_disbursements
+7. How much did ActBlue raise in 2024? → Specific committee lookup
+8. Which committees are based in Texas? → Filters fec_committees by state
 
-## Combined
-7) Investigate an entity name: show IRS + FEC evidence together (with citations).
+## Cross-Dataset Queries
+9. Which nonprofits have connections to political committees? → SQL JOIN on org name
+
+## Document Search (Pinecone Vector Search)
+10. What programs does United Way fund? → Semantic search across IRS text chunks
