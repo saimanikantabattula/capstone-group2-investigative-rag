@@ -792,7 +792,7 @@ GROUND_TRUTH = [
         "id": "both_022",
         "question": "Which nonprofits are based in New Jersey?",
         "expected_keywords": ["NJ", "New Jersey"],
-        "expected_contains": "NJ",
+        "expected_contains": "New Jersey",
         "dataset": "both",
         "category": "Cross Dataset",
     },
