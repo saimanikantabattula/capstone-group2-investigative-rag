@@ -255,8 +255,8 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 | Cross Dataset | 25 | 23 | **92%** |
 | **OVERALL** | **100** | **99** | **99%** |
 
-**Average response time:** 3.20 seconds  
-**Average keyword score:** 85.1%  
+**Average response time:** 3.22 seconds  
+**Average keyword score:** 81.9%  
 **Average Answer Relevancy:** 0.871 / 1.0 (DeepEval AnswerRelevancyMetric - true LLM-as-judge)  
 **Average Faithfulness:** 0.919 / 1.0 (DeepEval FaithfulnessMetric - true LLM-as-judge)  
 **Total revenue tracked in database:** $681.6 billion
