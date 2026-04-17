@@ -246,19 +246,19 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 
 | Category | Questions | Passed | Accuracy |
 |---|---|---|---|
-| IRS Financial Ranking | 20 | 20 | **100%** |
+| IRS Financial Ranking | 20 | 18 | **90%** |
 | IRS Geographic | 15 | 15 | **100%** |
 | IRS Filing Type | 5 | 5 | **100%** |
 | FEC Financial Ranking | 20 | 19 | **95%** |
 | FEC Specific Committee | 10 | 10 | **100%** |
 | FEC Geographic | 5 | 5 | **100%** |
 | Cross Dataset | 25 | 23 | **92%** |
-| **OVERALL** | **100** | **97** | **97%** |
+| **OVERALL** | **100** | **96** | **96%** |
 
-**Average response time:** 2.69 seconds  
+**Average response time:** 3.20 seconds  
 **Average keyword score:** 85.1%  
-**Average Answer Relevancy:** 0.81 / 1.0 (LLM-as-judge)  
-**Average Faithfulness:** 0.02 / 1.0 (LLM-as-judge)  
+**Average Answer Relevancy:** 0.873 / 1.0 (DeepEval AnswerRelevancyMetric - true LLM-as-judge)  
+**Average Faithfulness:** 0.942 / 1.0 (DeepEval FaithfulnessMetric - true LLM-as-judge)  
 **Total revenue tracked in database:** $681.6 billion
 
 ### Extended Batch Test (109 Questions)
