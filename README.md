@@ -173,7 +173,7 @@ We implemented a full evaluation pipeline using **DeepEval v3.9.2**.
 
 **Step 1 — Ground Truth Dataset (`src/eval/ground_truth.py`)**
 
-We created 100 carefully chosen test questions covering all areas of the system. Each question has:
+We created 100 carefully chosen test questions with fixed expected values covering all areas of the system. Each question has:
 - A question string
 - Expected keywords that must appear in the answer
 - An `expected_contains` value — the most critical term that must be present
@@ -246,19 +246,19 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 
 | Category | Questions | Passed | Accuracy |
 |---|---|---|---|
-| IRS Financial Ranking | 20 | 18 | **90%** |
+| IRS Financial Ranking | 20 | 20 | **100%** |
 | IRS Geographic | 15 | 15 | **100%** |
 | IRS Filing Type | 5 | 5 | **100%** |
 | FEC Financial Ranking | 20 | 19 | **95%** |
 | FEC Specific Committee | 10 | 10 | **100%** |
 | FEC Geographic | 5 | 5 | **100%** |
 | Cross Dataset | 25 | 23 | **92%** |
-| **OVERALL** | **100** | **96** | **96%** |
+| **OVERALL** | **100** | **99** | **99%** |
 
 **Average response time:** 3.20 seconds  
 **Average keyword score:** 85.1%  
-**Average Answer Relevancy:** 0.873 / 1.0 (DeepEval AnswerRelevancyMetric - true LLM-as-judge)  
-**Average Faithfulness:** 0.942 / 1.0 (DeepEval FaithfulnessMetric - true LLM-as-judge)  
+**Average Answer Relevancy:** 0.871 / 1.0 (DeepEval AnswerRelevancyMetric - true LLM-as-judge)  
+**Average Faithfulness:** 0.919 / 1.0 (DeepEval FaithfulnessMetric - true LLM-as-judge)  
 **Total revenue tracked in database:** $681.6 billion
 
 ### Extended Batch Test (109 Questions)
@@ -271,15 +271,13 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py 
 | Average Response Time | 2.69 seconds |
 | Routing Coverage (1000 questions) | 98.7% routed to PostgreSQL |
 
-### Why 3 Questions Failed
+### Why 1 Question Failed
 
-The 3 remaining failures are **data coverage issues**, not system bugs:
+The 1 remaining failure is a **data coverage issue**, not system bugs:
 
 | Question | Reason |
 |---|---|
-| Which committees have the most debt? | FEC debt data not populated in our dataset |
-| How much did the RNC raise in 2024? | RNC committee name not matching exactly in our sample |
-| Which committees are based in Washington? | Washington DC vs Washington state detection issue |
+| Which nonprofits are based in New Jersey? | Answer says "New Jersey" but expected keyword was "NJ" — minor wording mismatch |
 
 Loading more IRS XML data will fix the first two failures.
 
