@@ -48,6 +48,13 @@ RRF_K = 60
 _embed_model = None
 _pinecone_index = None
 
+# Cache for HuggingFace embeddings — same query = same vector, no need to call API twice
+_embedding_cache = {}
+
+# Cache for full answers — same question = same answer, saves DB + LLM calls
+_answer_cache = {}
+MAX_CACHE_SIZE = 100
+
 
 def get_embed_model():
     global _embed_model
@@ -59,7 +66,13 @@ def get_embed_model():
     return _embed_model
 
 def get_embedding_via_api(text):
-    """Get embedding via HuggingFace API - no local model needed."""
+    """Get embedding via HuggingFace API with caching — same text = no repeat API call."""
+    global _embedding_cache
+    
+    # Return cached embedding if available
+    if text in _embedding_cache:
+        return _embedding_cache[text]
+    
     import urllib.request, json
     url = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
     data = json.dumps({"inputs": text, "options": {"wait_for_model": True}}).encode()
@@ -71,8 +84,13 @@ def get_embedding_via_api(text):
             # Handle both flat list [0.1, 0.2...] and nested [[0.1, 0.2...]]
             if isinstance(result, list):
                 if isinstance(result[0], list):
-                    return result[0]  # nested format
-                return result  # flat format
+                    vector = result[0]
+                else:
+                    vector = result
+                # Store in cache
+                if len(_embedding_cache) < MAX_CACHE_SIZE:
+                    _embedding_cache[text] = vector
+                return vector
             return None
     except Exception as e:
         print(f"HuggingFace API error: {e}")
@@ -273,6 +291,14 @@ def generate_answer(context, citation_list, query):
 
 
 def ask(query, dataset="both", top_k=TOP_K):
+    """Main RAG function with answer caching."""
+    global _answer_cache
+    
+    # Check answer cache first
+    cache_key = f"{query.lower().strip()}|{dataset}"
+    if cache_key in _answer_cache:
+        print(f"[Cache] Returning cached answer for: {query[:50]}")
+        return _answer_cache[cache_key]
     all_citations = []
     sources_used = []
 
@@ -309,8 +335,14 @@ def ask(query, dataset="both", top_k=TOP_K):
     except Exception as e:
         answer_text = f"Could not generate answer: {e}"
 
-    return RAGResponse(
+    response = RAGResponse(
         answer=answer_text,
         citations=all_citations[:10],
         sources_used=sources_used,
     )
+    
+    # Store in answer cache
+    if len(_answer_cache) < MAX_CACHE_SIZE:
+        _answer_cache[cache_key] = response
+    
+    return response
