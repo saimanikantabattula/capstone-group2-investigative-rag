@@ -136,6 +136,70 @@ def test_embedding():
     except Exception as e:
         return {"status": "error", "error": str(e), "token_set": bool(hf_token)}
 
+@app.get("/dashboard")
+def get_dashboard_data():
+    """Returns aggregated data for dashboard charts."""
+    import psycopg2
+    try:
+        conn = psycopg2.connect(
+            host=os.getenv("DB_HOST", "localhost"),
+            port=int(os.getenv("DB_PORT", 5432)),
+            dbname=os.getenv("DB_NAME", "capstone_rag"),
+            user=os.getenv("DB_USER", "postgres"),
+            password=os.getenv("DB_PASS", "")
+        )
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT state, COUNT(*) as count FROM irs_locations
+            WHERE state IS NOT NULL AND state != ''
+            GROUP BY state ORDER BY count DESC LIMIT 10
+        """)
+        top_states = [{"state": r[0], "count": r[1]} for r in cur.fetchall()]
+
+        cur.execute("""
+            SELECT org_name, state, total_revenue FROM irs_financials
+            WHERE total_revenue IS NOT NULL
+            ORDER BY total_revenue DESC LIMIT 10
+        """)
+        top_revenue = [{"org": r[0], "state": r[1], "revenue": float(r[2])} for r in cur.fetchall()]
+
+        cur.execute("""
+            SELECT return_type, COUNT(*) as count FROM irs_index
+            WHERE return_type IS NOT NULL
+            GROUP BY return_type ORDER BY count DESC
+        """)
+        return_types = [{"type": r[0], "count": r[1]} for r in cur.fetchall()]
+
+        cur.execute("""
+            SELECT "CMTE_NM", "TTL_RECEIPTS", "TTL_DISB" FROM fec_committees
+            WHERE "TTL_RECEIPTS" IS NOT NULL AND "TTL_RECEIPTS" != ''
+            ORDER BY CAST("TTL_RECEIPTS" AS FLOAT) DESC LIMIT 10
+        """)
+        top_fec = [{"name": r[0], "receipts": float(r[1] or 0), "disbursements": float(r[2] or 0)} for r in cur.fetchall()]
+
+        cur.execute("SELECT COUNT(*), SUM(total_revenue) FROM irs_financials WHERE total_revenue IS NOT NULL")
+        row = cur.fetchone()
+
+        cur.execute("SELECT COUNT(*) FROM fec_committees")
+        total_fec = cur.fetchone()[0]
+
+        conn.close()
+        return {
+            "top_states": top_states,
+            "top_revenue": top_revenue,
+            "return_types": return_types,
+            "top_fec": top_fec,
+            "summary": {
+                "total_orgs": row[0],
+                "total_revenue": float(row[1] or 0),
+                "total_fec": total_fec,
+                "total_vectors": 100835
+            }
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     return {"status": "ok"}
