@@ -134,6 +134,145 @@ def detect_state(question):
     return None, None
 
 
+def detect_city(question):
+    """Detect city name in question."""
+    q = question.lower()
+    # Common major US cities
+    CITIES = [
+        "new york city", "new york", "los angeles", "chicago", "houston",
+        "phoenix", "philadelphia", "san antonio", "san diego", "dallas",
+        "san jose", "austin", "jacksonville", "fort worth", "columbus",
+        "charlotte", "indianapolis", "san francisco", "seattle", "denver",
+        "boston", "nashville", "baltimore", "atlanta", "miami",
+        "minneapolis", "portland", "las vegas", "detroit", "memphis",
+        "louisville", "milwaukee", "albuquerque", "tucson", "fresno",
+        "sacramento", "kansas city", "mesa", "omaha", "cleveland",
+        "raleigh", "colorado springs", "virginia beach", "long beach",
+        "tampa", "new orleans", "pittsburgh", "cincinnati", "st louis",
+        "orlando", "buffalo", "richmond", "madison", "birmingham",
+    ]
+    for city in CITIES:
+        if city in q:
+            return city.title()
+    return None
+
+
+def detect_year(question):
+    """Detect tax year in question."""
+    import re
+    years = re.findall(r'20(1[5-9]|2[0-4])', question)
+    if years:
+        return f"20{years[0]}"
+    if "2024" in question: return "2024"
+    if "2023" in question: return "2023"
+    if "2022" in question: return "2022"
+    if "2021" in question: return "2021"
+    if "latest" in question.lower() or "recent" in question.lower() or "current" in question.lower():
+        return "latest"
+    return None
+
+
+def query_irs_by_city(city):
+    """Query IRS organizations by city."""
+    conn = get_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cur.execute("""
+            SELECT f.org_name, f.state, l.city, f.return_type, f.tax_year,
+                   ROUND(f.total_revenue) as total_revenue,
+                   ROUND(f.total_assets) as total_assets
+            FROM irs_financials f
+            JOIN irs_locations l ON f.ein = l.ein
+            WHERE LOWER(l.city) = LOWER(%s) AND f.total_revenue IS NOT NULL
+            ORDER BY f.total_revenue DESC LIMIT 15
+        """, (city,))
+        rows = [dict(r) for r in cur.fetchall()]
+        if not rows:
+            # Try partial match
+            cur.execute("""
+                SELECT f.org_name, f.state, l.city, f.return_type, f.tax_year,
+                       ROUND(f.total_revenue) as total_revenue,
+                       ROUND(f.total_assets) as total_assets
+                FROM irs_financials f
+                JOIN irs_locations l ON f.ein = l.ein
+                WHERE LOWER(l.city) LIKE LOWER(%s) AND f.total_revenue IS NOT NULL
+                ORDER BY f.total_revenue DESC LIMIT 15
+            """, (f"%{city}%",))
+            rows = [dict(r) for r in cur.fetchall()]
+        return rows
+    finally:
+        cur.close()
+        conn.close()
+
+
+def query_irs_fuzzy_name(org_name):
+    """Fuzzy search for organization by name — handles abbreviations and partial matches."""
+    conn = get_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        # Try exact match first
+        cur.execute("""
+            SELECT org_name, state, return_type, tax_year,
+                   ROUND(total_revenue) as total_revenue,
+                   ROUND(total_assets) as total_assets
+            FROM irs_financials
+            WHERE LOWER(org_name) LIKE LOWER(%s)
+            AND total_revenue IS NOT NULL
+            ORDER BY total_revenue DESC LIMIT 10
+        """, (f"%{org_name}%",))
+        rows = [dict(r) for r in cur.fetchall()]
+        
+        if not rows:
+            # Try word-by-word matching
+            words = [w for w in org_name.split() if len(w) > 3]
+            if words:
+                conditions = " AND ".join([f"LOWER(org_name) LIKE '%{w.lower()}%'" for w in words[:3]])
+                cur.execute(f"""
+                    SELECT org_name, state, return_type, tax_year,
+                           ROUND(total_revenue) as total_revenue,
+                           ROUND(total_assets) as total_assets
+                    FROM irs_financials
+                    WHERE {conditions}
+                    AND total_revenue IS NOT NULL
+                    ORDER BY total_revenue DESC LIMIT 10
+                """)
+                rows = [dict(r) for r in cur.fetchall()]
+        return rows
+    finally:
+        cur.close()
+        conn.close()
+
+
+def query_irs_by_year(year, metric="total_revenue"):
+    """Query IRS financials filtered by tax year."""
+    conn = get_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        if year == "latest":
+            cur.execute(f"""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_assets) as total_assets
+                FROM irs_financials
+                WHERE {metric} IS NOT NULL
+                ORDER BY tax_year DESC, {metric} DESC LIMIT 15
+            """)
+        else:
+            cur.execute(f"""
+                SELECT org_name, state, return_type, tax_year,
+                       ROUND(total_revenue) as total_revenue,
+                       ROUND(total_assets) as total_assets
+                FROM irs_financials
+                WHERE {metric} IS NOT NULL
+                AND tax_year = %s
+                ORDER BY {metric} DESC LIMIT 15
+            """, (year,))
+        return [dict(r) for r in cur.fetchall()]
+    finally:
+        cur.close()
+        conn.close()
+
+
 def is_financial_question(question):
     q = question.lower()
     return any(kw in q for kw in FINANCIAL_KEYWORDS)
@@ -777,6 +916,39 @@ def hybrid_ask(question, dataset="both", top_k=5):
                     sources_used=["IRS + FEC Cross-Dataset (PostgreSQL)"])
         except Exception as e:
             print(f"Cross-dataset query failed: {e}, falling back to RAG")
+
+    # ── 0b. City-level geographic search ──
+    city = detect_city(question)
+    if city and not detect_state(question)[0] and dataset in ("irs", "both"):
+        try:
+            rows = query_irs_by_city(city)
+            if rows:
+                context = format_rows_as_context(rows, "IRS Financials")
+                answer = generate_answer_from_data(question, context, "IRS nonprofit filings")
+                citations = [Citation(source="IRS", file_name="irs_financials + irs_locations (PostgreSQL)",
+                    org_name=r.get("org_name",""), ein="", object_id="",
+                    snippet=f"City: {r.get('city','N/A')} | State: {r.get('state','N/A')} | Revenue: {r.get('total_revenue','N/A')}",
+                    distance=0.0) for r in rows[:5]]
+                return RAGResponse(answer=answer, citations=citations, sources_used=["IRS Financials by City (PostgreSQL)"])
+        except Exception as e:
+            print(f"City query failed: {e}, falling back to RAG")
+
+    # ── 0c. Year/date filtering ──
+    year = detect_year(question)
+    if year and is_financial_question(question) and dataset in ("irs", "both"):
+        metric = "total_assets" if "asset" in q_lower else "total_revenue"
+        try:
+            rows = query_irs_by_year(year, metric)
+            if rows:
+                context = format_rows_as_context(rows, "IRS Financials")
+                answer = generate_answer_from_data(question, context, "IRS nonprofit filings")
+                citations = [Citation(source="IRS", file_name="irs_financials (PostgreSQL)",
+                    org_name=r.get("org_name",""), ein="", object_id="",
+                    snippet=f"Year: {r.get('tax_year','N/A')} | Revenue: {r.get('total_revenue','N/A')} | State: {r.get('state','N/A')}",
+                    distance=0.0) for r in rows[:5]]
+                return RAGResponse(answer=answer, citations=citations, sources_used=[f"IRS Financials {year} (PostgreSQL)"])
+        except Exception as e:
+            print(f"Year query failed: {e}, falling back to RAG")
 
     # ── 1. Geographic: query by state ──
     state_abbr, state_name = detect_state(question)

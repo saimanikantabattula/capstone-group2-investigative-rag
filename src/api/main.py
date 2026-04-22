@@ -10,9 +10,19 @@ ChromaDB for document search.
 import os
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+import logging
+import time
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+logger = logging.getLogger(__name__)
 
 try:
     from src.rag.hybrid import hybrid_ask
@@ -27,6 +37,14 @@ app = FastAPI(
     description="Multi-agent RAG over IRS 990 and FEC filings",
     version="1.0.0",
 )
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start = time.time()
+    response = await call_next(request)
+    elapsed = round(time.time() - start, 3)
+    logger.info(f"{request.method} {request.url.path} | {response.status_code} | {elapsed}s")
+    return response
 
 app.add_middleware(
     CORSMiddleware,
@@ -225,6 +243,7 @@ def query(req: QueryRequest):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
+    logger.info(f"Query: '{body.question[:60]}' | dataset={body.dataset}")
     if not RAG_AVAILABLE:
         return {"answer": "RAG system not available in this deployment.", "citations": [], "sources_used": []}
     result = hybrid_ask(
