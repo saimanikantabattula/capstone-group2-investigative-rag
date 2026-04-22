@@ -218,6 +218,144 @@ def get_dashboard_data():
     except Exception as e:
         return {"error": str(e)}
 
+@app.post("/suggestions")
+def get_suggestions(body: QueryRequest):
+    """Generate truly contextual related questions based on the question."""
+    q = body.question.lower()
+    suggestions = []
+
+    # State-based — suggest other states
+    STATE_SUGGESTIONS = {
+        "california": ["Which nonprofits are based in New York?", "Which nonprofits are based in Texas?", "Which nonprofits are based in Florida?", "Which nonprofits are based in Illinois?"],
+        "new york": ["Which nonprofits are based in California?", "Which nonprofits are based in Texas?", "Which nonprofits are based in New Jersey?", "Which nonprofits are based in Massachusetts?"],
+        "texas": ["Which nonprofits are based in California?", "Which nonprofits are based in Florida?", "Which nonprofits are based in Georgia?", "Which nonprofits are based in North Carolina?"],
+        "florida": ["Which nonprofits are based in Texas?", "Which nonprofits are based in Georgia?", "Which nonprofits are based in California?", "Which nonprofits are based in North Carolina?"],
+        "illinois": ["Which nonprofits are based in Ohio?", "Which nonprofits are based in Michigan?", "Which nonprofits are based in Indiana?", "Which nonprofits are based in Wisconsin?"],
+        "boston": ["Which nonprofits are based in Massachusetts?", "Which nonprofits are based in New York?", "Which nonprofits are based in Chicago?", "Which nonprofits are based in Seattle?"],
+        "chicago": ["Which nonprofits are based in Boston?", "Which nonprofits are based in Illinois?", "Which nonprofits are based in Detroit?", "Which nonprofits are based in Milwaukee?"],
+        "massachusetts": ["Which nonprofits are based in New York?", "Which nonprofits are based in Connecticut?", "Which nonprofits are based in Pennsylvania?", "Which nonprofits are based in Maryland?"],
+    }
+    for state, sugg in STATE_SUGGESTIONS.items():
+        if state in q:
+            return {"suggestions": [s for s in sugg if s.lower() != q]}
+
+    # Specific committee — suggest related committees
+    if "actblue" in q:
+        return {"suggestions": ["How much did WinRed raise in 2024?", "What did Harris Victory Fund report in 2024?", "How much did the DNC raise in 2024?", "Which PACs spent the most in 2024?"]}
+    if "winred" in q:
+        return {"suggestions": ["How much did ActBlue raise in 2024?", "How much did the RNC raise in 2024?", "Which Republican committees raised the most?", "Which PACs spent the most in 2024?"]}
+    if "harris" in q:
+        return {"suggestions": ["How much did ActBlue raise in 2024?", "What did the DNC raise in 2024?", "Which PACs spent the most in 2024?", "Which Democratic committees raised the most?"]}
+    if "dnc" in q or "democratic" in q:
+        return {"suggestions": ["How much did the RNC raise in 2024?", "Which Democratic committees raised the most?", "How much did ActBlue raise in 2024?", "Which PACs spent the most in 2024?"]}
+    if "rnc" in q or "republican" in q:
+        return {"suggestions": ["How much did the DNC raise in 2024?", "Which Republican committees raised the most?", "How much did WinRed raise in 2024?", "Which PACs spent the most in 2024?"]}
+
+    # City-based suggestions
+    if "boston" in q:
+        return {"suggestions": ["Which nonprofits are based in Massachusetts?", "Which nonprofits are based in New York?", "Which nonprofits are based in Chicago?", "Which nonprofits are based in Seattle?"]}
+    if "chicago" in q:
+        return {"suggestions": ["Which nonprofits are based in Boston?", "Which nonprofits are based in Illinois?", "Which nonprofits are based in Detroit?", "Which nonprofits are based in Milwaukee?"]}
+    if "seattle" in q:
+        return {"suggestions": ["Which nonprofits are based in Washington?", "Which nonprofits are based in Oregon?", "Which nonprofits are based in California?", "Which nonprofits are based in Boston?"]}
+    if "atlanta" in q:
+        return {"suggestions": ["Which nonprofits are based in Georgia?", "Which nonprofits are based in Florida?", "Which nonprofits are based in North Carolina?", "Which nonprofits are based in Tennessee?"]}
+    if "los angeles" in q:
+        return {"suggestions": ["Which nonprofits are based in California?", "Which nonprofits are based in New York?", "Which nonprofits are based in Chicago?", "Which nonprofits are based in Houston?"]}
+
+    # Revenue questions — suggest other financial metrics
+    if any(w in q for w in ["raised", "revenue", "most money"]) and "based in" not in q and "located in" not in q:
+        return {"suggestions": [
+            "Which nonprofits have the most total assets?",
+            "Which nonprofits pay their officers the most?",
+            "Which nonprofits reported the most expenses?",
+            "Which nonprofits have the highest net assets?",
+        ]}
+
+    # Asset questions — suggest revenue and other metrics
+    if "asset" in q:
+        return {"suggestions": [
+            "Which nonprofits raised the most money?",
+            "Which nonprofits have the highest liabilities?",
+            "Which nonprofits pay officers the most?",
+            "Which foundations have the most net assets?",
+        ]}
+
+    # Hospital/health — suggest related health orgs
+    if any(w in q for w in ["hospital", "health system", "medical center"]):
+        return {"suggestions": [
+            "Which hospitals have the most assets?",
+            "Which health systems have the highest revenue?",
+            "Which medical centers spent the most money?",
+            "Which nonprofit hospitals are the largest?",
+        ]}
+
+    # University/college
+    if any(w in q for w in ["universit", "college"]):
+        return {"suggestions": [
+            "Which universities have the most assets?",
+            "Which colleges raised the most money?",
+            "Which universities have the most debt?",
+            "Which research institutes have the most assets?",
+        ]}
+
+    # PAC/FEC general
+    if any(w in q for w in ["pac", "committee", "fec", "spent", "political"]):
+        return {"suggestions": [
+            "How much did ActBlue raise in 2024?",
+            "Which committees have the most cash on hand?",
+            "Which Democratic committees raised the most?",
+            "Which Republican committees raised the most?",
+        ]}
+
+    # 990PF / filing type
+    if "990pf" in q or "private foundation" in q:
+        return {"suggestions": [
+            "Which foundations have the most net assets?",
+            "Which foundations raised the most in contributions?",
+            "Which foundations spent the most money?",
+            "Which nonprofits filed 990EZ returns?",
+        ]}
+
+    # Cross dataset
+    if any(w in q for w in ["connection", "both", "political"]):
+        return {"suggestions": [
+            "Which nonprofits have the most total assets?",
+            "Which PACs spent the most in 2024?",
+            "Which health organizations have the most revenue?",
+            "Which foundations have the most assets?",
+        ]}
+
+    # Officer compensation
+    if any(w in q for w in ["officer", "compensation", "executive", "salary"]):
+        return {"suggestions": [
+            "Which nonprofits raised the most money?",
+            "Which hospitals have the most assets?",
+            "Which universities have the most assets?",
+            "Which nonprofits have the highest revenue?",
+        ]}
+
+    # Year-based — suggest same question for other years
+    import re
+    years = re.findall(r'202[0-4]', q)
+    if years:
+        year = int(years[0])
+        other_years = [y for y in [2021, 2022, 2023, 2024] if y != year]
+        return {"suggestions": [
+            f"Which nonprofits raised the most money in {other_years[0]}?",
+            f"Which nonprofits raised the most money in {other_years[1]}?",
+            "Which nonprofits raised the most money overall?",
+            "Which nonprofits had the most assets in recent years?",
+        ]}
+
+    # Default — truly different from Try hints
+    return {"suggestions": [
+        "Which hospitals have the most assets?",
+        "Which foundations have the most net assets?",
+        "Which nonprofits have connections to political committees?",
+        "Which nonprofits pay their officers the most?",
+    ]}
+
 @app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     return {"status": "ok"}
@@ -243,7 +381,7 @@ def query(req: QueryRequest):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
-    logger.info(f"Query: '{body.question[:60]}' | dataset={body.dataset}")
+    logger.info(f"Query: '{req.question[:60]}' | dataset={req.dataset}")
     if not RAG_AVAILABLE:
         return {"answer": "RAG system not available in this deployment.", "citations": [], "sources_used": []}
     result = hybrid_ask(

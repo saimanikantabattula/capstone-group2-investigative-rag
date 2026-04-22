@@ -22,3 +22,8 @@ export async function getHealth() {
   return response.data;
 }
 // Wed Apr 15 19:36:39 EDT 2026
+
+export async function getSuggestions(question, dataset = "both") {
+  const response = await api.post("/suggestions", { question, dataset });
+  return response.data;
+}
