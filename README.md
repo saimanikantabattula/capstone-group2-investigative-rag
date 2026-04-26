@@ -1,285 +1,200 @@
-# Capstone Group 2 — Investigative RAG (IRS 990 + FEC)
+# Capstone Group 2 — Investigative RAG
 
-**Team:** Sai Manikanta Battula · Bhavani Danthuri · Ability Chikanya · Hanok Naidu Suravarapu  
+**Team:** Sai Manikanta Battula, Bhavani Danthuri, Ability Chikanya, Hanok Naidu Suravarapu
 **University:** Yeshiva University
+**Course:** Capstone Project
 
 ---
 
-## Live Demo
+## What This Project Does
 
-| Service | URL |
+This system lets anyone ask plain English questions about nonprofit organizations and political finance records, and get back clear answers with citations from real government data.
+
+For example you can ask:
+- Which nonprofits raised the most money?
+- Which PACs spent the most in 2024?
+- Which nonprofits are based in Boston?
+- How much did ActBlue raise in 2024?
+- Which nonprofits have connections to political committees?
+
+The system searches through 1.2 million IRS nonprofit records and 38,000 FEC political committee records to find the answer, then uses AI to write a clear cited response.
+
+---
+
+## Live Links
+
+| What | Link |
 |---|---|
-| **Frontend** | https://capstone-group2-investigative-rag.vercel.app |
-| **Backend API** | https://capstone-group2-investigative-rag.onrender.com |
-| **API Health** | https://capstone-group2-investigative-rag.onrender.com/health |
-| **Database** | Supabase PostgreSQL — 378K IRS rows + 38K FEC rows |
-
----
-
-## Live Demo
-
-| Service | URL | Status |
-|---|---|---|
-| **Frontend** | https://capstone-group2-investigative-rag.vercel.app | ✅ Live |
-| **Backend API** | https://capstone-group2-investigative-rag.onrender.com | ✅ Live |
-| **API Health** | https://capstone-group2-investigative-rag.onrender.com/health | ✅ Live |
-| **Database** | Supabase PostgreSQL — 378K IRS rows + 38K FEC rows | ✅ Live |
-| **Vector Search** | Pinecone — 100,835 vectors (74K IRS + 26K FEC) | ✅ Live |
+| Frontend (website) | https://capstone-group2-investigative-rag.vercel.app |
+| Backend API | https://capstone-group2-investigative-rag.onrender.com |
+| Health check | https://capstone-group2-investigative-rag.onrender.com/health |
 
 ---
 
 ## Research Question
 
-Can we automatically connect IRS Form 990 nonprofit filings with FEC political committee filings to uncover financial and organizational links, and answer investigative questions with cited evidence?
-
----
-
-## What We Built
-
-An evidence-based question-answering system that lets anyone ask plain English questions about IRS nonprofit filings and FEC political finance records and get back real answers with citations pointing to the actual government filing.
-
-**Example queries the system answers:**
-- *"Which nonprofits raised the most money?"* → Mass General Brigham $23.5B, Fidelity Investments Charitable Gift Fund $19B...
-- *"Which PACs spent the most in 2024?"* → ActBlue $3.79B, WinRed $1.68B, Harris Victory Fund $1.31B...
-- *"Which nonprofits are based in New York?"* → SelfHelp Community Services $117.9M, Governors Island Corporation $385.9M assets...
-- *"How much did ActBlue raise in 2024?"* → ActBlue raised $5.06 billion in combined receipts
-- *"Which nonprofits have connections to political committees?"* → Development Now for Chicago: $81.5M IRS revenue + $102M FEC receipts
-
----
-
-## System Architecture
-
-```mermaid
-flowchart LR
-  DS["IRS 990 XMLs + FEC CSVs/PDFs"] --> ING["Ingestion Pipelines"]
-  ING --> PG["PostgreSQL\n(structured data)"]
-  ING --> VDB["ChromaDB\n(vector embeddings)"]
-  PG --> HYB["Hybrid Query Engine"]
-  VDB --> HYB
-  HYB --> LLM["Language Model API"]
-  LLM --> UI["React Frontend + FastAPI"]
-```
-
-## Data Flow
-
-```mermaid
-flowchart TB
-  A["Raw XML/PDF/CSV"] --> B["Parse + Extract\nlxml / PyMuPDF / pandas"]
-  B --> C["Clean + Normalize"]
-  C --> D["PostgreSQL\nirs_financials, irs_index\nirs_locations, fec_committees"]
-  C --> E["Chunk Text\n~300 words per chunk"]
-  E --> F["Sentence Embeddings\nall-MiniLM-L6-v2"]
-  F --> G["ChromaDB\n74K IRS + 26K FEC chunks"]
-  H["User Question"] --> I["Hybrid Router"]
-  I -->|"Cross-dataset"| J["IRS + FEC JOIN"]
-  I -->|"Financial question"| D
-  I -->|"Document question"| G
-  D --> K["Language Model\ngenerates cited answer"]
-  G --> K
-  J --> K
-  K --> L["Answer + Citations\nwith IRS.gov / FEC.gov links"]
-```
+Can we automatically connect IRS Form 990 nonprofit filings with FEC political committee filings to answer investigative questions with cited evidence?
 
 ---
 
 ## Technology Stack
 
-| Component | Technology | Purpose |
+| Part | Technology | What it does |
 |---|---|---|
-| Vector Database | Pinecone | Cloud vector search — 100K+ embeddings in cloud |
-| Relational Database | PostgreSQL | Structured financial and committee data |
-| Embedding Model | all-MiniLM-L6-v2 | Convert text to vectors for similarity search |
-| Language Model | LLM API (Python SDK) | Generate cited answers from retrieved evidence |
-| Backend API | FastAPI + Uvicorn | REST API with /query, /health, /collections endpoints |
-| Frontend | React + Vite | Web interface for user queries |
-| Analytics | Grafana | Visual dashboards connected to PostgreSQL |
-| XML Parser | lxml | Extract data from IRS 990 XML files |
-| PDF Parser | PyMuPDF | Extract text from FEC PDF filings |
-| Evaluation | DeepEval | Automated accuracy testing framework |
+| Frontend | React + Vite | The website users interact with |
+| Backend | FastAPI + Python 3.11 | Receives questions and returns answers |
+| Database | PostgreSQL on Supabase | Stores all financial data |
+| Vector database | Pinecone | Stores document text for semantic search |
+| Embeddings | HuggingFace API (all-MiniLM-L6-v2) | Converts text to numbers for search |
+| Language model | Anthropic Claude Haiku | Writes the final cited answer |
+| Evaluation | DeepEval v3.9.2 | Measures how good our answers are |
+| Monitoring | UptimeRobot | Pings our server every 5 min so it never sleeps |
+| Deployment | Vercel + Render + Supabase + Pinecone | All cloud, all free tier |
 
 ---
 
-## Database Schema
+## Data We Have
 
 ### PostgreSQL Tables
 
-| Table | Rows | Description |
-|---|---|---|
-| `irs_financials` | 378,272 | Financial data — revenue, expenses, assets, liabilities, officer compensation |
-| `irs_index` | 100,000 | IRS filing index — org names, EINs, return types, tax periods |
-| `irs_locations` | 1,216,026 | Location data — state, city, zip for 1.2M organizations |
-| `fec_committees` | 38,793 | FEC committee data — receipts, disbursements, cash on hand |
-
-### ChromaDB Collections
-
-| Collection | Chunks | Source |
-|---|---|---|
-| `irs_filings_25k` | 74,529 | Text chunks from 20,411 IRS Form 990 XML files |
-| `fec_filings` | 26,306 | FEC committee records converted to readable text |
-
----
-
-## Cross-Dataset Queries
-
-One of the most powerful features of our system is finding organizations that appear in **both IRS and FEC datasets**, revealing nonprofit-political connections.
-
-**Example:** *"Which nonprofits have connections to political committees?"*
-
-| Organization | IRS Revenue | FEC Receipts | Connection |
+| Table | Rows | Size | What it stores |
 |---|---|---|---|
-| Development Now for Chicago | $81.5M | $102M | Both IRS nonprofit + FEC committee |
-| Democracy Matters | Active | Active | Appears in both datasets |
-| International Brotherhood of Teamsters | Active | Active | Union with political committee |
+| irs_financials | 378,272 | 151 MB | Revenue, assets, expenses, officer pay |
+| irs_locations | 1,216,026 | 298 MB | City, state, ZIP for all 1.2M orgs |
+| irs_index | 100,000 | 31 MB | EIN, name, return type |
+| fec_committees | 38,793 | 21 MB | Receipts, spending, cash on hand |
+| Total | 1,733,091 rows | 501 MB | At Supabase free tier limit |
 
-This is powered by a SQL JOIN between `irs_financials` and `fec_committees` on organization name matching.
+### Pinecone Vectors
 
----
-
-## Hybrid Query Engine
-
-The system automatically routes each question to the best data source:
-
-```
-User Question
-     │
-     ├── Cross-dataset? (e.g. "connections to political committees")
-     │        └── JOIN irs_financials + fec_committees → PostgreSQL
-     │
-     ├── Geographic? (e.g. "based in New York")
-     │        └── Query irs_locations or fec_committees by state → PostgreSQL
-     │
-     ├── Specific committee? (e.g. "ActBlue", "WinRed", "Harris")
-     │        └── Query fec_committees by name → PostgreSQL
-     │
-     ├── Threshold? (e.g. "over 100 million")
-     │        └── Query fec_committees with numeric filter → PostgreSQL
-     │
-     ├── Financial/ranking? (e.g. "most revenue", "highest assets")
-     │        └── Query irs_financials or fec_committees → PostgreSQL
-     │
-     └── Document/text question?
-              └── Semantic search → ChromaDB → Language Model
-```
+| Namespace | Vectors | Source |
+|---|---|---|
+| irs | 74,529 | IRS 990 XML text chunks |
+| fec | 26,306 | FEC committee descriptions |
+| Total | 100,835 | Out of 1 million free tier limit |
 
 ---
 
-## Evaluation Framework
+## How the System Routes Questions
 
-> **Professor Requirement:** Develop ground truth data with expected outcomes. Use LLM as a judge or a framework like DeepEval to evaluate how accurate and consistent the system responses are.
+Every question goes through 9 steps in order until a match is found:
 
-### How We Built the Evaluation
+| Step | When it triggers | What it queries |
+|---|---|---|
+| Step 0 | "connections to", "linked to" | SQL JOIN between IRS and FEC tables |
+| Step 0b | City name found (Boston, Chicago) | irs_financials joined with irs_locations |
+| Step 0c | Year found (2023, 2024, "latest") | irs_financials filtered by tax_year |
+| Step 1 | State name found (California, NY) | irs_financials or fec_committees by state |
+| Step 2 | Specific committee (ActBlue, WinRed) | fec_committees WHERE name matches |
+| Step 3 | Threshold phrase (over 1 billion) | fec_committees WHERE receipts >= amount |
+| Step 4 | Financial keywords (revenue, assets) | irs_financials ordered by metric |
+| Step 5 | FEC keywords (PAC, committee) | fec_committees ordered by receipts |
+| Step 6 | Everything else | Pinecone vector search |
 
-We implemented a full evaluation pipeline using **DeepEval v3.9.2**.
+98.7% of questions are answered by PostgreSQL (Steps 0 to 5). Only document text questions fall through to Pinecone (Step 6).
 
-**Step 1 — Ground Truth Dataset (`src/eval/ground_truth.py`)**
+---
 
-We created 100 carefully chosen test questions with fixed expected values covering all areas of the system. Each question has:
-- A question string
-- Expected keywords that must appear in the answer
-- An `expected_contains` value — the most critical term that must be present
-- A dataset label (irs / fec / both)
-- A category label for breakdown analysis
+## Multi-Agent Architecture
 
-Example entry:
-```python
-{
-    "id": "fec_003",
-    "question": "How much did ActBlue raise in 2024?",
-    "expected_keywords": ["ActBlue", "billion", "receipts"],
-    "expected_contains": "ActBlue",
-    "dataset": "fec",
-    "category": "FEC Specific Committee",
-}
-```
+The system has 4 agents that each do one specific job:
 
-**Step 2 — Evaluation Script (`src/eval/evaluate.py`)**
+| Agent | File | Job |
+|---|---|---|
+| Controller Agent | agent_controller.py | Receives question, decides which agent to call |
+| Filter Agent | agent_filter.py | Runs all SQL queries against PostgreSQL |
+| Retriever Agent | agent_retriever.py | Runs vector search against Pinecone |
+| Writer Agent | agent_writer.py | Calls Claude to generate the cited answer |
 
-The script:
-1. Runs all 100 ground truth questions through the RAG system
-2. Scores each answer using keyword matching and contains check
-3. Pass/Fail — passes if keyword score ≥ 50% AND contains check passes
-4. Records response time
-5. Saves results to `src/eval/evaluation_results.json`
-6. Generates a PDF report via `src/eval/eval_report.py`
+### Reciprocal Rank Fusion
 
-**Step 3 — Batch Tester (`src/eval/batch_test.py`)**
-
-Extended testing across 109 questions using rule-based quality checks (zero extra evaluation cost):
+When combining IRS and FEC vector results we use RRF. The formula is:
 
 ```
-FAIL if answer contains:
-  - "I cannot answer"
-  - "No data found"
-  - "not included in this dataset"
-  - "no organizations / no committees"
-
-FAIL if:
-  - Answer is less than 30 words
-  - Financial question has no numbers in answer
-
-PASS otherwise
+score = 1 / (60 + rank)
 ```
 
-**Run commands:**
+A document that ranks highly in both the IRS list and the FEC list gets a higher combined score than one that only ranks well in one list. This is based on the standard RRF formula from Cormack et al. 2009.
+
+---
+
+## New Features Added After Ground Truth Evaluation
+
+| Feature | What it does |
+|---|---|
+| City search | "Which nonprofits are in Boston?" queries irs_locations table |
+| Year filtering | "Which nonprofits raised most in 2023?" filters by tax_year column |
+| Fuzzy name matching | Finds organizations by partial name using word-by-word SQL LIKE queries |
+| Related questions | Shows 4 clickable follow-up questions after every answer |
+| Embedding cache | Caches HuggingFace vectors in memory — 493x faster on repeat queries |
+| Answer cache | Caches complete answers — instant response for repeated questions |
+| Request logging | Every API call logged with method, path, status code, and time taken |
+| UptimeRobot | Pings health endpoint every 5 minutes so Render never goes to sleep |
+
+---
+
+## Performance
+
+| What | Number |
+|---|---|
+| Average response time | 3.22 seconds |
+| Cached response time | 0.0 seconds (493x faster) |
+| Cache size | 100 entries per cache |
+| Cache storage | In memory, resets on server restart |
+
+---
+
+## Evaluation
+
+We use DeepEval v3.9.2 with Anthropic Claude as the LLM judge. This is true AI-based evaluation, not simple keyword matching. Claude reads every question and answer and gives a score from 0 to 1.
+
+### Metrics
+
+| Metric | Type | What it measures |
+|---|---|---|
+| Answer Relevancy | DeepEval LLM-as-judge | Is the answer relevant to the question? |
+| Faithfulness | DeepEval LLM-as-judge | Is the answer grounded in retrieved data? |
+| Keyword Score | Rule-based | What percentage of expected keywords appear? |
+| Contains Check | Rule-based | Is the most critical expected term present? |
+
+### Ground Truth Questions (115 total)
+
+| Category | Count |
+|---|---|
+| IRS Financial Ranking | 20 |
+| IRS Geographic | 15 |
+| FEC Financial Ranking | 20 |
+| FEC Specific Committee | 10 |
+| FEC Geographic | 5 |
+| Cross Dataset | 25 |
+| IRS Filing Type | 5 |
+| IRS City Search | 5 |
+| IRS Year Filter | 5 |
+| Fuzzy Name Search | 5 |
+| Total | 115 |
+
+### Results
+
+| Metric | Score |
+|---|---|
+| Accuracy | 99% (99 out of 100 core questions) |
+| Answer Relevancy | 0.871 out of 1.0 |
+| Faithfulness | 0.919 out of 1.0 |
+| Average response time | 3.22 seconds |
+
+### Run the evaluation
+
 ```bash
-# Run full ground truth evaluation (100 questions)
 DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/evaluate.py
-
-# Run batch test (109 questions)
-DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py
-
-# Run IRS questions only
-DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py --dataset irs
-
-# Run FEC questions only
-DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py --dataset fec
-
-# Run quick sample of 20 random questions
-DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py --sample 20
 ```
 
----
+### Run the batch test (faster, no LLM cost)
 
-## Evaluation Results
+```bash
+DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py
+```
 
-### Ground Truth Evaluation (100 Questions)
-
-| Category | Questions | Passed | Accuracy |
-|---|---|---|---|
-| IRS Financial Ranking | 20 | 20 | **100%** |
-| IRS Geographic | 15 | 15 | **100%** |
-| IRS Filing Type | 5 | 5 | **100%** |
-| FEC Financial Ranking | 20 | 19 | **95%** |
-| FEC Specific Committee | 10 | 10 | **100%** |
-| FEC Geographic | 5 | 5 | **100%** |
-| Cross Dataset | 25 | 23 | **92%** |
-| **OVERALL** | **100** | **99** | **99%** |
-
-**Average response time:** 3.22 seconds  
-**Average keyword score:** 81.9%  
-**Average Answer Relevancy:** 0.871 / 1.0 (DeepEval AnswerRelevancyMetric - true LLM-as-judge)  
-**Average Faithfulness:** 0.919 / 1.0 (DeepEval FaithfulnessMetric - true LLM-as-judge)  
-**Total revenue tracked in database:** $681.6 billion
-
-### Extended Batch Test (109 Questions)
-
-| Metric | Value |
-|---|---|
-| Total Questions | 109 |
-| Passed | **107 (98.2%)** |
-| Failed | 2 (1.8%) |
-| Average Response Time | 2.69 seconds |
-| Routing Coverage (1000 questions) | 98.7% routed to PostgreSQL |
-
-### Why 1 Question Failed
-
-The 1 remaining failure is a **data coverage issue**, not system bugs:
-
-| Question | Reason |
-|---|---|
-| Which nonprofits are based in New Jersey? | Answer says "New Jersey" but expected keyword was "NJ" — minor wording mismatch |
-
-Loading more IRS XML data will fix the first two failures.
+Batch test result: 98.2% pass rate on 109 questions.
 
 ---
 
@@ -287,102 +202,132 @@ Loading more IRS XML data will fix the first two failures.
 
 ```
 capstone-group2-investigative-rag/
-├── src/
-│   ├── api/
-│   │   └── main.py                 # FastAPI backend
-│   ├── rag/
-│   │   ├── answer.py               # ChromaDB RAG engine
-│   │   └── hybrid.py               # Hybrid query router + cross-dataset JOIN
-│   ├── ingest/
-│   │   ├── irs_ingest.py           # IRS XML → ChromaDB
-│   │   ├── fec_ingest.py           # FEC PDF → ChromaDB
-│   │   └── fec_csv_ingest.py       # FEC CSV → ChromaDB
-│   ├── db/
-│   │   ├── load_irs_financials.py  # IRS XML → PostgreSQL financials
-│   │   └── extract_locations.py    # IRS XML → PostgreSQL locations
-│   └── eval/
-│       ├── ground_truth.py         # 25 ground truth questions
-│       ├── evaluate.py             # DeepEval evaluation script
-│       ├── batch_test.py           # 109-question batch tester
-│       └── eval_report.py          # PDF report generator
 ├── frontend/
 │   └── src/
-│       ├── App.jsx                 # Main React app with settings panel
-│       ├── App.css                 # White theme with dark mode support
+│       ├── App.jsx              # Main React component
+│       ├── api/client.js        # API calls to backend
 │       └── components/
 │           ├── SearchBar.jsx
+│           ├── DatasetToggle.jsx
 │           ├── AnswerPanel.jsx
-│           ├── CitationCard.jsx    # Clickable IRS.gov / FEC.gov links
-│           └── DatasetToggle.jsx
-├── data/
-│   └── manifests/
-│       └── irs_manifest_clean.csv
-└── README.md
+│           └── CitationCard.jsx
+├── src/
+│   ├── api/
+│   │   └── main.py             # FastAPI backend, all endpoints
+│   ├── agents/
+│   │   ├── agent_controller.py # Routes questions to right agent
+│   │   ├── agent_filter.py     # PostgreSQL SQL queries
+│   │   ├── agent_retriever.py  # Pinecone vector search with RRF
+│   │   └── agent_writer.py     # Claude answer generation
+│   ├── rag/
+│   │   ├── hybrid.py           # 9-step hybrid router
+│   │   └── answer.py           # Pinecone RAG + caching
+│   ├── db/                     # Database helpers
+│   ├── ingest/                 # Data loading scripts
+│   └── eval/
+│       ├── evaluate.py         # DeepEval evaluation
+│       ├── ground_truth.py     # 115 test questions
+│       ├── batch_test.py       # 109-question fast tester
+│       └── anthropic_judge.py  # Anthropic wrapper for DeepEval
+├── deployment/
+│   └── README.md
+├── docs/
+│   └── use_cases.md
+├── Procfile
+├── requirements.txt
+└── .python-version
 ```
 
 ---
 
-## Setup Instructions
+## Local Setup
 
-### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- PostgreSQL 14+
+### Requirements
 
-### 1. Clone Repository
+- Python 3.11 or higher
+- Node.js 18 or higher
+- PostgreSQL (local) or Supabase account
+- Pinecone account
+- Anthropic API key
+- HuggingFace token
+
+### Steps
+
 ```bash
-git clone https://github.com/saimanikantabattula/capstone-group2-investigative-rag
+# 1. Clone the repo
+git clone https://github.com/saimanikantabattula/capstone-group2-investigative-rag.git
 cd capstone-group2-investigative-rag
-```
 
-### 2. Python Environment
-```bash
+# 2. Set up Python environment
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
 
-### 3. Environment Variables
-```bash
+# 3. Copy environment file and fill in your values
 cp .env.example .env
-# Edit .env and add your API key and DB password
+
+# 4. Start the backend
+DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey PINECONE_API_KEY=yourkey HF_TOKEN=yourtoken uvicorn src.api.main:app --port 8000
+
+# 5. Start the frontend (open a new terminal tab)
+cd frontend
+npm install
+npm run dev
 ```
 
-### 4. Start Backend
-```bash
-DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey uvicorn src.api.main:app --port 8000
-```
-
-### 5. Start Frontend
-```bash
-cd frontend && npm install && npm run dev
-# Open http://localhost:5173
-```
+Open http://localhost:5173 in your browser.
 
 ---
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
+| Method | Endpoint | What it does |
 |---|---|---|
-| `/health` | GET | Check API status |
-| `/collections` | GET | List ChromaDB collections |
-| `/query` | POST | Submit question, get cited answer |
+| GET | /health | Health check, used by UptimeRobot |
+| POST | /query | Main question answering endpoint |
+| POST | /suggestions | Returns 4 related questions |
+| GET | /dashboard | Returns aggregated stats for charts |
+| GET | /test-pinecone | Tests Pinecone connection |
+| GET | /test-embedding | Tests HuggingFace embedding API |
 
-### Query Example
+### Example request
+
 ```bash
-curl -X POST http://localhost:8000/query \
+curl -X POST https://capstone-group2-investigative-rag.onrender.com/query \
   -H "Content-Type: application/json" \
   -d '{"question": "Which nonprofits raised the most money?", "dataset": "irs", "top_k": 5}'
 ```
 
+### Example response
+
+```json
+{
+  "question": "Which nonprofits raised the most money?",
+  "answer": "Based on our dataset, the top nonprofits by revenue are: 1. Mass General Brigham (MA) — $23.5 billion [1]...",
+  "citations": [{"source": "IRS", "org_name": "MASS GENERAL BRIGHAM", "snippet": "..."}],
+  "sources_used": ["IRS Financials (PostgreSQL)"]
+}
+```
+
 ---
 
-## Team
+## Known Limitations
 
-| Name | Role |
+| Limitation | Why | Possible fix |
+|---|---|---|
+| Only 31% of IRS data loaded | Supabase free tier is 500MB, we used 501MB | Upgrade to Supabase Pro ($25/month) for 8GB |
+| FEC data is 2024-2026 only | We only ingested recent cycles | Load older election cycles |
+| Cache resets on server restart | We use in-memory cache | Add Redis for persistent cache |
+| No user authentication | System is open access | Add API key middleware |
+| Only 1.7% Pinecone document coverage | Storage limits | Expand Pinecone index |
+
+---
+
+## Team Contributions
+
+| Member | Files |
 |---|---|
-| Sai Manikanta Battula | Backend, Data Pipelines, PostgreSQL |
-| Bhavani Danthuri | Data Processing, Evaluation |
-| Ability Chikanya | Frontend, API Integration |
-| Hanok Naidu Suravarapu | RAG Engine, Hybrid Router, Evaluation Framework |
+| Sai Manikanta Battula | agent_controller.py, load_irs_financials.py |
+| Bhavani Danthuri | README.md, agent_filter.py |
+| Ability Chikanya | frontend/src/App.jsx, agent_writer.py |
+| Hanok Naidu Suravarapu | agent_retriever.py, ground_truth.py |
