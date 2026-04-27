@@ -137,7 +137,7 @@ A document that ranks highly in both the IRS list and the FEC list gets a higher
 
 | What | Number |
 |---|---|
-| Average response time | 3.22 seconds |
+| Average response time | 4.74 seconds |
 | Cached response time | 0.0 seconds (493x faster) |
 | Cache size | 100 entries per cache |
 | Cache storage | In memory, resets on server restart |
@@ -171,16 +171,17 @@ We use DeepEval v3.9.2 with Anthropic Claude as the LLM judge. This is true AI-b
 | IRS City Search | 5 |
 | IRS Year Filter | 5 |
 | Fuzzy Name Search | 5 |
-| Total | 115 |
+| Adversarial | 10 |
+| Total | 125 |
 
 ### Results
 
 | Metric | Score |
 |---|---|
-| Accuracy | 99% (99 out of 100 core questions) |
-| Answer Relevancy | 0.871 out of 1.0 |
-| Faithfulness | 0.919 out of 1.0 |
-| Average response time | 3.22 seconds |
+| Accuracy | 96.8% (121 out of 125 questions) |
+| Answer Relevancy | 0.890 out of 1.0 |
+| Faithfulness | 0.962 out of 1.0 |
+| Average response time | 4.74 seconds |
 
 ### Run the evaluation
 
@@ -194,7 +195,7 @@ DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/evaluate.py
 DB_PASS='yourpassword' ANTHROPIC_API_KEY=yourkey python3 src/eval/batch_test.py
 ```
 
-Batch test result: 98.2% pass rate on 109 questions.
+Batch test result: 98.2% pass rate on 109 questions (rule-based, no LLM cost).
 
 ---
 
