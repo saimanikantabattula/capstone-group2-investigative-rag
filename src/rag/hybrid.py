@@ -594,10 +594,10 @@ def query_irs_financials(question):
             elif "990t" in q: rt = "990T"       # Unrelated business income returns
             else: rt = "990"                    # Standard nonprofit returns
             cur.execute("""
-                SELECT "TAXPAYER_NAME" as org_name, "RETURN_TYPE" as return_type,
-                       "TAX_PERIOD" as tax_year, "EIN" as ein
-                FROM irs_index WHERE UPPER("RETURN_TYPE") = %s
-                ORDER BY "TAXPAYER_NAME" LIMIT 20
+                SELECT org_name, return_type, tax_period as tax_year, ein
+                FROM irs_index WHERE UPPER(return_type) = %s
+                AND org_name IS NOT NULL
+                ORDER BY org_name LIMIT 20
             """, (rt,))
 
         # ── Contributions and grants ──
@@ -1485,6 +1485,32 @@ def hybrid_ask(question, dataset="both", top_k=5):
         except Exception as e:
             print(f"FEC PostgreSQL query failed: {e}, falling back to RAG")
 
+
+    # ── STEP 5b: Fuzzy organization name search ──────────────────────────────
+    # Check if question mentions a specific organization name
+    # Example: "Tell me about Mass General Brigham financials"
+    org_keywords = ["tell me about", "financials of", "financial status of",
+                    "revenue of", "assets of", "about", "show me"]
+    if any(kw in q_lower for kw in org_keywords) and dataset in ("irs", "both"):
+        # Extract potential org name from question
+        org_name = q_lower
+        for kw in org_keywords:
+            org_name = org_name.replace(kw, "").strip()
+        org_name = org_name.replace("financials", "").replace("financial", "").strip()
+        if len(org_name) > 3:
+            try:
+                rows = query_irs_fuzzy_name(org_name)
+                if rows:
+                    context = format_rows_as_context(rows, "IRS Financials")
+                    answer = generate_answer_from_data(question, context, "IRS nonprofit finance")
+                    citations = [Citation(source="IRS", file_name="irs_financials (PostgreSQL)",
+                        org_name=r.get("org_name",""), ein="", object_id="",
+                        snippet=f"Revenue: {r.get('total_revenue','N/A')} | State: {r.get('state','N/A')}",
+                        distance=0.0) for r in rows[:5]]
+                    return RAGResponse(answer=answer, citations=citations,
+                        sources_used=["IRS Financials (PostgreSQL)"])
+            except Exception as e:
+                print(f"Fuzzy search failed: {e}")
 
     # ── STEP 6: Pinecone vector search (fallback) ─────────────────────────────
     # If no SQL route matched, fall back to Pinecone document text search
