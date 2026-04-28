@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
 import SearchBar from "./components/SearchBar";
 import DatasetToggle from "./components/DatasetToggle";
@@ -58,23 +59,11 @@ function SkeletonLoader() {
   );
 }
 
-function CopyButton({ text }) {
-  const [copied, setCopied] = useState(false);
-  async function handleCopy() {
-    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch {}
-  }
-  return (
-    <button className={`copy-btn ${copied ? "copy-btn--copied" : ""}`} onClick={handleCopy}>
-      {copied ? (
-        <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>Copied!</>
-      ) : (
-        <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</>
-      )}
-    </button>
-  );
-}
 
 export default function App() {
+  const [user, setUser] = useState(() => {
+    try { const s = localStorage.getItem("rag_user"); return s ? JSON.parse(s) : null; } catch { return null; }
+  });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [question, setQuestion] = useState("");
   const [dataset, setDataset] = useState("both");
@@ -169,6 +158,15 @@ export default function App() {
     }
   }, [question, dataset]);
 
+  function handleLogin(userData) {
+    setUser(userData);
+    try { localStorage.setItem("rag_user", JSON.stringify(userData)); } catch {}
+  }
+  function handleLogout() {
+    setUser(null);
+    try { localStorage.removeItem("rag_user"); } catch {}
+    setResult(null); setQuestion(""); setSuggestions([]);
+  }
   function handleNewChat() {
     setQuestion("");
     setResult(null);
@@ -191,6 +189,10 @@ export default function App() {
     const a = document.createElement("a");
     a.href = url; a.download = `investigative-rag-${Date.now()}.txt`; a.click();
     URL.revokeObjectURL(url);
+  }
+
+  if (!user) {
+    return <Login onLogin={handleLogin} />;
   }
 
   return (
@@ -251,31 +253,38 @@ export default function App() {
                 <button className="settings-close" onClick={() => setSettingsOpen(false)}>✕</button>
               </div>
               <div className="settings-body">
-                <div className="settings-section-title">About</div>
-                <div style={{fontSize:"0.78rem", color:"var(--text-muted)", lineHeight:1.6}}>
-                  <p>Investigative RAG — Capstone Group 2</p>
-                  <p style={{marginTop:"0.3rem"}}>Yeshiva University · 2025-2026</p>
-                  <p style={{marginTop:"0.5rem", color:"var(--green)"}}>96.8% accuracy · 125 test questions</p>
-                </div>
-                <div className="settings-section-title" style={{marginTop:"1.25rem"}}>Team</div>
-                {TEAM.map(name => (
-                  <div key={name} style={{fontSize:"0.78rem", color:"var(--text-muted)", padding:"0.3rem 0", borderBottom:"1px solid var(--border)"}}>
-                    {name}
+                <div className="settings-section-title">Signed In As</div>
+                <div className="settings-user-card">
+                  <div className="settings-user-avatar">
+                    {(user?.name || "G").split(" ").map(n => n[0]).slice(0,2).join("")}
                   </div>
-                ))}
-                <div className="settings-section-title" style={{marginTop:"1.25rem"}}>Links</div>
-                <div style={{display:"flex", flexDirection:"column", gap:"0.4rem"}}>
-                  {[
-                    ["GitHub", "https://github.com/saimanikantabattula/capstone-group2-investigative-rag"],
-                    ["IRS.gov", "https://apps.irs.gov/app/eos/"],
-                    ["FEC.gov", "https://www.fec.gov/data/"],
-                  ].map(([label, url]) => (
-                    <a key={label} href={url} target="_blank" rel="noopener noreferrer"
-                      style={{fontSize:"0.78rem", color:"var(--green)", textDecoration:"none"}}>
-                      {label} →
-                    </a>
-                  ))}
+                  <div className="settings-user-info">
+                    <p className="settings-user-name">{user?.name || "Guest"}</p>
+                    <p className="settings-user-role">{user?.role || "Demo Access"}</p>
+                  </div>
                 </div>
+
+                <div className="settings-section-title" style={{marginTop:"1.5rem"}}>Appearance</div>
+                <div className="theme-toggle">
+                  <div className="theme-toggle-label">
+                    <span className="theme-icon">{darkMode ? "🌙" : "☀️"}</span>
+                    {darkMode ? "Dark Mode" : "Light Mode"}
+                  </div>
+                  <label className="toggle-switch">
+                    <input type="checkbox" checked={darkMode} onChange={e => setDarkMode(e.target.checked)} />
+                    <span className="toggle-slider" />
+                  </label>
+                </div>
+
+                <div className="settings-section-title" style={{marginTop:"1.5rem"}}>Sign Out</div>
+                <button className="settings-signout-btn" onClick={() => { setSettingsOpen(false); handleLogout(); }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  Sign Out
+                </button>
               </div>
             </div>
           </>
@@ -380,7 +389,6 @@ export default function App() {
                   </span>
                 )}
                 <div className="response-meta-actions">
-                  <CopyButton text={result.answer} />
                   <button className="export-btn" onClick={handleExportPDF}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Export
