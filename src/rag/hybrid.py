@@ -966,15 +966,18 @@ def query_irs_financials(question):
             """)
 
         # ── DEFAULT: top nonprofits by revenue ──
-        # If no specific category matched, return top organizations by total revenue
+        # GROUP BY org_name to avoid duplicate organizations from multiple tax years
         else:
             cur.execute("""
-                SELECT org_name, state, return_type, tax_year,
-                       ROUND(total_revenue) as total_revenue,
-                       ROUND(total_expenses) as total_expenses,
-                       ROUND(total_assets) as total_assets
+                SELECT org_name, state,
+                       MAX(return_type) as return_type,
+                       MAX(tax_year) as tax_year,
+                       ROUND(MAX(total_revenue)) as total_revenue,
+                       ROUND(MAX(total_expenses)) as total_expenses,
+                       ROUND(MAX(total_assets)) as total_assets
                 FROM irs_financials WHERE total_revenue IS NOT NULL
-                ORDER BY total_revenue DESC LIMIT 15
+                GROUP BY org_name, state
+                ORDER BY MAX(total_revenue) DESC LIMIT 15
             """)
 
         rows = cur.fetchall()
@@ -1169,6 +1172,18 @@ def format_rows_as_context(rows, source="IRS"):
     The numbers [1], [2] etc. become the citation references in the final answer.
     Dollar amounts over $1000 are formatted with $ sign and commas.
     """
+    # Deduplicate by org_name — keep only highest value row per organization
+    seen_orgs = set()
+    deduped = []
+    for row in rows:
+        name = str(row.get("org_name", "")).strip()
+        if name and name not in seen_orgs:
+            seen_orgs.add(name)
+            deduped.append(row)
+        elif not name:
+            deduped.append(row)
+    rows = deduped
+
     if not rows:
         return "No data found."
 
@@ -1455,6 +1470,15 @@ def hybrid_ask(question, dataset="both", top_k=5):
         try:
             rows = query_irs_financials(question)
             if rows:
+                # Deduplicate by org_name before building citations
+                seen = set()
+                deduped = []
+                for r in rows:
+                    name = str(r.get("org_name","")).strip()
+                    if name not in seen:
+                        seen.add(name)
+                        deduped.append(r)
+                rows = deduped
                 context = format_rows_as_context(rows, "IRS Financials")
                 answer = generate_answer_from_data(question, context, "IRS nonprofit finance")
                 citations = [Citation(source="IRS", file_name="irs_financials (PostgreSQL)",
