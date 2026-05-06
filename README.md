@@ -458,6 +458,7 @@ curl -X POST https://capstone-group2-investigative-rag.onrender.com/query \
 ## Team Contributions
 
 | Member | Responsibility |
+
 |---|---|---|
 | Sai Manikanta Battula | agent_controller.py, load_irs_financials.py | System architecture, data ingestion |
 | Bhavani Danthuri | README.md, agent_filter.py | Documentation, SQL query engine |
