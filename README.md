@@ -463,3 +463,18 @@ curl -X POST https://capstone-group2-investigative-rag.onrender.com/query \
 | Bhavani Danthuri | README.md, agent_filter.py | Documentation, SQL query engine |
 | Ability Chikanya | frontend/src/App.jsx, agent_writer.py | Frontend development, answer generation |
 | Hanok Naidu Suravarapu | agent_retriever.py, ground_truth.py | Vector search, evaluation framework |
+
+## Analytics Dashboard
+
+**Live Tableau Dashboard:** https://public.tableau.com/app/profile/battula.sai.manikanta/viz/CongressPoliticalMoneyFlow2024/CongressMembersPoliticalMoneyFlow2024
+
+### Key Findings:
+- 278 Congress members matched with FEC data
+- $1.28 Billion total political money tracked
+- Democrats raised $869M vs Republicans $399M
+- Top fundraiser: Ruben Gallego — $129M
+- Biggest overspender: Robert Menendez — $10M
+
+### Data Sources:
+- Congress.gov API
+- FEC.gov Bulk Downloads 2024
